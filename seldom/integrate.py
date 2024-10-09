@@ -55,7 +55,7 @@ def selection_func(
     """
     if quadrature is None:
         quadrature = scipy.special.roots_legendre(100)
-    return core.integrate.selection_func(x, z, gamma, quadrature[0], quadrature[1])
+    return core.integrate.selection_func(x, z, gamma, *quadrature)
 
 
 def integrate_selection_func(
