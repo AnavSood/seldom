@@ -1205,8 +1205,265 @@ This can be confirmed via Bayes rule:
     &= \frac{a + b}{c}
 \end{align*}
 
+\section{Selective Dominance and One-Sided Testing}
 
-\section{Additional Proofs and Derivations}
+In this appendix, we establish the selective dominance property for UMP p-values in MLR familes and UMPU p-values in exponential families. We also show that in these cases, the adjusted p-value from \Cref{thm:adjustment} is monotone in the parameter, under suitable conditions. Throughout the appendix, we draw from the discussion and proof strategy in Appendix B.1 of \cite{Lei}.
+
+\subsection{MLR Families}
+
+We consider a parametric family $P_{\theta}$ that has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. These densities are such that, for any $\theta < \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a finite and non-decreasing function of some real-valued function $T(x)$. We will suppose the likelihood ratio is always finite. 
+
+%To be fully general we only define the likelihood ratio when at least one of the numerator and denominator are non-zero and let it equal $\infty$ when the denominator is zero.
+
+Recall that for a testing problem, the critical function $\phi(x)$ (see \cite[Section 3.1]{Lehmann}) tells us the probability of rejecting the null having observed data $x$, so $\phi(X) = P(\text{reject } H_0 | X)$. From Theorem 3.4.1 of \cite{Lehmann} we know the test governed by the critical function 
+\begin{equation}
+    \label{eq:mlr_test}
+    \phi(x) = \begin{cases}
+        1 &\text{if } T(X) > C  \\
+        \gamma &\text{if } T(X) = C  \\
+        0 & \text{otherwise }
+    \end{cases}
+\end{equation}
+is UMP for testing $H_0 : \theta \leq \theta_0$ against the alternatives $H_a : \theta > \theta_0 $ so long $C$ and $\gamma$ satisfy
+\begin{equation}
+    \label{eq:constraint}
+    P_{\theta_0}(T(X) > C) + \gamma P_{\theta_0}(T(X) = C) = \alpha.
+\end{equation}
+Denote the left-continuous survival function of $T(X)$ and its righthand limit under $P_{\theta_0}$ as
+\begin{equation*}
+    G(t) = P_{\theta_0}(T(X) \geq t) \qquad G^+(t) = \lim_{u \downarrow t} G(u).
+\end{equation*}
+Since $G(t)$ is a monotone non-increasing function, we can also define its generalized inverse 
+\begin{equation*}
+    G^{-1}(z) = \sup \{ t : G(z) \geq z\},
+\end{equation*}
+
+    
+    
+We know that $G(C) = G(G^{-1}(\alpha)) \geq \alpha$ by how $G^{-1}$ is defined. If $G^+(C) > \alpha$ then we would be able to find some $t^+ > C$ such that $G(t^+) > \alpha$, contradicting that $C = G^{-1}(\alpha)$. Thus we must have $G^+(C) \leq \alpha$, finishing the proof. 
+
+\begin{equation*}
+    G^{-1}(z) = \inf \{ t : G(t) \leq z\},
+\end{equation*}
+
+\Cref{lem:setting_constants} gives a natural way to set $C$ and $\gamma$ in \Cref{eq:mlr_test} to get an UMP test. 
+
+\begin{lemma}[An UMP test]
+    \label{lem:setting_constants} Adopting the convention that $0/0 = 0$, taking $C = G^{-1}(\alpha)$ and $\gamma = (\alpha - G^+(C))/(G(C) - G^+(C))$
+    in \Cref{eq:mlr_test} gives an UMP test.
+\end{lemma}
+
+\begin{proof}
+    At continuity points $t$ of $G(\cdot)$, we have $G(G^{-1}(t)) = t$ and also $P(T(X) = t) = 0$. Thus, if $C = G^{-1}(\alpha)$ is a continuity point of $G(\cdot)$, then $G^+(C) = P_{\theta_0}(T(X) > C) = P_{\theta_0}(T(X) \geq C) = G(C) = \alpha$ and $\gamma=0$, so the constraint \eqref{eq:constraint} is immediately satisfied. 
+
+    If $C = G^{-1}(\alpha)$ is not a continuity point of $G(\cdot)$, then $G(C) - G^+(C) > 0$, so $\gamma$ is well defined in this case and the constraint \eqref{eq:constraint} is also immediately satisfied. To ensure that we still have a valid test, however, we need $\gamma \in [0, 1]$. This is true so long as $\alpha \in [G^{+}(C), G(C)]$. We know that $G(t) \leq \alpha$ for any $t > C$, so $G^{+}(C) \leq \alpha$. If $G(C) < \alpha$, then we could find some $t^{-} < C$ such that $G(C) < \alpha$ by right-continuity, but this would contradict that $C = G^{-1}(\alpha)$, finishing the proof. 
+\end{proof}
+
+Letting $U_{aux} \sim \text{Unif}([0, 1])$ be auxiliary randomness that is independent of $X$, a simple way to instantiate the test from \Cref{lem:setting_constants} is to reject whenever $T(X) > C$ or when $T(X) = C$ and $U_{aux} \leq \gamma$. \Cref{lem:fuzzy} explains how this is the same as rejecting when the p-value, termed as a fuzzy p-value in \cite{Geyer}, 
+\begin{equation}
+    \label{eq:mlr_p_val}
+    p = G^+(T(X)) + U_{aux}(G(T(X)) - G^+(T(X))) 
+\end{equation}
+is at most $\alpha$. 
+
+\begin{lemma}[Fuzzy p-value is UMP]
+    \label{lem:fuzzy}
+    Rejecting $H_0: \theta \leq \theta_0$ when the fuzzy p-value \eqref{eq:mlr_p_val} is at most $\alpha$ instantiates the test from \Cref{lem:setting_constants}, and is therefore UMP. 
+\end{lemma}
+
+\begin{proof} We rewrite 
+    \begin{equation*}
+        p = (1 - U_{aux})G^+(T(X)) + U_{aux} G(T(X))
+    \end{equation*}
+    and consider four  cases. 
+    \begin{itemize}
+        \item If $t < G^{-1}(\alpha)$ then we can find some $t^+ > t$ such that $G(t^+) > \alpha$. Thus $G(t) \geq G^{+}(t) > \alpha$. So $p > \alpha$ whenever $T(X) < G^{-1}(\alpha)$ 
+        \item If $t = G^{-1}(\alpha)$ and $G^{-1}(\alpha)$ is a continuity point of $G(\cdot)$, then $G^{+}(t) = G(t) = \alpha$. Thus in this case $p \leq \alpha$ whenever $T(X) = G^{-1}(\alpha)$ and $U_{aux} \leq  \frac{\alpha - G^+(G^{-1}(\alpha))}{G(G^{-1}(\alpha)) - G^+(G^{-1}(\alpha))} = \infty$. 
+        \item If $t = G^{-1}(\alpha)$ and $G^{-1}(\alpha)$ is not a continuity point of $G(\cdot)$, then we must have that $G(t) - G^+(t)  > 0$. Also by right continuity we have $G(t) \geq \alpha$ and by how $G^{-1}(\cdot)$ is defined we have $G^+(t) \leq \alpha$. In this case $p \leq \alpha$, also whenever $T(X) = G^{-1}(\alpha)$ and $U_{aux} \leq  \frac{\alpha - G^+(G^{-1}(\alpha))}{G(G^{-1}(\alpha)) - G^+(G^{-1}(\alpha))}$. 
+        \item If $t > G^{-1}(\alpha)$ then $G^+(t) \leq G(t) \leq \alpha$. So $p \leq \alpha$ whenever $T(X) > G^{-1}(\alpha)$. 
+    \end{itemize}
+
+
+    This implies the following set equalities:
+
+    \begin{align*}
+        \{p \leq \alpha \} &= \{T(X) > G^{-1}(\alpha) \} \cup \left\{T(X) =  G^{-1}(\alpha), U_{aux} \leq \frac{\alpha - G^+(G^{-1}(\alpha))}{G(G^{-1}(\alpha)) - G^+(G^{-1}(\alpha))} \right\}\\
+                           &= \{T(X) > C \} \cup \left\{T(X) =  C, U_{aux} \leq \gamma \right\}\\
+    \end{align*}
+
+\end{proof}
+
+
+\Cref{lem:uniform} shows that $p \sim \text{Unif}([0, 1])$ under $P_{\theta_0}$, which will be useful for us later. 
+
+\begin{lemma}[Fuzzy p-value is uniform at null boundary]
+    \label{lem:uniform}
+    Under $P_{\theta_0}$, the p-value \eqref{eq:mlr_p_val} has a $\text{Unif}([0, 1])$ distribution.
+\end{lemma}
+
+\begin{proof}
+
+Using the set equality from \Cref{lem:fuzzy} but replacing $\alpha$ with $z \in (0, 1)$, we find
+
+\begin{align*}
+        &P_{\theta_0}(G^+(T(X)) + U_{aux}(G(T(X)) - G^+(T(X))) \leq z)\\
+        &= P_{\theta_0}(T(X) > G^{-1}(z)) + P_{\theta_0}\left(T(X) = G^{-1}(z),  U \leq \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\right)\\
+        &= P_{\theta_0}(T(X) > G^{-1}(z)) + P_{\theta_0}(T(X) = G^{-1}(z)) P_{\theta_0}\left(U \leq \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\right)\\
+        &=G^+(G^{-1}(z)) + (G(G^{-1}(z)) - G^{+}(G^{-1}(z))) \cdot \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\\
+        &= z.
+    \end{align*}
+
+\end{proof}
+
+Now we can show that $p$ is a selectively dominant p-value for testing the null $H_0: \theta \leq \theta_0$. To start, we prove some facts that allow us to relate the distribution of $T(X)$ under $P_{\theta_0}$ and under $P_{\theta}$ for $\theta \leq \theta_0$. 
+
+\begin{lemma}
+    \label{lem:stan_machine}
+    Consider some $\theta \leq \theta_0$ and let $g_{\theta}(T(x)) = p_{\theta}(x)/p_{\theta_0}(x)$ be the non-increasing likelihood ratio and
+    \begin{equation*}
+        \nu(A) = \int I(T(X) \in A) p_{\theta_0}(x) \mu(dx)
+    \end{equation*}
+    be the meausre of $T(X)$ under $X \sim P_{\theta_0}$. Then 
+    \begin{equation*}
+        P_{\theta}(T(X) \in A) = \int_A g_{\theta}(t) \nu(dt)
+    \end{equation*}
+\end{lemma}
+
+\begin{proof}
+This follows from an application of the ``standard machine'' (see the discussion after Equation 42 in \cite{Lei}). 
+\end{proof}
+
+
+\begin{lemma}
+    \label{lem:pi_lambda}
+    If $\omega$ denotes the product measure of $T(X)$ and Lesbesgue measure on $[0, 1]$, i.e., the distribution of $(T(X), U_{aux})$ under $P_{\theta_0}$, then 
+    \begin{equation*}
+        P_{\theta_0}((T(X), U) \in B) = \int_{B} g_{\theta}(t) \omega(dt, du)
+    \end{equation*}
+    \begin{equation*}
+        \nu(A) = \int I(T(X) \in A) p_{\theta_0}(x) \mu(dx)
+    \end{equation*}
+    be the meausre of $T(X)$ under $X \sim P_{\theta_0}$. Then 
+    \begin{equation*}
+        P_{\theta}(T(X) \in A) = \int_A g_{\theta}(t) \nu(dt)
+    \end{equation*}
+\end{lemma}
+\begin{proof}
+    This follows from a standard application of the $\pi-\lambda$ theorem. 
+\end{proof}
+
+With these lemmas under our belt, we can show show \Cref{prop:mlr_sel_dom}. Since $p \sim_{P_{\theta_0}} \text{Unif}([0, 1])$, this proposition is sufficient to imply selective dominance. 
+
+\begin{proposition}
+    \label{prop:mlr_sel_dom}
+    Consider some $\theta \leq \theta_0$ and any selection function $s(x)$ for which $p$ has positive probability of selection under both $\theta$ and $\theta_0$. Then 
+    \begin{equation*}
+        P_{\theta}(p \leq z | S = 1)  \leq P_{\theta_0}(p \leq z | S = 1)
+    \end{equation*}
+\end{proposition}
+
+\begin{proof}
+
+For $\theta \leq \theta_0$ define $g_{\theta}(T(x)) = p_{\theta}(x)/p_{\theta_0}(x)$ to be the non-increasing likelihood ratio. Define the mapping 
+\begin{equation*}
+    m(t, u) = G^+(t) + u(G(t) - G^+(t))
+\end{equation*}
+so that $p = m(T(X), U_{aux})$, and also define the reparametrized the selection function
+\begin{equation*}
+    s(t, u) = s(m(t, u)). 
+\end{equation*}
+We will denote the pre-image of $m(\cdot, \cdot)$ by $m^{-1}(\cdot)$. 
+
+It is straightforward to show that via Bayes rule that 
+\begin{equation*}
+    P_{\theta}(p \in A| S = 1) = \frac{\int_{m^{-1}(A)} g_{\theta}(t) s(t, u) \omega(dt, du) }{\int_{m^{-1}([0, 1])} g_{\theta}(t) s(t, u) \omega(dt, du)}. 
+\end{equation*}
+
+If $z$ is such that $P_{\theta}(p \leq z | S = 1)  = 0$ then the desired inequality is trivial. To handle the non-trival case, note that if $(t, u) \in m^{-1}([0, z])$ then $t \geq G^{-1}(z)$, and if $(t, u) \in m^{-1}((z, 1])$ then $t \leq G^{-1}(z)$. Also, because $m$ is an invertible mapping, $m^{-1}([0, z])$ and $m^{-1}((z, 1])$ are disjoint. Thus, 
+\begin{align*}
+     \frac{1}{P_{\theta}(p \leq z | S = 1)} &= \frac{\int_{m^{-1}([0, 1])} g_{\theta}(t) s(t, u) \omega(dt, du) }{\int_{m^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) }\\
+                                            &= \frac{\int_{m^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) + \int_{m^{-1}((z, 1])} g_{\theta}(t)  s(t, u)\omega(dt, du) }{\int_{m^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) }\\
+                                            &= 1 + \frac{\int_{m^{-1}((z, 1])} g_{\theta}(t) s(t, u) \omega(dt, du)}{\int_{m^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du)}\\
+                                            &\geq 1 + \frac{g_{\theta}(G^{-1}(z))  \int_{m^{-1}((z, 1])}  s(t, u) \omega(dt, du)}{g_{\theta}(G^{-1}(z)) \int_{m^{-1}([0, z])} s(t, u) \omega(dt, du)} \\
+                                            &= 1 + \frac{\int_{m^{-1}((z, 1])} s(t, u) \omega(dt, du)}{ \int_{m^{-1}([0, z])} s(t, u) \omega(dt, du)} \\
+                                            &= \frac{1}{P_{\theta_0}(p \leq z | S = 1)}, 
+\end{align*}
+where at the end, we have noted that $g_{\theta_0}(t) = 1$ everywhere. This is sufficient to imply the claim. 
+\end{proof}
+
+\begin{proposition}
+    \label{prop:monotone_adjustment}
+    Let $s_{\theta}(x)$ be a selection function such that for $\theta \leq \theta_0$ the ratio $s_{\theta_0}(x)/s_{\theta}(x)$ is non-decreasing in $x$. 
+    
+    
+    that is monotone non-decreasing in $\theta$ for every $x \in [0, 1]$. If $p^{\theta}_{adj}$ the adjustment from $F_{U | S_{\theta} = 1}(p^{\theta})$ then $p^{\theta}$ is monotone non-decreasing increasing in $\theta$.  
+\end{proposition}
+\begin{proof}
+
+        Fix a $t$ and $u$ and let $A_{t, u} = \{(x, y) : x > t \text{ or } x = t \text{ and } y \leq u \}$. Then it suffices to show that 
+        \begin{equation*}
+            \frac{ \int_{A_{t, u}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}{ \int_{A_{t, u}} s_{\theta}(t, u) \omega(dt, du)}
+        \end{equation*}
+        is monotone. 
+
+        \begin{align*}
+            \frac{ \int_{A_{t, u}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}{ \int_{A_{t, u}} s_{\theta}(t, u) \omega(dt, du)}
+        \end{align*}
+
+        \begin{align*}
+            \frac{p^{\theta}_{(1)}}{p^{\theta}_{(2)}} &= \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2}} g_{\theta}(t) \omega(dt, du)} \\
+            &= 1 + \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}} g_{\theta}(t) \omega(dt, du)} \\
+            &\leq 1 + \frac{ g_{\theta}(t_1) \int_{A_{t_1, u_1}}   \omega(dt, du)}{ g_{\theta}(t_1)\int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
+            &= 1 + \frac{ \int_{A_{t_1, u_1}}   \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
+            &=  \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}}
+        \end{align*}
+    
+\end{proof}
+
+
+\subsection{Proof of \Cref{cor:class_mlr}, \Cref{cor:cond_mlr}, and \Cref{cor:hyb_mlr}}
+
+In this appendix, we prove the validity of all our LCBs for MLR families. We consider a MLR family  $P_{\theta}$ parameterized by $\theta \in \R$ as in \Cref{sec:mlr_selective_dominance_appdx}. Suppose we observe $n$ independent samples $X_i \sim P_{\theta_i}$, and are imagining using the UMP p-values $p_i^{\theta_0}$ for the test $H_{0, i} : \theta_i \leq \theta_0$ as given in \eqref{eq:ump_mlr}.
+
+Proving that our provided confidence regions have at least $1-\alpha$ coverage is straightforward, but arguing that the resulting confidence regions are actually LCBs is more tricky. We first need a simple analysis lemma. 
+
+\begin{lemma}
+    \label{lem:analysis}
+    If $f(x) \geq 0$ is non-increasing real-valued function in $x\in \R$ and $a \geq b$ with $a, b \in (0, 1)$, then 
+    \begin{equation}
+        \frac{a h(x) + (1-a)}{b h(x) + (1-b)}
+    \end{equation}
+    is also a non-increasing function in $x$.
+\end{lemma}
+\begin{proof}
+    Considering some $y \leq z$, rearranging things shows that 
+    \begin{align*}
+        \frac{a h(y) + (1-a)}{b h(y) + (1-b)} \geq \frac{a h(z) + (1-a)}{b h(z) + (1-b)} &\iff \frac{(a - b)(h(y) - h(z)) }{(ah(x) + (1-a))(b h(x) + (1-b))} \geq 0\\
+        &\iff (a - b)(h(y) - h(z)) \geq 0
+    \end{align*}
+    and the right-hand inequality is clearly true. 
+\end{proof}
+
+And then another key lemma. 
+
+\begin{lemma}
+    Both $p^{\theta_0}_{(1)}$ and $p^{\theta_0}_{(1)}/p^{\theta_0}_{(2)}$ are non-decreasing in $\theta_0$.  
+\end{lemma}
+
+\begin{proof}
+    For a $t$ and $u$, let $A_{t, u} = \{(x, y) : x > t \text{ or } x = t \text{ and } y \leq u \}$. Then  
+    \begin{align*}
+        \frac{p^{\theta}_{(1)}}{p^{\theta}_{(2)}} &= \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2}} g_{\theta}(t) \omega(dt, du)} \\
+        &= 1 + \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}} g_{\theta}(t) \omega(dt, du)} \\
+        &\leq 1 + \frac{ g_{\theta}(t_1) \int_{A_{t_1, u_1}}   \omega(dt, du)}{ g_{\theta}(t_1)\int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
+        &= 1 + \frac{ \int_{A_{t_1, u_1}}   \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
+        &=  \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}}
+    \end{align*}
+\end{proof}
+
+\subsection{Exponential Families}
+
+\section{Proofs and Derivations}
 \label{sec:proofs_appdx}
 
 \subsection{Proof of \Cref{thm:adjustment}}
@@ -1263,6 +1520,7 @@ But the fact that
 \end{align*}
 implies that $P(p \leq t | S = 1) > \frac{1}{2} $, which means that $p$ cannot be selectively dominant. 
 
+\iffalse 
 \subsection{Selective dominance for one-sided testing in MLR families}
 \label{sec:mlr_selective_dominance_appdx}
 
@@ -1454,6 +1712,7 @@ And then another key lemma.
     which is sufficient. 
 
 \end{proof}
+\fi 
 
 Now we can give proofs of each corollary. 
 
