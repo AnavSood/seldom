@@ -16,7 +16,8 @@ T selection_func(
     const auto fs = util::rowvec_type<T>::NullaryExpr(
         quad_x.size(), 
         [&](auto i) {
-            return ((1 - odds * x - 0.5 * (quad_x[i] + 1)) + odds * z).max(0).min(1).prod();
+            const auto u = 0.5 * (quad_x[i] + 1);
+            return ((1 - odds * x - u) + odds * z).max(0).min(1).prod();
         }
     );
     return 0.5 * (fs * quad_w).sum();
@@ -32,14 +33,14 @@ T integrate_selection_func(
 )
 {
     const auto p_half = 0.5 * p;
-    return p_half * util::rowvec_type<T>::NullaryExpr(
+    const auto ss = util::rowvec_type<T>::NullaryExpr(
         quad_x.size(),
         [&](auto i) {
             const auto xi = quad_x[i];
-            const auto wi = quad_w[i];
-            return wi * selection_func(p_half * (xi+1), z, gamma, quad_x, quad_w); 
+            return selection_func(p_half * (xi+1), z, gamma, quad_x, quad_w); 
         }
-    ).sum();
+    );
+    return p_half * (ss * quad_w).sum();
 }
 
 } // namespace seldom
