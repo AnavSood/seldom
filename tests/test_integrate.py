@@ -46,3 +46,22 @@ def test_integrate_selection_func(n, gamma, seed=0):
     expected = _integrate_selection_func(p, z, gamma)
 
     assert np.allclose(actual, expected, atol=1e-4)
+
+
+@pytest.mark.parametrize("seed", [0, 5, 10, 20])
+def test_gauss_fd(seed):
+    def _gauss_fd(a, t):
+        return (
+            scipy.stats.norm.expect(
+                lambda x: scipy.stats.norm.sf(t - x),
+                lb=a,
+            ) / scipy.stats.norm.sf(t / np.sqrt(2))
+        )
+
+    np.random.seed(seed)
+    a = np.random.normal(0, 1)
+    t = np.random.normal(0, 1)
+    actual = sd.integrate.gauss_fd(a, t)
+    expected = _gauss_fd(a, t)
+
+    assert np.allclose(actual, expected, atol=1e-4)

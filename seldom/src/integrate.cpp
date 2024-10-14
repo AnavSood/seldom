@@ -1,5 +1,6 @@
 #include "decl.hpp"
 #include "utils.hpp"
+#include <unsupported/Eigen/SpecialFunctions>
 
 namespace seldom {
 
@@ -43,6 +44,26 @@ T integrate_selection_func(
     return p_half * (ss * quad_w).sum();
 }
 
+template <class T>
+T gauss_fd(
+    T a,
+    T t,
+    const Eigen::Ref<const util::rowvec_type<T>>& quad_x,
+    const Eigen::Ref<const util::rowvec_type<T>>& quad_w
+)
+{
+    constexpr T sqrt_1_2pi = 0.5 * M_2_SQRTPI / M_SQRT2;
+    const auto Phi = [&](auto x) {
+        return 0.5 * (1 + (x / M_SQRT2).erf());
+    };
+    const auto fs = 1 - Phi((t - a) - quad_x);
+    const auto phis = (-0.5 * (quad_x - (1-a)).square()).exp();
+    const auto correction = sqrt_1_2pi * std::exp(0.5 - a);
+    const auto numerator = (quad_w * fs * phis).sum() * correction;
+    const auto denominator = 1 - 0.5 * (1 + std::erf(t * 0.5));
+    return numerator / (denominator + (denominator <= 0));
+}
+
 } // namespace seldom
 
 namespace sd = seldom;
@@ -51,4 +72,5 @@ void register_integrate(py::module_& m)
 {
     m.def("selection_func", &sd::selection_func<double>); 
     m.def("integrate_selection_func", &sd::integrate_selection_func<double>);
+    m.def("gauss_fd", &sd::gauss_fd<double>);
 }

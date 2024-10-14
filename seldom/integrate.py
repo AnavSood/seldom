@@ -98,3 +98,14 @@ def integrate_selection_func(
     if quadrature is None:
         quadrature = scipy.special.roots_legendre(100)
     return core.integrate.integrate_selection_func(p, z, gamma, *quadrature)
+
+
+def gauss_fd(
+    a: float,
+    t: float,
+    *,
+    quadrature: Union[Tuple[np.ndarray, np.ndarray], None] =None,
+):
+    if quadrature is None:
+        quadrature = scipy.special.roots_laguerre(100)
+    return core.integrate.gauss_fd(a, t, *quadrature)
