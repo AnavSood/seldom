@@ -59,7 +59,7 @@
 \maketitle
 
 \begin{abstract}
-Coming Soon
+Selective inference is a subfield of statistics that enables valid inferences after selection of a data-dependent question. In this paper, we introduce selectively dominant p-values, a class of p-values that allow practitioners to easily perform selective inference after arbitrary selection procedures. Unlike a traditional p-value, whose distribution must stochastically dominate the uniform distribution under the null, a selectively dominant p-value must have a  post-selection distribution that stochastically dominates that of a uniform having undergone the same selection process; moreover, this property must hold simultaneously for all possible selection processes. Despite the strength of this condition, we show that all commonly used p-values (e.g., p-values from two-sided testing in parametric families, one-sided testing in monotone likelihood ratio and exponential families, and permutation tests) are selectively dominant. By recasting two canonical selective inference problems—inference on winners and rank verification—in our selective dominance framework, we provide simpler derivations, a deeper conceptual understanding, and new generalizations and variations of these methods. Additionally, we use our insights to introduce selective variants of methods that combine p-values, such as Fisher's combination test. 
 \end{abstract}
 
 
@@ -68,7 +68,7 @@ Coming Soon
 Selective inference is a subfield of statistics that allows practioners to make valid inferences even when statistical question at hand was chosen by a data-driven selection process. Most selective methods however, which operate by conditioning on the selection event, can be difficult to derive, hard to implement, and exhibit counterintuitive behaviors. To statisticians outside of the field, each selective procedure may seem to come from a different argument or approach.
 
 
-In this paper, we provide a unifying framework for selective inference centered around p-values. So long as a statistician knows how to construct a p-value for their inferential question at hand, our framework provides an algorithmic approach for delivering hypothesis testing procedures and confidence intervals that are valid even after selection. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior.
+In this paper, we provide a unifying framework for selective inference centered around p-values. So long as a statistician knows how to construct a p-value for their inferential question at hand, our framework provides an algorithmic approach for delivering hypothesis testing procedures and confidence intervals that are valid even after selection. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior as well as new variations and extensions. 
 
 
 \subsection{Motivation}
@@ -124,33 +124,30 @@ Sequential selective hypothesis testing.
 
 %Stochastic dominance.  when we say uniform we mean Unif([0, 1]). $v_{-i}$ for a vector
 
-%Ties broken randomly. Mention something about dropping dependence on $X$. 
-
-%Set minuses
 
 \section{Selectively Dominant p-Values}
 \label{sec:dominance}
 
-In this section we define selectively dominant p-values, a class of p-values that enable us to easily do inference after selection. We give a precise characterization of when p-values are selectively dominant and examples illustrating that the most commonly used p-values are all selectively dominant. 
+In this section we define selectively dominant p-values, a class of p-values that enable us to easily do inference after selection. We give a precise characterization of when p-values are selectively dominant and illustrate that the most commonly used p-values are all selectively dominant. Finally, we discuss how to use this machinery to conduct data dependent hypothesis tests and construct selective confidence regions. 
 
 \subsection{Selective Dominance}
 
-In classical statistics, a p-value is a random variable $p$ that stochastically dominates the uniform distribution $U \sim \text{Unif([0, 1])}$ under the null, i.e., $p \succeq_{H_0} U$. When working with p-values, we maintain Type I error control if we reject the null $H_0$ when $p$ is small:
+In classical statistics, a p-value is a random variable $p$ supported on $[0, 1]$ that stochastically dominates the uniform distribution $U \sim \text{Unif([0, 1])}$ under the null, i.e., $p \succeq_{H_0} U$. When working with p-values, we maintain Type I error control if we reject the null $H_0$ when $p$ is small:
 \begin{equation*}
     P_{H_0}(\text{reject null}) = P_{H_0}(p \leq \alpha) \leq P(U \leq \alpha)  = \alpha.
 \end{equation*}
 In essence, stochastic dominance allows us to use the uniform distribution as a reference distribution. We control the probability of $p$ being small under the null by comparing it to the probability of a uniform being small. 
 
-In the problems we consider, we use $p$ to test the null $H_0$ only after it has been ``selected''. In full generality, we consider a p-value $p$ that for testing the null $H_0$ that is conditionally valid given some random vector $Z$, i.e., $p \mid Z \succeq_{H_0} U$:
+In the problems we consider, we use $p$ to test the null $H_0$ only after it has been ``selected''. In full generality, we consider a p-value $p$ for testing the null $H_0$ that is conditionally valid given some random vector $Z$, i.e., $p \mid Z = z \succeq_{H_0} U$:
 \begin{equation}
     \label{eq:valid_given_z}
-    P_{H_0}(p \leq \alpha \mid Z) \leq P(U \leq \alpha)  = \alpha.
+    P_{H_0}(p \leq \alpha \mid Z =z) \leq P(U \leq \alpha)  = \alpha.
 \end{equation}
-Additionally, we consider a binary selection random variable $S \in \{0, 1\}$ that takes value one when $p$ is selected. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function},
+Additionally, we consider a binary selection random variable $S \in \{0, 1\}$ that takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function},
 \begin{equation*}
     s(x, z) = P(S = 1 \mid p = x, Z = z).
 \end{equation*}
-Intuitively, we imagine first observing $p=x$ and $Z$, and then flipping a biased coin that comes up heads with probability $s(x, Z)$. We only use $p$ to test the null $H_0$ when the coin comes up heads, and otherwise we do not perform inference. This process captures what happens in a wide range of selective inference problems. In the problems we consider, we decide the selection procedure in our problems, so $s(x, z)$ is known. In cases where there is no $Z$ we can imagine that $Z=0$ and write the selection function $s(x)$ purely in terms of $x$. 
+Intuitively, we imagine observing $p=x$ and $Z=z$ and then flipping a biased coin that comes up heads with probability $s(x, z)$. We only use $p$ to test the null $H_0$ when this coin comes up heads, and otherwise do not perform inference. This process turns out to capture what happens in a wide range of selective inference problems. We decide the selection procedure in the problems we consider, so $s(x, z)$ is known. In cases where no $Z$ is present, we can imagine $Z=0$ and write the selection function $s(x)$ purely in terms of $x$. 
 
 Because we only perform inference when the coin comes up heads, our goal should be to design a procedure that controls Type I error conditional on this selection event:
 \begin{equation}
@@ -159,7 +156,7 @@ Because we only perform inference when the coin comes up heads, our goal should 
 \end{equation}
 As illustrated by our next example, the classical approach of rejecting when $p \leq \alpha$ does not maintain selective Type I error control as in \eqref{eq:selective_error_control}. 
 
-\begin{example}[Failure of classical inference]
+\begin{example}[Publication bias and the failure of classical inference]
 \label{exm:publication_bias}
 Consider a p-value $p$ that is uniform on $[0, 1]$ under the null $H_0$. If we use the selection function $s(x) = I_{p \leq \alpha}$, i.e., we select $p$ when it is at most $\alpha$, then $p \mid S=1 \sim \text{Unif}([0, \alpha])$. Our classical procedure will clearly fail to control Type I error conditional on selection:
 \begin{equation*}
@@ -167,25 +164,25 @@ Consider a p-value $p$ that is uniform on $[0, 1]$ under the null $H_0$. If we u
 \end{equation*}
 \end{example}
 
-\Cref{exm:publication_bias} is a classic example in the literature on publication bias. If researchers publish studies testing the null $H_0$ only when their p-values are below $\alpha$, the reader only gets to observe inferences made after this selection. As a consequence, the observed type I error rate for the reader can be as high as one. 
+\Cref{exm:publication_bias} is a standard example in the literature on publication bias. If researchers publish studies testing the null $H_0$ only when their p-values are below $\alpha$, the reader only gets to observe inferences made after this selection. As a consequence, the reader's observed type I error rate can be as high as one. 
 
-Essentially, after selection, the uniform distribution no longer suffices as a reference distribution. Naturally, we may instead try and use the distribution of a uniform after it has been selected by the same selection function. Formally, suppose that $U$ has uniform distribution conditional on $Z$, i..e., $U \mid Z \sim \text{Unif}([0, 1])$, and let $S' \in \{0, 1\}$ be a different binary selection random variable whose joint distribution with $U$ and $Z$ is governed by the same selection function 
+Essentially, after selection, the uniform distribution no longer suffices as a reference distribution. Naturally, we may instead try and use the distribution of a uniform after it has been selected by the same selection function. Formally, suppose that $U$ has uniform distribution conditional on $Z$, i..e., $U \mid Z=z \sim \text{Unif}([0, 1])$, and let $S' \in \{0, 1\}$ be a different binary selection random variable whose joint distribution with $U$ and $Z$ is governed by the same selection function 
 \begin{equation*}
      P(S' = 1 \mid U = x, Z=z ) = s(x, z).
 \end{equation*}
-Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below. 
+Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below \footnote{For the sake of simplicity, we require selective dominance to hold point-wise for \emph{every} $z$ rather than almost all, and our later results similarly hold point-wise. Our definition and results, however, can be modified to accomodate more general case.}. 
 
 \begin{definition}[Selective dominance]
     \label{def:selective_dominance}
-    Considering a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}, we say that $p$ is \textbf{selectively dominant given $Z$} if it has a conditional probability density function (PDF) given $Z$ under the null $H_0$ and it satisfies 
+    Considering a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}, we say that $p$ is \textbf{selectively dominant given $Z$} if, under the null $H_0$, it has a conditional probability density function (PDF) given $Z=z$ and satisfies
     \begin{equation}
     \label{eq:selective_dominance}
-    p \mid Z, S = 1 \succeq_{H_0} U \mid Z, S' = 1
+    p \mid Z=z, S = 1 \succeq_{H_0} U \mid Z=z, S' = 1
     \end{equation}
-    for every selection function $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected. 
+    for every selection function $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected given $Z=z$. 
 \end{definition}
 
-As we will soon see, the majority of p-values that practitioners use are selectively dominant as described in \eqref{eq:selective_dominance}. In \Cref{def:selective_dominance}, we restrict to p-values with conditional PDFs under the null because it makes our theory and methods simpler to state. Because we can always make a p-value both have a conditional PDF and be more powerful via randomization, this restriction is never a practical issue. Also, we only consider selection functions $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected so that the conditioning event $S = 1$ is never probability zero. 
+As we will soon see, the majority of p-values that practitioners use are selectively dominant as described in \eqref{eq:selective_dominance}. In \Cref{def:selective_dominance}, we restrict to p-values with conditional PDFs under the null because it makes our theory and methods simpler to state. Because we can always make a p-value both have a conditional PDF and be more powerful via randomization, this restriction is never a practical issue. Also, after applying our machinery with randomized p-values, the user can always derandomize the resulting method if they would like. %We only consider selection functions $s(x, z)$ under which $p$ and $U$ both have a positive probability of selection in \Cref{def:selective_dominance} so that the conditioning events $S = 1$ is never probability zero. 
 
 To perform valid post-selection inference using a selectively dominant p-value, we can transform it so that it remains a p-value after selection. As \Cref{thm:adjustment} explains, we can ``undo'' the effects of selection by applying the conditional cumulative distribution function (CDF) $F_{U \mid Z, S' = 1}(\cdot)$ of $U$ given selection to $p$. In line with prior literature, we refer to this transformed p-value as a \textbf{selective p-value}. For simple selection functions, this selective p-value is often computable in closed form. 
 
@@ -196,37 +193,15 @@ To perform valid post-selection inference using a selectively dominant p-value, 
     \label{eq:adjustment}
         p_{sel} = F_{U \mid Z, S' = 1}(p) = \frac{\int_0^p s(x, Z) dx}{\int_0^1 s(x, Z) dx}
     \end{equation}
-    stochastically dominates the uniform distribution conditional on $Z$ and selection:
+    stochastically dominates the uniform distribution conditional on $Z$ and selection,
     \begin{equation}
-        P_{H_0}(p_{sel} \leq \alpha \mid Z, S= 1) \leq \alpha. 
+        \label{eq:adjusted_error_control}
+        P_{H_0}(p_{sel} \leq \alpha \mid Z=z, S= 1) \leq \alpha, 
     \end{equation}
+    for any selection function $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected given $Z=z$. Further, for any distribution in $H_0$ under which $p$ has an exact uniform distribution given $Z=z$, \eqref{eq:adjusted_error_control} holds with equality. 
 \end{theorem}
 
-Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z, S = 1$ rather than the $\alpha$ quantile of $U$. 
-
-The below example shows how to use \Cref{thm:adjustment} to perform inference using the ``winning'' p-value. It illustrates how our selective dominance machinery allows us to easily test data dependent hypotheses. 
-
-\begin{example}[Inference on the winning p-value]
-    \label{exm:winner} Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the null hypotheses $H_{0, i}$, and we choose to test only the $j$th null $H_{0, j}$ after observing that $p_j$ is the smallest of the $p_i$. So long as $p_j$ has a positive probability of being the smallest, then we can apply our framework with $p =p_j$, $Z = p_{-j}$, and the selection function $s(x, z) = I_{x < \min_{k} z_k}$. It is straightforward to compute that the adjusted p-value $p_{adj}$ from \eqref{eq:adjustment} is $p_j/\min_{i \neq j} p_i$, so \Cref{thm:adjustment} tells us that rejecting when $p_j \leq \alpha \min_{i \neq j} p_i$ controls selective Type I error:
-    \begin{equation}
-        \label{eq:winner_error_control}
-        P_{H_{0, j}}(p_j \leq \alpha \min_{i \neq j} p_i \mid  p_{-j}, S = 1) \leq \alpha.
-    \end{equation} 
-
-    If we let $W$ be the index of the smallest p-value, it is now easy to see that rejecting the data-dependent ``winning'' null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ is a procedure that controls Type I error both conditionally on $W$ and marginally. Consider only the set of indices $j \in \mathcal{J}$ for which $p_j$ has a positive probability of being the smallest. Conditional error control is immediate: If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is the same event as selecting $p_j$ for inference in \eqref{eq:winner_error_control}, so 
-    \begin{align*}
-        P(\text{falsely reject } H_{0, W} \mid W = j) &= P(p_{(1)} \leq \alpha p_{(2)} \mid W = j)\\
-        &= P(p_j \leq \alpha \min_{i \neq j} p_i \mid W = j)\\
-        &\leq \alpha.
-    \end{align*}
-     Marginal error control follows from the law of total probability. 
-    \begin{align*}
-        P(\text{falsely reject } H_{0, W}) &= \sum_{j \in \mathcal{J}} P(\text{falsely reject } H_{0, j} \mid W = j)P(W=j) \\
-                                          &\leq \alpha \sum_{j \in \mathcal{J}} P(W=j)\\
-                                          &\leq \alpha. 
-    \end{align*}
-    If the nulls are all true and the $p_i$ are exactly uniform, then the inequalities become equalities and our error control is tight. 
-\end{example}
+Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z=z, S' = 1$ rather than the $\alpha$ quantile of $U$. 
 
 \subsection{Characterizing Selectively Dominant p-Values and Examples}
 
@@ -234,10 +209,10 @@ The below example shows how to use \Cref{thm:adjustment} to perform inference us
 
 \begin{theorem}[Selective dominance and increasing density]
     \label{thm:density}
-    If the conditional PDF of the p-value $p$ given $Z$ is always non-decreasing under the null, then it is selectively dominant given $Z$ as described in \Cref{def:selective_dominance}. Conversely, if ever under the null, the conditional PDF of $p$ given $Z$ is everywhere continuous and not non-decreasing for a set of $Z$ that have positive probability, then $p$ is not selectively dominant given $Z$.  
+    If the conditional PDF of the p-value $p$ given $Z=z$ is always non-decreasing under the null, then it is selectively dominant given $Z$ as described in \Cref{def:selective_dominance}. Conversely, if ever under the null, the conditional PDF of $p$ given $Z=z$ is everywhere continuous and not non-decreasing, then $p$ is not selectively dominant given $Z$.  
 \end{theorem}
 
-In what follows, we give a number of examples of selectively dominant p-values. Our examples include all the common hypothesis testing scenarios that practitioners encounter in real life. We recommend that the unfamiliar reader review uniformly most powerful (UMP) and uniformly most powerful unbiased (UMPU) testing \cite[Chapter 3 and Chapter 4]{Lehmann} prior to proceeding.
+In what follows, we give a number of examples of selectively dominant p-values. Our examples include all the common p-values that practitioners use in real life. We recommend that the unfamiliar reader review uniformly most powerful (UMP) and uniformly most powerful unbiased (UMPU) testing \cite[Chapter 3 and Chapter 4]{Lehmann} prior to proceeding.
 
 \begin{example}[Two-sided testing in parametric families]
 \label{exm:two-sided}
@@ -246,7 +221,7 @@ Consider observing data from a parametric family $P_{\theta}$ and testing the nu
 
 \begin{example}[One-sided testing in monotone likelihood ratio families]
 \label{exm:mlr}
-Consider observing one-dimensional data from a parametric family $X \sim P_{\theta}$ that has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We say that $P_{\theta}$ has a monotone likeliihood ratio (MLR) in the real valued function $T(x)$ if, for any $\theta < \theta'$, the ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a finite non-decreasing function of $T(x)$. In this case, the UMP test for the null $H_0: \theta \leq \theta_0$ rejects when $T(X)$ is large. The associated randomized p-value for this test is selectively dominant. 
+Consider observing one-dimensional data from a parametric family $X \sim P_{\theta}$ that admits density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We say that $P_{\theta}$ has a monotone likeliihood ratio (MLR) in the real valued function $T(x)$ if, the densities $p_{\theta}(x)$ share a common support and, for any $\theta < \theta'$, the ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a non-decreasing function of $T(x)$. In this case, the UMP test for the null $H_0: \theta \leq \theta_0$ rejects when $T(X)$ is large. The associated randomized p-value for this test (see \Cref{sec:one_sided_appdx}) is selectively dominant. 
 \end{example}
 
 \begin{example}[Testing in in exponential families]
@@ -263,57 +238,101 @@ In a permutation test we observe data $X \in \mathcal{X}$ and compute a test sta
 \begin{equation*}
     p = \frac{\#\{1 \leq j \leq w : T(g_j(X)) > T(X) \}}{w} + U_{aux} \frac{\#\{1 \leq j \leq w : T(g_j(X)) = T(X) \}}{w},
 \end{equation*}
-where $U_{aux} \sim \text{Unif}([0, 1])$ adds auxiliary randomness that is independent of $X$ (not to be confused with the reference distribution $U$). This p-value always has an exact $\text{Unif}([0, 1])$ distribution under $H_0$ and is therefore is trivially selectively dominant. 
+where $U_{aux} \sim \text{Unif}([0, 1])$ adds auxiliary randomness that is independent of $X$. This p-value always has an exact $\text{Unif}([0, 1])$ distribution under $H_0$ and is therefore is trivially selectively dominant. 
 \end{example}
 
-Etablishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, the bulk of \Cref{sec:mlr_selective_dominance_appdx} is spent doing so. 
+Etablishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, and the bulk of \Cref{sec:one_sided_appdx} is spent doing so. 
+
+\subsection{Example Applications of Selective Dominance}
+
+Having developed our machinery, we provide a couple examples that illustrate how to use it.
+
+As an introductory example, we show how to correct for \Cref{exm:publication_bias}'s publication bias. Using our selective dominance machinery, we show how one can easily derive the p-value adjustment from \cite{Hung2020}. 
+
+\begin{example}[Correcting for publication bias]
+\label{exm:correction}
+Suppose we have a selectively dominant p-value $p$ for the null hypothesis $H_0$, and we choose to test $H_0$ only after observing that $p \leq \alpha$. We can apply our framework with $p=p$, $Z=0$, and $s(x, z) = I_{x \leq \alpha}$. The selective p-value from \eqref{eq:adjustment} is $p/\alpha$, so \Cref{thm:adjustment} tells us that rejecting when $p \leq \alpha^2$ controls selective Type I error:
+\begin{equation*}
+    P_{H_0}(p \leq \alpha^2 | S= 1) =  P_{H_0}(p/\alpha \leq \alpha | S= 1) \leq \alpha  
+\end{equation*}
+\end{example}
+
+As we have just learned that essentially all the p-values researchers use are selectively dominant, \Cref{exm:correction} gives a simple way for readers to make valid inferences in the presence of publication bias: declare a studies' result significant when its associated p-value is at most $\alpha^2$.
+
+Our rule of thumb of rejecting when $p \leq \alpha^2$ should also deliver valid inferences in the presence of p-hacking. Rather discarding an experiment after observing a p-value larger than $\alpha$, researches more typically tweak their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, is difficult to study theoretically (hence \cite{Hung2020} does not handle this case), but it has been  empirically well established that it results in p-values with left-skewed distributions under the null. That is, under the null, p-hacked p-values can be reasonably modeled as having an increasing density supported on $[0,\alpha]$ \citep{Simonsohn, Hung2020}. The transformed p-value $p/\alpha$ then has a density that is increasing on $[0, 1]$ under the null, and \Cref{thm:density} guarantees that it is indeed a valid p-value.
+
+Our second example shows how to use \Cref{thm:adjustment} to perform inference using the ``winning'' p-value. It provides a recipe for how to use our selective dominance machinery to test data dependent hypotheses. 
+
+\begin{example}[Inference on the winning p-value]
+    \label{exm:winner} Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the null hypotheses $H_{0, i}$, and we choose to test only the $j$th null $H_{0, j}$ after observing that $p_j$ is the smallest of the $p_i$. We will assume that under $H_{0, i}$ each $p_i$ has density that is positive on all of $(0, 1)$. Applying our framework with $p =p_j$, $Z = p_{-j}$, and the selection function $s(x, z) = I_{x < \min_{k} z_k}$, it is straightforward to compute that the adjusted p-value $p_{adj}$ from \eqref{eq:adjustment} is $p_j/\min_{i \neq j} p_i$, so \Cref{thm:adjustment} tells us that rejecting when $p_j \leq \alpha \min_{i \neq j} p_i$ controls selective Type I error:
+    \begin{equation}
+        \label{eq:winner_error_control}
+        P_{H_{0, j}}(p_j \leq \alpha \min_{i \neq j} p_i \mid  p_{-j}, S = 1) \leq \alpha.
+    \end{equation} 
+
+    If we let $W$ be the index of the smallest p-value, it is now easy to see that rejecting the data-dependent ``winning'' null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ is controls Type I error both conditionally on $W$ and marginally. Consider only the set of indices $j \in \mathcal{J}$ for which $p_j$ has a positive probability of being the smallest. Conditional error control is immediate: If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is the same event as selecting $p_j$ for inference in \eqref{eq:winner_error_control}, so 
+    \begin{align*}
+        P(\text{falsely reject } H_{0, W} \mid W = j) &= P(p_{(1)} \leq \alpha p_{(2)} \mid W = j)\\
+        &= P(p_j \leq \alpha \min_{i \neq j} p_i \mid W = j)\\
+        &\leq \alpha.
+    \end{align*}
+     Marginal error control follows from the law of total probability. 
+    \begin{align*}
+        P(\text{falsely reject } H_{0, W}) &= \sum_{j \in \mathcal{J}} P(\text{falsely reject } H_{0, j} \mid W = j)P(W=j) \\
+                                          &\leq \alpha \sum_{j \in \mathcal{J}} P(W=j)\\
+                                          &\leq \alpha. 
+    \end{align*}
+    If the nulls are all true and the $p_i$ are exactly uniform, then the inequalities become equalities and our error control is tight. 
+\end{example}
+
+Rejecting the null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ may seem like a strange procedure, but we will see that doing so is central to the conditional inference on winners method that arises from \cite{Fithian2017} and appears often in the existing selective inference. 
+
+\Cref{exm:correction} and \Cref{exm:winner} share some common characteristics. In both examples, the practioner cheats. They peak at the p-value and only test the null when the p-value looks promising. The purpose of selective  procedures to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the p-value. 
 
 \subsection{Selective Confidence Bounds and Confidence Intervals}
 
-Finally, we discuss how we can invert tests of data dependent null hypotheses to get selectively confidence intervals and lower bounds for random parameters. \Cref{exm:invert_winner} gives the beginnings of an illustrative example. 
+In parametric settings, we can  invert tests of data dependent null hypotheses to get selective confidence regions. These confidence regions cover a \underline{random} parameter. \Cref{exm:confidence_region} gives the beginnings of an illustrative example. 
 
 \begin{example}[Confidence region for the winner] 
     \label{exm:confidence_region}
-    Suppose the $X_i \sim P_{\theta_i}$ are $n$ independent samples from an MLR family $P^{\theta}$, and $p^{\theta_0}_i =  p^{\theta_0}(X_i)$ are the UMP p-values for testing $H_0 : \theta \leq \theta_0$. Let $W$ be the index of the smallest p-value (which means that $X_W = \max_{i \in [n]} X_i$ is a winner). If we only test the null $H_0^{\theta_0}: \theta_j \leq \theta_0$ when we observe $W=j$, then \Cref{exm:winner} shows us how to get a valid procedure by applying our selective dominance framework with $p^{\theta_0} = p^{\theta^0}_j$, $Z^{\theta_0} = p^{\theta^0}_{-j}$, and $s^{\theta_0}(x, z) = I(p^{\theta_0}_j \leq \min_{i \neq j} p^{\theta_0}_i)$. Inverting the resulting test gives us a selectively valid confidence region:
-    \begin{equation}
-        \label{eq:winner_lcb}
-        P\left(\left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\} | W=j \right) = P\left(\left\{ \theta_0 : \frac{p^{\theta_0}_{j}}{ \min_{i \neq j} p^{\theta_0}_i} > \alpha \right\} | W=j \right) \geq 1-\alpha.
-    \end{equation} 
+    Suppose the $X_i \sim P_{\theta_i}$ are $n$ independent samples from an MLR family $P_{\theta}$, and $p^{\theta_0}_j =  p^{\theta_0}(X_j)$ are the UMP p-values for testing $H_{0, j} : \theta_j \leq \theta_0$. Define the parameter vector $\Theta = (\theta_1, \dots, \theta_n)$ and let $W$ be the index of the smallest p-value, so that $X_W = \max_{i \in [n]} X_i$ is a winner. We can get a $1-\alpha$ confidence region for the winning parameter $\theta_W$ that is valid conditional on $W$ by inverting \Cref{exm:winner}'s test of the winning null $H_{0, W} : \theta_W \leq \theta_0$:
+    \begin{align*}
+        \label{eq:winner_cr}
+        P_{\Theta}\left( \theta_W \in \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\} | W=j \right) &= P_{\Theta}\left( \theta_j \in \left\{ \theta_0 : \frac{p^{\theta_0}_{j}}{ \min_{i \neq j} p^{\theta_0}_i} > \alpha \right\} | W=j \right)\\
+                                     &= P_{\Theta}\left(  \frac{p^{\theta_j}_{j}}{ \min_{i \neq j} p^{\theta_j}_i} > \alpha  | W=j \right)\\
+                                    &= 1-\alpha,
+    \end{align*} 
+    where we have equality because $p^{\theta_j}_j$ has an exact uniform distribution given $p^{\theta_j}_{-j}$ under $P_{\Theta}$. 
 \end{example}
 
-Since the region in \Cref{exm:invert_winner} results from inverting a one sided test, we would hope that it is not just a confidence region but a confidence lower bound. While the p-values $p^{\theta_0}_i$ are known to be monotone in $\theta_0$, it is less clear whether the selective p-values $p^{\theta_0}_{j}/ \min_{i \neq j} p^{\theta_0}_i$ resulting from \Cref{thm:adjustment} are. Indeed confirming that confidence regions are intervals or lower bounds can be tricky in selective problems, and proving that such regions form intervals or lower bounds is sometimes done on a case by case basis  \citep{Benjamini, Lee} or not at all \citep{Sengupta}. 
+Since the region in \Cref{exm:confidence_region} results from inverting a one sided test, we would hope that it is not just a confidence region, but a confidence lower bound. This is not obvious, however. While the p-values $p^{\theta_0}_j$ are known to be monotone in $\theta_0$, it is less clear whether the selective p-values $p^{\theta_0}_{j}/ \min_{i \neq j} p^{\theta_0}_i$ resulting from \Cref{thm:adjustment} are. Indeed confirming that selective confidence regions are actually invervals or lower bounds can be tricky in selective problems, and proving that they are is sometimes done on a case by case basis \citep{Benjamini, Lee} or not at all \citep{Sengupta}. 
 
-
-\Cref{thm:monotone} identifies a sufficient condition for when a broad class of selective p-values remain monotone in the parameter. \Cref{thm:montone} applies whenever we observe independent samples from an MLR family or multiparameter data from an exponential family.We mention that, in \Cref{thm:monotone}, the conditioning variable $Z$ is not allowed to depend on $\theta_0$ as in \Cref{exm:confidence_region}. 
-\begin{theorem}
-    \label{thm:monotone}
-    Consider $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Let $p^{\theta_0}$ be the UMP p-value for testing $H_0: \theta \leq \theta_0$. If $s^{\theta_0}(x, z)$ is a selection function for which $p^{\theta_0}$ has a positive probability of being selected under $P_{\theta_0}$, then the selective p-value 
-    \begin{equation*}
-        p_{sel}^{\theta_0} = \frac{\int_0^{p^{\theta_0}} s^{\theta_0}(x, Z)  dx}{ \int_0^1 s^{\theta_0}(x, Z) dx}
-    \end{equation*}
-    is monotone non-decreasing in $\theta_0$ so long as, for $\theta \leq \theta'$, $s^{\theta}(x, z) = 0 \implies s^{\theta'}(x, z) = 0$ and the \textbf{selection ratio} $s_{\theta'}(x, z)/s_{\theta'}(x, z)$ is monotone non-decreasing in $x$. 
-\end{theorem}
-
-For the vast majority of selective problems, the selection event does not depend on the null parameter $\theta_0$ and \Cref{thm:monotone} is trivial to apply. More specifically, the selection probabilities can usually be written in terms of the data $T(X)$ and independent uniform $U_{aux}$ from which $p^{\theta_0}$ is computed, i.e., there is a function $\tilde{s}(t, u, z)$ such that
+It turns out that selective p-values resulting from UMP or UMPU one-sided testing are essentially always monotone in the null parameter $\theta_0$. Suppose we observe data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. This setting is general enough to encompass both when we have independent samples from an MLR family as in \Cref{exm:confidence_region} and also when we have data from an exponential family. Conditional on $Z = z$, the UMP p-value $p^{\theta_0}$ for testing $H_0: \theta \leq \theta_0$ is a deterministic function of $T(X)$ and an independent uniform $U_{aux}$ (see \Cref{sec:one_sided_appdx}):
+\begin{equation}
+    p^{\theta_0} = m^{\theta_0}(T(X), U_{aux}, z).
+\end{equation}
+We usually get the selective p-value $p^{\theta_0}_{sel}$ by applying \Cref{thm:adjustment}'s adjustment with the selection function $s^{\theta_0}(x, z)$. The resulting selective p-value $p^{\theta_0}_{sel}$ from \Cref{thm:adjustment} will be monotone non-decreasing in $\theta_0$ whenever $s^{\theta_0}(x, z)$ depends on $\theta_0$ only through $m^{\theta_0}$, i.e., if 
 \begin{equation*}
-    s^{\theta_0}(x, z) =  \tilde{s}(t, u, z) \implies \frac{s_{\theta'}(x, z)}{s_{\theta'}(x, z)} = \frac{\tilde{s}(t, u, z)}{\tilde{s}(t, u, z)},
+   \text{there exists } \tilde{s} \text{ such that } s^{\theta_0}(x, z) = \tilde{s}(t, u, z) \text{ for all } t, u \text{ with } x = m^{\theta_0}(t, u, z).
 \end{equation*}
-and the selection ratio is therefore one. There are more modern approaches however, where the selection event depends on the parameter $\theta_0$ we are testing (e.g, hybrid inference \cite{Andrews2023}), in which case the full power of \Cref{thm:monotone} is needed.
+Essentially, this condition requires that the selection event, once written in terms of the data, has no dependence on the specific parameter $\theta_0$ that we are testing. Admittedly, this is the one case where writing our problem in terms of p-values instead of the original data adds an additional complication. But, since this condition holds for essentially all selective problems, a practioner seldom has to worry about this complication.  
 
-In \Cref{sec:winner_monotone_appdx}, we show carefully that selecting the winner is one of the settings where \Cref{thm:monotone} trivially applies. This allows us to present a more refined version of \Cref{exm:confidence_region}
-
+In \Cref{sec:winner_monotone}, we carefully show that the selective p-values from \Cref{exm:confidence_region} satisfy the above condition. This allows us to give a more refined version of our above example. 
 
 \begin{example}[Confidence lower bound and interval for the winner] 
     \label{exm:confidence_interval}
-    Suppose the $X_i \sim P_{\theta_i}$ are $n$ independent samples from an MLR family $P^{\theta}$, and $p^{\theta_0}_i =  p^{\theta_0}(X_i)$ are the UMP p-values for testing $H_0 : \theta \leq \theta_0$. Let $W$ be the index of the smallest p-value (which means that $X_W = \max_{i \in [n]} X_i$ is a winner). If we only test the null $H_0^{\theta_0}: \theta_j \leq \theta_0$ when we observe $W=j$, then \Cref{exm:winner} shows us how to get a valid procedure by applying our selective dominance framework with $p^{\theta_0} = p^{\theta^0}_j$, $Z^{\theta_0} = p^{\theta^0}_{-j}$, and $s^{\theta_0}(x, z) = I(p^{\theta_0}_j \leq \min_{i \neq j} p^{\theta_0}_i)$. Inverting the resulting test gives us a selectively valid confidence region:
-    \begin{equation}
-        \label{eq:winner_lcb}
-        P\left(\left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\} | W=j \right) = P\left(\left\{ \theta_0 : \frac{p^{\theta_0}_{j}}{ \min_{i \neq j} p^{\theta_0}_i} > \alpha \right\} | W=j \right) \geq 1-\alpha.
-    \end{equation} 
+    Recall the setting of \Cref{exm:confidence_region}. Then 
+    \begin{equation*}
+        \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\}
+    \end{equation*}
+    and 
+    \begin{equation*}
+        \left\{ \theta_0 : 1 - \frac{\alpha}{2}> \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \frac{\alpha}{2} \right\}
+    \end{equation*}
+    are a CLB and CI that cover the winning parameter  $\theta_W$ with probability exactly $1-\alpha$ conditional on $W$. In the CI, we can replace the left bound with $1-\alpha_1$ and the right bound with $\alpha_2$ for any $\alpha_1, \alpha_2 $ such that $\alpha_1 + \alpha_2 = \alpha$. The choice $\alpha_1 = \alpha_2 = \alpha/2$ ensures we miscover because the CI lies above and below the parameter with equal probability. 
 \end{example}
 
-And just like that, we have exact selective confidence lower bounds and intervals for the winning parameter for independent data from any MLR family. We confirm in \Cref{sec:winner_monotone_appdx} that this CLB and CI match the selective lower bound and interval one gets from following the steps of \cite{Fithian2017}. 
-
+The CI and CLB from \Cref{exm:confidence_interval} immediately generalize the conditional CI and CLB for the winner that one gets by following \cite{Fithian2017} to any MLR family. These confidence regions are normally only presented in the Gaussian case, and we show explicitly in \Cref{sec:winner_monotone_appdx} that our CI and CLB match those in the existing literature in the Gaussian case. 
 
 \section{Inference on Winners}
 \label{sec:winner}
@@ -661,6 +680,8 @@ Again, the proof of \Cref{cor:hyb_mlr} is essentially that the proposed LCB is t
 \label{sec:rank_verification}
 
 In this section we consider the problem of verifying that that the winning parameter is actually larger than the other parameters, i.e., rather than doing inference on the winning parameter, we do inference on the gap between the winning parameter and the remaining parameters. Mainly, we give a corrected accounting of the seminal work \cite{Hung2019}'s main results in the language of selected dominance. It illustrates how our selective dominance machinery allows us to correctly design fairly intricate statistical procedures.  
+
+Our goal is to give a more intuitive derivation and a corrected accounting of how to apply the method when there are ties. For examples of the method's application, of which there are many, we refer the reader to the original article. 
 
 \subsection{Warm-up: Rank Verification and Type III Error Control}
 
@@ -1347,6 +1368,7 @@ This can be confirmed via Bayes rule:
 In this appendix, we establish the selective dominance property for UMP p-values in MLR familes and UMPU p-values in exponential families. We also show that in these cases, the adjusted p-value from \Cref{thm:adjustment} is monotone in the parameter, under suitable conditions. Throughout the appendix, we draw from the discussion and proof strategy in Appendix B.1 of \cite{Lei}.
 
 \subsection{MLR Families}
+\label{sec:one_sided_mlr_appdx}
 
 We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta < \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e, for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
 
@@ -1561,6 +1583,7 @@ where to finish we have noted that $g_{\theta_0}(t) = 1$ almost eveywhere in the
 \end{proof}
 
 \subsection{Exponential Families}
+\label{sec:one_sided_exp_fam_appdx}
 
 Suppose we observe data $X \in \R^m$ from an exponential family $P_{\theta}$ parameterized by $\theta \in \R^n$ i.e., under $P_{\theta}$ the data $X$ has density  
 \begin{equation*}
@@ -1601,6 +1624,7 @@ where $U_{aux}$ is an uniform random variable independent of the data and
 is at most $\alpha$. Our work from the previous section also implies that this p-value is selectively dominant given $T_{-i}(X)$. 
 
 \subsection{Montonicty of Selective MLR p-Values}
+\label{sec:one_sided_monotone_appdx}
 
 In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Without loss of generality however, we can fix $Z = z$ and pretend we just observe $X$. Letting
 \begin{equation*}
@@ -1680,65 +1704,68 @@ Let $p^{\theta_0}$ be the UMP p-value for testing $H_0: \theta \leq \theta_0$. I
 
 \end{proof}
 
-\subsection{Exponential Families}
-
 \section{Proofs and Derivations}
 \label{sec:proofs_appdx}
 
 \subsection{Proof of \Cref{thm:adjustment}}
-Recall we are considering a selection function such that the probability that $U$ is selected $P(S=1) = \int_0^1 s(x) dx$ is positive. The CDF of $U$ given selection is continuous because it cannot have any point masses:
+Recall we are considering a selection function such that the probability that $U$ is selected $P(S'=1 | Z= z) = \int_0^1 s(x, z) dx$ is positive. The CDF of $U$ given selection is continuous because it cannot have any point masses:
 \begin{equation*}
-    P(U = x | S = 1) = \frac{P(U = x, S = 1)}{P(S=1)} \leq \frac{P(U = x)}{P(S=1)} =  0. 
+    P(U = x | Z=z, S' = 1) = \frac{P(U = x, S' = 1| Z=z)}{P(S'=1 |Z=z)} \leq \frac{P(U = x|Z=z)}{P(S'=1|Z=z)} =  0. 
 \end{equation*}
 Therefore, defining 
 \begin{equation*}
-    F^{-1}_{U | S=1}(t)  = \inf \{x: F_{U | S = 1}(x) > t  \}
+    F^{-1}_{U |Z=z, S'=1}(t)  = \inf \{x: F_{U |Z=z, S' = 1}(x) > t  \}
 \end{equation*}
-continuity implies that $F_{U|S =1}(F^{-1}_{U | S=1}(t)) = t$ and $F_{U | S = 1}(x) \leq t \iff x \leq  F^{-1}_{U | S = 1}(t)$. Then 
-\begin{equation*}
-    P_{H_0}(F_{U | S = 1}(p) \leq  t | S=1) = P_{H_0}(p \leq F_{U | S = 1}^{-1}(t) | S=1) \leq P(U \leq F_{U | S = 1}^{-1}(t) | S=1) = P(F_{U|S = 1}(U) \leq t | S=1)
-\end{equation*}
-where we have used that $p | S=1 \succeq_{H_0} U |S=1$ to get the middle inequality. Finally 
+continuity implies that $F_{U|Z=z, S =1}(F^{-1}_{U |Z=z, S=1}(t)) = t$ and $F_{U | Z=z, S = 1}(x) \leq t \iff x \leq  F^{-1}_{U | Z=z, S = 1}(t)$. Then 
+\begin{align*}
+    P_{H_0}(F_{U | Z=z, S' = 1}(p) \leq  t |Z=z, S=1) &= P_{H_0}(p \leq F_{U |Z=z,  S' = 1}^{-1}(t) | Z=z, S=1) \\
+    &\leq P(U \leq F_{U |Z=z, S' = 1}^{-1}(t) |Z=z, S'=1) \\
+    &= P(F_{U|Z=z, S' = 1}(U) \leq t |Z=z, S'=1)
+\end{align*}
+where we have used that $p | Z=z, S=1 \succeq_{H_0} U |Z=z, S'=1$ to get the middle inequality. Finally 
+\begin{align*}
+    P(F_{U|Z=z, S' = 1}(U) \leq t |Z=z, S'=1) &= P(U \leq F_{U|S' = 1}^{-1}(t) | Z=z, S'=1) \\
+    &= F_{U|Z=z, S'=1}(F_{U|Z=z, S' = 1}^{-1}(t)) = t
+\end{align*}
+so $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$, which finishes the proof. 
 
-\[P(F_{U|S = 1}(U) \leq t | S=1) = P(U \leq F_{U|S = 1}^{-1}(t) | S=1) = F_{U|S=1}(F_{U|S = 1}^{-1}(t)) = t,\]
-so  $F_{U|S = 1}(U) | S = 1 \sim \text{Unif}([0, 1])$ which finishes the proof. 
+Further, if for some distribution under the null, $p$ has an exact uniform distribution given $Z=z$, then the distributions $U | Z = z, S= 1'$ and $p | Z= z , S=1$ are indentical, so the fact that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$ also implies that $F_{U|Z=z, S' = 1}(p) |Z=z, S = 1 \sim \text{Unif}([0, 1])$, and therefore \eqref{eq:adjusted_error_control} holds with equality in this case. 
  
 \subsection{Proof of \Cref{thm:density}}
-Let $f$ be the density of $p$ under a distribution in the null $H_0$. We start by showing that, if $f$ is non-decreasing, then $p |S =1$ dominates $U | S=1$ . Fixing a selection function $s(x)$, it suffices to show that for any $t \in [0, 1]$. 
+Let $f_z$ be the density of $p |Z=z$ under a distribution in the null $H_0$. We start by showing that, if $f_z$ is non-decreasing, then $p |Z =z, S =1$ dominates $U |Z=z, S'=1$ . Fixing a selection function $s(x, z)$, it suffices to show that for any $t \in [0, 1]$. 
     \begin{align*}
-        &P(p \leq t | S =1) \leq P(U \leq t | S= 1)\\
+        &P(p \leq t | Z=z, S =1) \leq P(U \leq t |Z=z, S= 1)\\
         &\iff 
-        \frac{\int_{0}^{t} s(x) f(x) dx }{\int_{0}^{1} s(x) f(x) dx } \leq \frac{\int_{0}^{t} s(x) dx}{\int_{0}^{1} s(x) dx } \\
+        \frac{\int_{0}^{t} s(x, z) f_z(x) dx }{\int_{0}^{1} s(x, z) f_z(x) dx } \leq \frac{\int_{0}^{t} s(x, z) dx}{\int_{0}^{1} s(x, z) dx } \\
     \end{align*}
-If $P( p \leq t | S = 1)$ is zero then this trivially holds. Otherwise $P( p \leq t | S = 1) = \int_{0}^{t} s(x) f(x) dx  > 0$ and we see that, 
+If $P( p \leq t | Z=z, S = 1)$ is zero then this trivially holds. Otherwise $P( p \leq t | Z=z, S = 1) = \int_{0}^{t} s(x, z) f_z(x) dx  > 0$ and we see that, 
     \begin{align*}
-        \frac{ \int_{0}^{1} s(x) f(x) dx }{\int_{0}^{t} s(x) f(x) dx } &= 1 + \frac{\int_{t}^{1} s(x) f(x) dx }{\int_{0}^{t} s(x) f(x) dx }\\
-        &\geq 1 + \frac{f(t)\int_{t}^{1} s(x) dx }{f(t)\int_{0}^{t} s(x)  dx }\\
-        &= 1 + \frac{\int_{t}^{1} s(x) dx }{\int_{0}^{t} s(x)  dx }\\
-        &= \frac{ \int_{0}^{1} s(x) dx }{\int_{0}^{t} s(x)  dx },
+        \frac{ \int_{0}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx } &= 1 + \frac{\int_{t}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx }\\
+        &\geq 1 + \frac{f_z(t)\int_{t}^{1} s(x ,z) dx }{f_z(t)\int_{0}^{t} s(x, z)  dx }\\
+        &= 1 + \frac{\int_{t}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx }\\
+        &= \frac{ \int_{0}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx },
     \end{align*}
 which is sufficient to imply the claim. 
 
-Now assuming that $f$ is continuous and non-decreasing, we can show that $p$ is not selectively dominant. In general, it suffices for there to be two points $y_1 < y_2$ such that $f$ is strictly larger in a neighborhood around $y_1$ than in a neighborhood around $y_2$, where these neighborhoods are disjoint. In particular for $\epsilon > 0$ let $N_{\epsilon}(y) = (y - \epsilon, y + \epsilon )$ be a ball around $y$. Then we need there to be $y_1$, $y_2$, $\epsilon > 0$, and some $\eta > 0$ such that, for all $z_1 \in N_{\epsilon}(y_1)$ and $z_2 \in N_{\epsilon}(y_2)$,  $z_1  < z_2$ but $f(z_2) + \eta < f(z_1) $. If $f$ is continuous and not non-decreasing, then this must be true. First define $B_{high} = \inf \{f(z_1): z_1 \in N_{\epsilon}(y_1)\}$ and  $B_{low} = \sup \{f(z_2): z_2 \in N_{\epsilon}(y_2)\}$ so $B_{high}  > B_{low}$. Then consider the selection function 
+Now assuming that $f_{z'}$ is continuous and not non-decreasing for some $z'$, we can show that $p$ is not selectively dominant. In general, it suffices for there to be two points $y_1 < y_2$ such that $f_{z'}$ is strictly larger in a neighborhood around $y_1$ than in a neighborhood around $y_2$, where these neighborhoods are disjoint. In particular for $\epsilon > 0$ let $N_{\epsilon}(y) = (y - \epsilon, y + \epsilon )$ be a ball around $y$. Then we need there to be $y_1$, $y_2$, $\epsilon > 0$, and some $\eta > 0$ such that, for all $w_1 \in N_{\epsilon}(y_1)$ and $w_2 \in N_{\epsilon}(y_2)$, $w_1  < w_2$ but $f_{z'}(w_2) + \eta < f_{z'}(w_1) $. If $f$ is continuous and not non-decreasing, then this must be true. First define $B_{high} = \inf \{f_{z'}(w_1): w_1 \in N_{\epsilon}(y_1)\}$ and  $B_{low} = \sup \{f_{z'}(w_2): w_2 \in N_{\epsilon}(y_2)\}$ so $B_{high}  > B_{low}$. Then consider the selection function 
 \begin{equation*}
-s(x)= \begin{cases}
-1 &\text{if } x \in N_{\epsilon}(y_1) \cup N_{\epsilon}(y_2) \\
+s(x, z')= \begin{cases}
+1 &\text{if } x \in N_{\epsilon}(y_1) \cup N_{\epsilon}(y_2) \text{ and } z=z' \\
 0 &\text{otherwise }
 \end{cases}
 \end{equation*}
-and let $t$ be a value such that $t > z_1$ for all $z_1 \in N_{\epsilon}(y_1)$ and $t < z_2$ for all $z_2 \in  N_{\epsilon}(y_2)$. Trivially, 
+and let $t$ be a value such that $t > w_1$ for all $w_1 \in N_{\epsilon}(y_1)$ and $t < w_2$ for all $w_2 \in  N_{\epsilon}(y_2)$. Trivially, 
 \begin{equation*}
-    P(U \leq t | S = 1) = \frac{1}{2}. 
+    P(U \leq t | Z = z', S' = 1) = \frac{1}{2}. 
 \end{equation*}
 But the fact that 
 \begin{align*}
-    \frac{1}{P(p \leq t | S = 1)} &= \frac{ \int_{y_1 - \epsilon}^{y_1 + \epsilon} f(x) dx + \int_{y_2 - \epsilon}^{y_2 + \epsilon} f(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f(x) dx}\\
-    &= 1 + \frac{ \int_{y_2 - \epsilon}^{y_2 + \epsilon} f(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f(x) dx}\\
+    \frac{1}{P(p \leq t | Z=z', S = 1)} &= \frac{ \int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx + \int_{y_2 - \epsilon}^{y_2 + \epsilon} f_{z'}(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx}\\
+    &= 1 + \frac{ \int_{y_2 - \epsilon}^{y_2 + \epsilon} f_{z'}(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx}\\
     &\leq 1 + \frac{ 2\epsilon B_{low}  }{2\epsilon B_{high} }\\
     & < 2
 \end{align*}
-implies that $P(p \leq t | S = 1) > \frac{1}{2} $, which means that $p$ cannot be selectively dominant. 
-
+implies that $P(p \leq t |Z=z',  S = 1) > \frac{1}{2} $, which means that $p$ is not selectively dominant. 
 \iffalse 
 \subsection{Selective dominance for one-sided testing in MLR families}
 \label{sec:mlr_selective_dominance_appdx}
@@ -1932,14 +1959,6 @@ And then another key lemma.
 
 \end{proof}
 \fi 
-
-Now we can give proofs of each corollary. 
-
-\subsubsection{Proof of \Cref{cor:class_mlr}}
-
-\subsubsection*{Proof of \Cref{cor:cond_mlr}}
-
-\subsubsection*{Proof of \Cref{cor:hyb_mlr}}
 
 \subsection{Proof of \Cref{cor:sidak_closed}}
 
