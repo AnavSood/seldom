@@ -73,6 +73,25 @@ In this paper, we provide a unifying framework for selective inference centered 
 
 \subsection{Motivation}
 
+
+\begin{figure}
+    \centering
+    \scalebox{1}{
+    \hspace{-0.025 \textwidth}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig/class_dist_to_winner.pdf}
+    \end{minipage}
+    \hspace{0.05 \textwidth}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig/cond_dist_to_winner.pdf}
+    \end{minipage}
+    }
+    \caption{ The first panel (left) shows the growth of the quantile $z_{1 - \alpha_n}$ as a function of the dimension $n$. The second panel (right) gives the distance between the level $\alpha=0.05$ conditional LCB and the winner $X_W$ as a function of the gap $X_W - X_R$ between winner and the runner-up. For dimensions $n=1,10,100,1000$, it also gives the distance from $X_W$ to the level $\alpha=0.05$ simultaneous LCB.}
+    \label{fig:lcb}
+\end{figure}
+
 To more concretely motivate the need for our framework, we recall two canonical problems in selective inference. In both problems, we imagine observing $n$ independent samples $X_i \sim N(\mu_i, 1)$.
 
 First, we consider the inference on winners problem. We want to provide a level $\alpha$ confidence lower bound (CLB) for the mean $\mu_{(n)}$ corresponding to the largest observed value $X_{(n)}$. Note that we have abused notation, and $\mu_{(n)}$ is not the largest of the $\mu_i$ but rather it is the random variable whose value is the true mean of the largest observation. The classical approach to this problem is to deliver a Sidak corrected level $1-(1-\alpha)^n$ lower bound. These lower bounds 
@@ -86,6 +105,7 @@ Second, we consider the rank verification problem. In particular, we want to ver
 
 After observing the largest value $X_{(n)}$ we want to provide a confidence lower bound (CLB) 
 
+We derive a framework that not only establishes this to be true, but turns out to be an all encompassing framework for selective inference.
 
 
 \subsection{Our Contributions}
@@ -245,9 +265,9 @@ Etablishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, and the bulk o
 
 \subsection{Example Applications of Selective Dominance}
 
-Having developed our machinery, we provide a couple examples that illustrate how to use it.
+Having developed our machinery, we provide a few examples that illustrate how to use it.
 
-As an introductory example, we show how to correct for \Cref{exm:publication_bias}'s publication bias. Using our selective dominance machinery, we show how one can easily derive the p-value adjustment from \cite{Hung2020}. 
+As an introductory example, we show how to correct for \Cref{exm:publication_bias}'s publication bias. Using our selective dominance machinery, we can provide a one-line derivation of the p-value adjustment from \cite{Hung2020}. \cite{Hung2020} derive this correction specifically for p-values coming from z- and t-tests, but our machinery applies for all selectively dominant p-values. 
 
 \begin{example}[Correcting for publication bias]
 \label{exm:correction}
@@ -257,11 +277,11 @@ Suppose we have a selectively dominant p-value $p$ for the null hypothesis $H_0$
 \end{equation*}
 \end{example}
 
-As we have just learned that essentially all the p-values researchers use are selectively dominant, \Cref{exm:correction} gives a simple way for readers to make valid inferences in the presence of publication bias: declare a studies' result significant when its associated p-value is at most $\alpha^2$.
+As we have learned that essentially all the p-values researchers typically use are selectively dominant, \Cref{exm:correction} gives a simple way for readers to make valid inferences in the presence of publication bias: declare a studies' result significant when the associated p-value is at most $\alpha^2$.
 
-Our rule of thumb of rejecting when $p \leq \alpha^2$ should also deliver valid inferences in the presence of p-hacking. Rather discarding an experiment after observing a p-value larger than $\alpha$, researches more typically tweak their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, is difficult to study theoretically (hence \cite{Hung2020} does not handle this case), but it has been  empirically well established that it results in p-values with left-skewed distributions under the null. That is, under the null, p-hacked p-values can be reasonably modeled as having an increasing density supported on $[0,\alpha]$ \citep{Simonsohn, Hung2020}. The transformed p-value $p/\alpha$ then has a density that is increasing on $[0, 1]$ under the null, and \Cref{thm:density} guarantees that it is indeed a valid p-value.
+Our rule of thumb of rejecting when $p \leq \alpha^2$ should also deliver valid inferences in the presence of p-hacking. Rather discarding an experiment after observing a p-value larger than $\alpha$, researches more typically tweak their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, is difficult to study theoretically (hence \cite{Hung2020} do not study it). But it has been emprirically well established that, under the null, p-values resulting from p-hacking have left-skewed distributions, i.e., null p-hacked p-values can be reasonably modeled as having an increasing density on $[0,\alpha]$ \citep{Simonsohn}. The transformed p-value $p/\alpha$ then has a density that is increasing on $[0, 1]$ under the null, so \Cref{thm:density} guarantees that it is indeed a valid p-value.
 
-Our second example shows how to use \Cref{thm:adjustment} to perform inference using the ``winning'' p-value. It provides a recipe for how to use our selective dominance machinery to test data dependent hypotheses. 
+Our second example shows how to use \Cref{thm:adjustment} to perform inference using the ``winning'' p-value. It illustrates how our selective dominance machinery enables us to test data dependent hypotheses, the core problem of selective inference. 
 
 \begin{example}[Inference on the winning p-value]
     \label{exm:winner} Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the null hypotheses $H_{0, i}$, and we choose to test only the $j$th null $H_{0, j}$ after observing that $p_j$ is the smallest of the $p_i$. We will assume that under $H_{0, i}$ each $p_i$ has density that is positive on all of $(0, 1)$. Applying our framework with $p =p_j$, $Z = p_{-j}$, and the selection function $s(x, z) = I_{x < \min_{k} z_k}$, it is straightforward to compute that the adjusted p-value $p_{adj}$ from \eqref{eq:adjustment} is $p_j/\min_{i \neq j} p_i$, so \Cref{thm:adjustment} tells us that rejecting when $p_j \leq \alpha \min_{i \neq j} p_i$ controls selective Type I error:
@@ -285,210 +305,49 @@ Our second example shows how to use \Cref{thm:adjustment} to perform inference u
     If the nulls are all true and the $p_i$ are exactly uniform, then the inequalities become equalities and our error control is tight. 
 \end{example}
 
-Rejecting the null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ may seem like a strange procedure, but we will see that doing so is central to the conditional inference on winners method that arises from \cite{Fithian2017} and appears often in the existing selective inference. 
+Rejecting the null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ may seem like a strange procedure, but we will see that doing so is central to the conditional inference for winners method that arises from \cite{Fithian2017}. In fact, \cite{Fithian2017} implies that, in many settings, this test is UMP amongst tests that are valid conditional on $W$. 
 
-\Cref{exm:correction} and \Cref{exm:winner} share some common characteristics. In both examples, the practioner cheats. They peak at the p-value and only test the null when the p-value looks promising. The purpose of selective  procedures to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the p-value. 
+Lastly, we show how our framework also applies to data-carving. Specifically we consider the file-drawer problem from \cite{Fithian2017}.  \cite{Fithian2017} argue that data-splitting, which involves using a chunk of the data for selection and an independent chunk of data for inference, is often an inadmissible approach in selective inference problems. In such settings, data-carving, as we describe below, results in strictly more powerful procedures. Although it initially appears that data-carving's selection procedure does not involve selecting a p-value as we describe in \Cref{sec:dominance}, we show via a coupling argument that it can be viewed in this way. This both serves to illustrate the breadth of our framework's applicability, as well as provide a new perspective on data carving. 
 
-\subsection{Selective Confidence Bounds and Confidence Intervals}
-
-In parametric settings, we can  invert tests of data dependent null hypotheses to get selective confidence regions. These confidence regions cover a \underline{random} parameter. \Cref{exm:confidence_region} gives the beginnings of an illustrative example. 
-
-\begin{example}[Confidence region for the winner] 
-    \label{exm:confidence_region}
-    Suppose the $X_i \sim P_{\theta_i}$ are $n$ independent samples from an MLR family $P_{\theta}$, and $p^{\theta_0}_j =  p^{\theta_0}(X_j)$ are the UMP p-values for testing $H_{0, j} : \theta_j \leq \theta_0$. Define the parameter vector $\Theta = (\theta_1, \dots, \theta_n)$ and let $W$ be the index of the smallest p-value, so that $X_W = \max_{i \in [n]} X_i$ is a winner. We can get a $1-\alpha$ confidence region for the winning parameter $\theta_W$ that is valid conditional on $W$ by inverting \Cref{exm:winner}'s test of the winning null $H_{0, W} : \theta_W \leq \theta_0$:
-    \begin{align*}
-        \label{eq:winner_cr}
-        P_{\Theta}\left( \theta_W \in \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\} | W=j \right) &= P_{\Theta}\left( \theta_j \in \left\{ \theta_0 : \frac{p^{\theta_0}_{j}}{ \min_{i \neq j} p^{\theta_0}_i} > \alpha \right\} | W=j \right)\\
-                                     &= P_{\Theta}\left(  \frac{p^{\theta_j}_{j}}{ \min_{i \neq j} p^{\theta_j}_i} > \alpha  | W=j \right)\\
-                                    &= 1-\alpha,
-    \end{align*} 
-    where we have equality because $p^{\theta_j}_j$ has an exact uniform distribution given $p^{\theta_j}_{-j}$ under $P_{\Theta}$. 
+\begin{example}[Data carving and the file-drawer problem]
+    \label{exm:carve}
+    In the file-drawer problem we observe two independent samples $X_1, X_2 \sim N(\mu, 2)$ (e.g., $X_1$ comes from the first half of the data and $X_2$ from the second). We test the null $H_0: \mu \leq 0$, but only when we observe that $X_1 > t$ for some $t \in \R$.  
+    
+    Data splitting ignores the first observation, which was used for selection, and simply tests the null with the  p-value $p_{split} = 1 - \Phi(X_2/\sqrt{2}) $. Intuitively, because this p-value is independent of the selection process, we should maintain Type I error control without performing any correction. Applying our framework with $p = p_{split}$, $Z = X_1$, and the selection function $s(x, z) = I(z > t)$, it is not hard to see that the selective p-value indeed offers no correction. 
+    
+    Data-carving, however, attempts to still use the more powerful p-value $p_{full} = 1 - \Phi( (X_1 + X_2)/2 )$, which leverages information from both samples. How can we apply our framework to this data-carving problem? In how we have stated the problem, it is \underline{not} the case that we observe $p_{full}$ and then decide whether or not to use it for inference. Instead, we decide based on $X_1$, and unlike in data-splitting, $p$ is not a valid p-value given $X_1$. Noting that
+    \begin{equation*}
+        X_1 | \frac{X_1 + X_2}{2} = y \sim N(y, 1),
+    \end{equation*}
+    however, we can compute the probability that selection happened given that $p$ took a particular value:
+    \begin{equation*}
+        P(X_1 > t | p_{full} = x) = 1 - \Phi(t - \Phi^{-1}(1-x)). 
+    \end{equation*}
+    We may as well therefore imagine that we observed that $p_{full} = x$, and then decided to use it to test the null $H_0$ with probability $1 - \Phi(t - \Phi^{-1}(1-x))$. Although this is not what happens in the original problem (in our new characterization we may test $H_0$ even when $X_1 \leq 3$), the conditional distribution of $p$ given selection is the same in both cases. Hence we can apply our framework with $p = p_{full}$, $Z=0$ and $s(x) = 1 - \Phi(t - \Phi^{-1}(1-x))$. \cite{Fithian2017} argue that the resulting selective p-value
+    \begin{equation*}
+        p_{carve} = \frac{\int_0^{p_{full}}  1 - \Phi(t - \Phi^{-1}(1-x)) dx}{\int_0^1  1 - \Phi(t - \Phi^{-1}(1-x)) dx} = \frac{\int_0^{p_{full}}  1 - \Phi(t - \Phi^{-1}(1-x))dx }{1 - \Phi(t/\sqrt{2})} 
+    \end{equation*}
+    will result in strictly more rejections than $p_{split}$. \Cref{sec:carve_appdx} provides more details on the specific calculations done in this example. 
 \end{example}
 
-Since the region in \Cref{exm:confidence_region} results from inverting a one sided test, we would hope that it is not just a confidence region, but a confidence lower bound. This is not obvious, however. While the p-values $p^{\theta_0}_j$ are known to be monotone in $\theta_0$, it is less clear whether the selective p-values $p^{\theta_0}_{j}/ \min_{i \neq j} p^{\theta_0}_i$ resulting from \Cref{thm:adjustment} are. Indeed confirming that selective confidence regions are actually invervals or lower bounds can be tricky in selective problems, and proving that they are is sometimes done on a case by case basis \citep{Benjamini, Lee} or not at all \citep{Sengupta}. 
+Crucially, in \Cref{exm:carve}, the conditional distribution of the random variable $X_1$ used for selection given the p-value $p_{full}$ did not depend on the unknown parameter $\mu$. Hence, the selection function $s(x)$ had no dependence on $\mu$, and we were able to correct our p-value without any issues. This did not happen by accident, and is actually a consequence of more general and interesting fact regarding the relationship between between data splitting, data carving, data fission \citep{Leiner}, and data thinning \citep{Dharamshi, Neufeld}.
 
-It turns out that selective p-values resulting from UMP or UMPU one-sided testing are essentially always monotone in the null parameter $\theta_0$. Suppose we observe data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. This setting is general enough to encompass both when we have independent samples from an MLR family as in \Cref{exm:confidence_region} and also when we have data from an exponential family. Conditional on $Z = z$, the UMP p-value $p^{\theta_0}$ for testing $H_0: \theta \leq \theta_0$ is a deterministic function of $T(X)$ and an independent uniform $U_{aux}$ (see \Cref{sec:one_sided_appdx}):
-\begin{equation}
-    p^{\theta_0} = m^{\theta_0}(T(X), U_{aux}, z).
-\end{equation}
-We usually get the selective p-value $p^{\theta_0}_{sel}$ by applying \Cref{thm:adjustment}'s adjustment with the selection function $s^{\theta_0}(x, z)$. The resulting selective p-value $p^{\theta_0}_{sel}$ from \Cref{thm:adjustment} will be monotone non-decreasing in $\theta_0$ whenever $s^{\theta_0}(x, z)$ depends on $\theta_0$ only through $m^{\theta_0}$, i.e., if 
-\begin{equation*}
-   \text{there exists } \tilde{s} \text{ such that } s^{\theta_0}(x, z) = \tilde{s}(t, u, z) \text{ for all } t, u \text{ with } x = m^{\theta_0}(t, u, z).
-\end{equation*}
-Essentially, this condition requires that the selection event, once written in terms of the data, has no dependence on the specific parameter $\theta_0$ that we are testing. Admittedly, this is the one case where writing our problem in terms of p-values instead of the original data adds an additional complication. But, since this condition holds for essentially all selective problems, a practioner seldom has to worry about this complication.  
+In the most basic version of data fission, we add and subtract independent normal noise $Z \sim N(0, 1)$ to a normal sample $X \sim N(\mu, 1)$ to get two independent samples $X_1, X_2 \sim N(\mu, 2)$ centered at the same mean. This is meant to mimic data splitting: the first sample can be used for selection and the second for inference. Data thinning generalizes this idea to the setting where $X$ is a random vector from a parametric family, and we add noise make $k$ new random vectors $X_1, \dots, X_k$ that (1) are independent and (2) can be used to recover $X$ via a deterministic function $X = T(X_1, \dots, X_k)$. Vanilla data thinning would involve using some of the $X_i$ to perform selection and then the rest to do inference. Data carving, however, suggests using a p-value for inference that is a function of all the data $X = T(X_1, \dots, X_k)$, despite some of the $X_i$ being used for selection. Because the noise we add to $X$ has no dependence on the unknown parameter, the joint distribution of the $X_i$ given $T(X_1, \dots, X_k)$ also has no dependence on the unknown paramter. Therefore, contrary to the what the language in \cite{Leiner} suggests, the selection function $s(x)$ is always \underline{known}, and we can always apply our framework to data carve and get more power. If the selection process is highly complicated, it is true that $s(x)$ may be very difficult to compute, but in theory it is always accessible to us via extensive simulations. 
 
-In \Cref{sec:winner_monotone}, we carefully show that the selective p-values from \Cref{exm:confidence_region} satisfy the above condition. This allows us to give a more refined version of our above example. 
+Our framework also applies to regression problems, including \cite{Lee}'s foundational problem of doing inference on LASSO selected regression coefficients. For sake of brevity, we have moved this discussion to \Cref{sec:lasso_appdx}.  
 
-\begin{example}[Confidence lower bound and interval for the winner] 
-    \label{exm:confidence_interval}
-    Recall the setting of \Cref{exm:confidence_region}. Then 
-    \begin{equation*}
-        \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\}
-    \end{equation*}
-    and 
-    \begin{equation*}
-        \left\{ \theta_0 : 1 - \frac{\alpha}{2}> \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \frac{\alpha}{2} \right\}
-    \end{equation*}
-    are a CLB and CI that cover the winning parameter  $\theta_W$ with probability exactly $1-\alpha$ conditional on $W$. In the CI, we can replace the left bound with $1-\alpha_1$ and the right bound with $\alpha_2$ for any $\alpha_1, \alpha_2 $ such that $\alpha_1 + \alpha_2 = \alpha$. The choice $\alpha_1 = \alpha_2 = \alpha/2$ ensures we miscover because the CI lies above and below the parameter with equal probability. 
-\end{example}
+\Cref{exm:correction}, \Cref{exm:winner}, \Cref{exm:carve} all share a common theme. In all three examples, the practioner cheats. They peak at the p-value and, to varying degrees, they only test the null when the p-value looks promising. The purpose of selective procedures is to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the original p-value. 
 
-The CI and CLB from \Cref{exm:confidence_interval} immediately generalize the conditional CI and CLB for the winner that one gets by following \cite{Fithian2017} to any MLR family. These confidence regions are normally only presented in the Gaussian case, and we show explicitly in \Cref{sec:winner_monotone_appdx} that our CI and CLB match those in the existing literature in the Gaussian case. 
 
 \section{Inference on Winners}
 \label{sec:winner}
 
-In this section we provide both new interpretations and generalizations of methods that perform inference on winners. Our main insight is that, once written in terms of p-values, inference on winners methods become easier to derive, interpret, implement, and adapt to new settings. 
+In this section we use our framework to study the inference on winners problem. Along with providing further discussion about \Cref{exm:winner}, we also discuss how hybrid inference \citep{Andrews2023}, which offers a solution to the exploding interval problem, also naturally arises in our framework. For both appproaches, our discussion results in novel interpretations, generalizations, and methods. To be concrete, we will imagine performing inference at level $\alpha = 0.1$ throughout the section.
 
-Our treatment covers three methods for doing inference on winners: classical inference, conditional inference from \cite{Fithian2017}, and hybrid inference from \cite{Andrews2023}. For each method, we first discuss how the method goes about constructing a lower confidence bound (LCB) for the winning mean in the simple setting of independent Gaussian data. This discussion mirrors how the methods are typically presented in the existing literature. Then we write the LCB in terms of p-values and discuss the benefits of doing so. %Although we focus on one-sided intervals in the main text, we detail how to do the same analysis for two-sided confidence intervals in \Cref{coming_soon}. 
+For now, we focus on the independent data setting. The tools we develop in the next section, however, enable us to do inference on winners when data is generated from a multi-parameter exponential family, which encompasses many correlated data settings. 
 
-
-
-\subsection{Classical Inference}
-
-In this subsection we discuss how to perform classical inference on the winner. The material is review, but it lays the foundation of what is to come. 
-
-\subsubsection{The Classical LCB}
-
-In the case of independent Gaussian data $X \sim N(\mu, I_n)$ with winner $W = \argmax_{i \in [n]} X_i$, the classical approach to getting an LCB for the winning mean $\mu_W$ is to perform inference simultaneously on all the $\mu_i$. Defining 
-\begin{equation}
-    \label{eq:bonf_quantile}
-    \alpha_n = 1 - (1-\alpha)^{1/n}, 
-\end{equation}
-the lower bounds $ \mu_i > X_i - z_{1 - \alpha_n}$\footnote{When $\alpha$ is small or $n$ is large, $\alpha_n \approx \alpha/n$, so this approach is essentially equivalent to doing inference on each mean individually with a Bonferonni correction. } hold simultaneously with high probability:
-\begin{equation*}
-    P(\mu_i > X_i - z_{1- \alpha_n} \text{ for all } i \in [n]) = P( \max_{i \in [n] }X_i - \mu_i < z_{1-\alpha_n} ) = P( X_1 - \mu_1 <  z_{1-\alpha_n} )^n  = 1-\alpha.  
-\end{equation*}
-Therefore $X_W - z_{1-\alpha_n}$ is a strict lower bound for $\mu_{W}$ with probability at least $1-\alpha$. 
-
-Because this classical LCB arises from performing simultaneous inference on all the parameters, it necessarily suffers a penalty as the number of parameters increases. \Cref{fig:lcb} depicts how the quantile $z_{1-\alpha_n}$ grows with the number of parameters $n$. As a consequence, the classical lower bound for the winning mean $\mu_{W}$ becomes progressively farther away from the observed value $X_{W}$ as the problem dimension increases.  
-
-\subsubsection{The Classical LCB with p-Values}
-
-To gauge the quality of our classical LCB, we can check when it verifies the existence of a mean larger than $\mu_0 \in \R$. In the langauge of hypothesis testing, we are considering the nulls $H^{\mu_0}_{0, i} : \mu_i \leq \mu_0$ and rejecting the data dependent winning null $H^{\mu_0}_{0, W}$ when our LCB is at least $\mu_0$. 
-
-We can check when the classical LCB allows us to reject $H^{\mu_0}_{0, W}$ by examining the p-values $p^{\mu_0}(X_i) = 1- \Phi(X_i - \mu_0)$, which are valid p-values under the nulls $H^{\mu_0}_{0, i}$. It is not hard to verify that the classical LCB rejects $H^{\mu_0}_{0, W}$ when the winning (smallest) p-value $p^{\mu_0}_{(1)}$ is at most $\alpha_n$. The classical LCB, which is composed of all the $\mu_0$ for which we fail to reject $H^{\mu_0}_{0, W}$, can thus be written as 
-\begin{equation}
-    \label{eq:class_lcb}
-    C_{class}(X) = \{\mu_0 : p^{\mu_0}_{(1)} > \alpha_n \}. 
-\end{equation}
-
-When working with independent p-values, rejecting nulls whose corresponding p-value is less than $\alpha_n$ is a well-known family wise error rate (FWER) controlling procedure called Sidak's procedure. We recall it in \Cref{thm:sidak_testing} \citep{Sidak}. Essentially, the classical LCB \eqref{eq:class_lcb} for $\mu_W$ results from inverting Sidak's test for $H_{0, W}$. 
-
-\begin{theorem}[Sidak's procedure]
-     \label{thm:sidak_testing}
-     Suppose that $p_{i}$ are independent p-values for the nulls $H_{0, i}$. If we reject $H_{0, i}$ when $p_{i} \leq \alpha_n$ then the FWER is controlled at level $\alpha$. As a consequence, if $W$ is the index of the smallest p-value (with ties broken aribtrarily), then rejecting the winning null $H_{0, W}$ or the global null $H_0 : \cap_{i=1}^n H_{0i}$ when $p_{(1)} \leq \alpha_n$ controls Type I error at level $\alpha$. 
-\end{theorem}
-
-One benefit reframing things in a multiple hypothesis testing framework is that, if we are not explicitly interested in making a confidence region for $\mu_{W}$ and care just about making discoveries, we can make more discoveries via the closure principle \citep{Marcus}. To close Sidak's procedure, we imagine applying Sidak's global null test for every subseted global null $H^{\mu_0}_{0, \mathcal{I}} = \cap_{i \in \mathcal{I}} H^{\mu_0}_{0, i}$ where $\mathcal{I} \subseteq [p]$. We then reject the individual null $H^{\mu_0}_{0, i}$ if and only if Sidak's procedure rejects $H^{\mu_0}_{0, \mathcal{I}}$ for every $\mathcal{I}$ containing $i$. If the subseted global null tests are level $\alpha$, then our individiual rejections will satisfy level $\alpha$ FWER control. 
-
-Closing a global null test always allows us to make more discoveries, but doing so is usually computationally intractable. The closure of Sidak's procedure, however, has a tractable characterization called Holm's procedure. We give it in \Cref{cor:sidak_closed}. 
-
-\begin{corollary}[Holm's procedure]
-    \label{cor:sidak_closed}
-    Suppose that $p_{i}$ are independent p-values for the nulls $H_{0, i}$. As shorthand, let $H_{0, (j)}$ denote the null corresponding to the $j$th smallest p-value, with ties broken arbitrarily. Rejecting the null hypothesis $H_{0, (k)}$ when $p_{(j)} \leq \alpha_{n - j + 1} $ for every $j \leq k$ controls FWER error at level $\alpha$. 
-\end{corollary}
-
-Holm's procedure is best understood as a sequential procedure. We reject $H_{0, (1)}$ if $p_{(1)} \leq \alpha_n$. Then, if we rejected $H_{0, (1)}$, we reject $H_{0, (2)}$ if $p_{(2)} \leq \alpha_{n-1}$, so on and so forth until we fail to reject.   
-
-\subsubsection{Generalizing to MLR Families}
-\label{sec:class_mlr}
-
-A big advantage of writing everything in terms of p-values is that it easily allows us to generalize to any MLR family. Consider any family of distributions $P_{\theta}$ parameterized by $\theta \in \R$ with an MLR in $T(x)$, and suppose we observe $n$ independent samples $X_i \sim P_{\theta_i}$ where the $\theta_i$ are unknown. This is a strict generalization of our independent Gaussian setting. 
-
-Denoting the left-continuous survival function of $T(X)$ and its righthand limit as 
-\begin{equation*}
-    G^{\theta_0}(t) = P_{\theta_0}(T(X) \geq t) \qquad G^{\theta_0, +}(t) = \lim_{u \downarrow t} G^{\theta_0}(u)
-\end{equation*}
-the p-value corresponding to the UMP test for $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0$ is
-\begin{equation}
-    \label{eq:ump_mlr}
-    p^{\theta_0}(X_i) = G^{\theta_0, +}(T(X_i)) + U_{i, aux}(G^{\theta_0}(T(X_i)) - G^{\theta_0, +}(T(X_i))). 
-\end{equation}
-In \eqref{eq:ump_mlr}, $U_{i, aux}$ are $\text{Unif}([0,1])$ random variables that are independent from each other and the $X_i$. We give a detailed explanation regarding why rejecting according to these p-values is UMP in \Cref{sec:mlr_selective_dominance_appdx}. 
-
-\Cref{cor:class_mlr} tells us that, if we swap out our Gaussian p-values for the UMP p-values in \eqref{eq:ump_mlr}, \eqref{eq:class_lcb} directly generalizes to give us simultaneously valid LCBs for the $\theta_i$. Since the LCBs are simultaneously valid, we automatically get an LCB for the winning parameter(s) from them.  
-
-\begin{corollary}[Classical inference for MLR families]
-    \label{cor:class_mlr}
-    Let $P_{\theta}$ be a MLR family parameterized by $\theta \in \R$. If $X_i \sim P_{\theta_i}$ are $n$ independent samples and $p^{\theta_0}_i$ are the UMP p-values \eqref{eq:ump_mlr} for testing $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0 $, then $\{\theta_0 :  p^{\theta_0}_{i} > \alpha_n \}$ are a collection of LCBs for the $\theta_i$ that simultaneously hold with probability exactly $1-\alpha$. 
-\end{corollary}
 
 \subsection{Conditional Inference}
-
-In this subsection we provide the same treatment for conditional inference on the winner. The p-value viewpoint makes the existing method much easier to interpret and implement, and it also results in novel methods and generalizations.  
-
-
-\subsubsection{The Conditional LCB}
-\label{sec:lcb_background}
-
-\begin{figure}
-    \centering
-    \scalebox{1}{
-    \hspace{-0.035\textwidth}
-    \begin{minipage}{0.33\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{fig/class_dist_to_winner.pdf}
-    \end{minipage}
-    \hfill
-    \hspace{0.01\textwidth}
-    \begin{minipage}{0.33\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{fig/cond_dist_to_winner.pdf}
-    \end{minipage}
-    \hfill
-    \hspace{0.01\textwidth}
-    \begin{minipage}{0.33\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{fig/hyb_dist_to_winner.pdf}
-    \end{minipage}
-    }
-    \caption{ The first panel (left) shows the growth of the quantile $z_{1 - \alpha_n}$ as a function of the dimension $n$. The second panel (middle) gives the distance between the level $\alpha=0.05$ conditional LCB and the winner $X_W$ (i.e., the function $L(\cdot)$ in \eqref{eq:cond_lcb}) as a function of the gap $X_{W} - X_{R}$ between winner and the runner-up. For dimensions $n=1,10,100,1000$, we also give the distance from $X_W$ to the level $\alpha=0.05$ classical LCB. The third panel (right) considers a $n=10$ dimensional problem and shows this distance for the level $\alpha=0.05$ hybrid, conditional, and classical LCBs in red. For hybrid we take $\beta=0.005$. It also shows the distance to the larger of the level $\alpha=0.045$ conditional LCB and level $\alpha=0.005$ classical LCB in green (i.e., the union bound LCB).}
-    \label{fig:lcb}
-\end{figure}
-
-Again suppose we observe independent Gaussian data $X \sim N(\mu, I_n)$ and want to make a LCB for the mean $\mu_W$ of the winner $W = \argmax_{i \in [n]} X_i$. 
-
-The conditional approach tries to avoid the classical approach's curse of dimensionality by providing inferences for only the winning mean. It does so by delivering an LCB for $\mu_W$ that is valid conditionally on $W$. To construct the conditional LCB, we follow the framework of \cite{Fithian2017}. Letting $R$ be the index of the runner-up (second largest observation), we note that the deviation of $X_{W}$ from $\mu_{W}$ has a truncated normal distribution once we condition on $W$ and $X_{-W}$:
-\begin{equation}
-    \label{eq:cond_dist}
-    X_W - \mu_W \mid W, X_{-W} \sim TN(0, 1, X_{R} - \mu_{W}, \infty).
-\end{equation}
-Letting 
-\begin{equation}
-    \label{eq:cond_quantile}
-    q_{1-\alpha}(w, x_{-w}, \mu_w) = \text{Quantile}_{\mu}(1-\alpha, X_W -  \mu_{W} \mid W=w, X_{-w} = x_{-w})
-\end{equation}
-denote the $1-\alpha$ quantile of this conditional distribution \eqref{eq:cond_dist}, it is straightforward to show that
-\begin{equation}
-\label{eq:cond_set}
-     C_{cond}(X) = \{\eta : \eta > X_{W} - q_{1-\alpha}(W, X_{-W}, \eta)  \} 
-\end{equation}
-is a $1-\alpha$ confidence region for $\mu_{W}$ that is valid  conditional on $W$ and  $X_{-W}$:
-\begin{equation*}
-    P_{\mu}( \mu_{W} \in C_{cond}(X) | W, X_{-W})  = P_{\mu}( X_W - \mu_W < q_{1-\alpha}(W, X_{-W}, \mu_{W}) |W, X_W) = 1-\alpha.
-\end{equation*}
-Since $\eta$ appears on both sides of the membership condition in \eqref{eq:cond_set}, it is not clear that $C_{cond}(X)$ actually provides a lower bound for $\mu_{W}$. We will see, however, that we can rewrite $C_{cond}(X)$ as 
-\begin{equation}
-\label{eq:cond_lcb}
-     C_{cond}(X) = \{\eta : \eta > X_{W} - L(X_W - X_R)  \}. 
-\end{equation}
-where $L: \R \rightarrow \R$ is a complicated ``length'' function that determines the distance from the winner $X_W$ to the lower confidence bound. We will de-mistify $L(\cdot)$ in the next sub-section. For now, we provide a plot of it in the middle panel of \Cref{fig:lcb}.
-
-As can be seen in \Cref{fig:lcb}, the conditional LCB has very interesting behavior. In some situations, it indeed seems to avoid the curse of dimensionality. If the gap between $X_W$ and $X_R$ is large, then the conditional LCB for $\mu_W$ will be roughly $X_{W} - z_{1-\alpha}$, i.e, what we expect in a one-dimensional inference problem. But the cost of using the conditional approach can be tremendous. As the runner-up gets close to the winner, the conditional LCB goes quickly to $-\infty$ and can give much worse inferences than the classical approach. For example, if the runner-up is within just one standard deviation of the winner, we get inferences similar to those in the $n = 100$ dimensional classical problem. 
-
-Compared to the classical approach, which provides a lower bound that is a fixed distance from the winner, the conditional approach is much harder to interpret. Its quality depends on a somewhat opaque relationship between the runner-up and the winner. How separated does the winner need to be from the runner-up for the conditional approach to be useful? And how close can the winner and runner-up be before the classical approach is better? We shed light on these questions by rewriting the conditional procedure in terms of p-values. 
-
-\subsubsection{The Conditional LCB with p-Values}
-
-As we did for the classical LCB, imagine rejecting the winning null $H^{\mu_0}_{0, W}: \mu_{W} \leq \mu_0$ when the conditional LCB is at least $\mu_0$. Again, we will check this condition by examining the p-values $p^{\mu_0}_i = 1- \Phi(X_i - \mu_0)$. To be more concrete, we will assume $\alpha=0.05$ from now onwards. 
-
-In contrast to the classical LCB, the conditional LCB rejects $H^{\mu_0}_0$ when the winning (smallest) p-value $p^{\mu_0}_{(1)}$ is small relative to the runner-up (second smallest) p-value $p^{\mu_0}_{(2)}$. Particularly, it rejects when $p^{\mu_0}_{(1)} \leq \alpha p^{\mu_0}_{(2)}$. We can therefore write the conditional LCB \eqref{eq:cond_set}, which is composed of all the $\mu_0$ for which we fail to reject $H_{0, W}^{\mu_0}$, as  
-\begin{equation}
-\label{eq:cond_set_p_val}
-    C_{cond}(X) = \{ \mu_0 \in \R:  p^{\mu_0}_{(1)} >  \alpha p^{\mu_0}_{(2)} \}. 
-\end{equation}
-Derivations verifying these facts can be found in \Cref{sec:cond_appdx}. 
-
 
 \begin{figure}[]
     \centering
@@ -513,123 +372,140 @@ Derivations verifying these facts can be found in \Cref{sec:cond_appdx}.
     \label{fig:tail_prob}
 \end{figure}
 
-From \eqref{eq:cond_set_p_val} we get a clear interpretation of the length function $L(\cdot)$ from \eqref{eq:cond_lcb}. The conditional LCB stretches all the way back to the mean $\mu_0$ under which it is $1/\alpha = 20$ times less likely to see something as extreme as the winner than something as extreme as the runner-up! It is not hard to show (see \Cref{sec:gap_appdx}) that the distance between $X_W$ and the conditional LCB is determined solely by the gap between $X_W$ and $X_R$. If the winner and runner-up are very close, we will need $\mu_0$ to be very far back. Thanks to the decay of the Gaussian tail, however, we can always find such a mean if we go far back enough. \Cref{fig:tail_prob} provides an illustration. 
+In this sub-section we discuss \cite{Fithian2017}'s conditional approach for performing inference on winners. This conditional approach turns out to be highly related to the testing procedure that we derived in \Cref{exm:winner}. 
 
-As we have already seen in \Cref{exm:winner}, when working with independent and selectively dominant p-values, rejecting the winning null when the smallest p-value is at most $\alpha$ times the second smallest p-value is an error controlling procedure. Equipped with our selective dominance machinery, the computations in \Cref{exm:winner} were quite straightforward. In place of the previous sub-section's computations, it would have been much easier to justify our conditional LCB as an inversion of \Cref{exm:winner}'s test for the winner. For completeness, we restate the result from \Cref{exm:winner} in \Cref{thm:cond}. 
+\begin{corollary}[Testing the winner]
+    \label{cor:cond}
+    Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$, and let $W$ be the index of the smallest p-value. Rejecting $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ controls Type I error at level $\alpha$ conditionally on $W$, and therefore also marginally. 
+\end{corollary}
 
-\begin{theorem}[Testing the winner]
-    \label{thm:cond}
-    Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$, and let $W$ be the index of the smallest p-value. Rejecting $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ controls Type I error at level $\alpha$ conditionally on $W$, and therefore also marginally. The same is thus true for rejecting the global null $\cap_{i=1}^n H_{0, i}$ when $p_{(1)} \leq \alpha p_{(2)}$. 
-\end{theorem}
+Unlike Sidak's simultaneous approach, which rejects the winning null when the smallest p-value is small in absolute terms, the conditional approach rejects the winning null when the smallest p-value is small relative to the second smallest p-value. This procedure is strange, but fairly easy to interpret: we reject the winning null when the most extreme observation is $1/\alpha = 10$ more extreme under its null than the second most extreme observation. This can be quite a stringent requirement! 
 
-Once written in terms of p-values, its easy to see the merits and pitfalls of the conditional approach mathematically. If all the p-values except the smallest provide essentially no evidence against the null (i.e, the winner is well separated), then $p_{(2)} \approx 1$ and we reject when $p_{(1)} < \alpha$, the same p-value cutoff as a one-dimensional problem. On the other hand, if even just one other p-value provides a similar amount of evidence against the null as the smallest p-value, then then $p_{(2)} \approx p_{(1)}$ and we will never reject because $p_{(1)} \not < \alpha p_{(1)} \approx \alpha p_{(2)}$. In general, the conditional approach only makes a discovery if the most extreme observation is $1/\alpha = 20$ more extreme under the null than the second most extreme observation. This can be quite a stringent requirement!  
+Once written in terms of p-values, its easy to mathematically see the merits and pitfalls of the conditional approach. If all the p-values except the smallest provide essentially no evidence against the null,  then $p_{(2)} \approx 1$ and we reject when $p_{(1)} < \alpha$, the same p-value cutoff as a one-dimensional problem. On the other hand, if even just one other p-value provides a similar amount of evidence against the null as the smallest p-value, then then $p_{(2)} \approx p_{(1)}$ and we will never reject because $p_{(1)} \not < \alpha p_{(1)} \approx \alpha p_{(2)}$.
 
-The p-value viewpoint also makes it clear that the conditional approach can only outperform the classical one when some null p-values are conservative. In our Gaussian problem, the p-value for $H^{\mu_0}_{0, i}: \mu_i \leq \mu_0$ is conservative when $\mu_i \ll \mu_0$. We give a heuristic argument here, and a more formal statement in \Cref{sec:beta_dist_appdx}. Suppose one of our p-values $p_1$ is a very strong signal (i.e., $\mu_1 \gg \mu_0$) but the remaining p-values $p_2, \dots, p_n$ are non-conservative nulls (i.e, $\mu_2, \dots, \mu_n = \mu_0$). Our conditional procedure will reject when our smallest p-value, likely $p_1$, is less than $\alpha$ times the minimum of $p_2, \dots, p_n$, which are $n-1$ independent uniform random variables that have a minimum of $1/n$ on average. Thus, roughly speaking, the conditional approach also rejects when $p_{(1)}$ is less than $\alpha/n \approx \alpha_n$, which is no better than Sidak's. 
+The p-value viewpoint also makes it clear that the conditional approach can only outperform the simultaneous approach when some null p-values are conservative (i.e., they are super-uniform). We give a heuristic argument here, and a more formal statement in \Cref{sec:beta_dist_appdx}. Suppose one of our p-values $p_1$ is a very strong signal (so it is very small with high probability) but the remaining p-values $p_2, \dots, p_n$ are null p-values that are uniform (i.e., they are not conservative). Our conditional procedure will reject when our smallest p-value, likely $p_1$, is less than $\alpha$ times the smallest of $p_2, \dots, p_n$. The minimum of these $n-1$ uniform p-values is $1/n$ on average. Hence, roughly speaking, the conditional approach also rejects when $p_{(1)}$ is less than $\alpha/n$, which is essentially the same as Sidak's simultaneous approach when $n$ is large. 
 
-Like was the case for our classical procedure, we can make more discoveries via the conditional approach by closing \Cref{thm:cond}'s global null test. Although the resulting procedure is a bit strange, it is interesting that \Cref{thm:cond}'s global null test admits a tractable closure. 
+%In \Cref{fig:sim_results} we imagine observing independent Gaussian data $X_i \sim N(\mu_i, 1)$ and trying to verify the existence of a positive mean by testing the nulls $H^0_{0, i} : \mu \leq 0 $. The simulations affirm that the conditional method performs comparably to Sidak when no nulls are conservative and there is one strong signal, better when some nulls are conservative and there is one strong signal, and poorly when there are multiple strong signals. 
+
+\subsubsection{Confidence regions for the winner}
+
+In parametric problems, we can invert \Cref{cor:cond}'s test to get selective confidence intervals for the winning parameter. Consider observing independent data $X_i \sim P_{\theta_i}$ from an MLR family $P_{\theta}$ parametrized by $\theta \in \R$. Let $p_i^{\theta_0}$ (which is a function of $X_i$) be the UMP p-value for testing the null $H_0 : \theta_i \leq \theta_0$. Details regarding these p-values can be found in \Cref{sec:one_sided_mlr_appdx}. We can define the winner $W = \argmin_{j \in [n]} p_j^{\theta_0}$ to be the index of the smallest and most promising p-value. This winning index will be the same irrespsective of $\theta_0$  \footnote{If we use the same auxiliary randomness to compute $p_i^{\theta_0}$ for every $\theta_0$, then one index will result in the smallest p-value for every $\theta_0$ and $W$ is well-defined. The discussion in \Cref{sec:one_sided_mlr_appdx} implies that this will be the case. }. By inverting \Cref{cor:cond}'s test, we get an LCB
+
+\begin{equation}
+    \label{eq:winning_lcb}
+    \{\theta_0 : p^{\theta_0}_{(1)}/p^{\theta_0}_{(2)} > \alpha  \}
+\end{equation}
+for the winning parameter $\theta_W$ that holds conditionally on $W$ with probability exactly $1-\alpha$:
+\begin{equation*}
+    P( \theta_W \in\{\theta_0 : p^{\theta_0}_{(1)}/p^{\theta_0}_{(2)} > \alpha  \} |W ) = 1-\alpha.
+\end{equation*}
+The fact that the confidence region \eqref{eq:winning_lcb} is actually an LCB is a consequence of the selective p-value $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ being monotone non-decreasing in null parameter $\theta_0$. \Cref{sec:one_sided_monotone_appdx} provides general conditions under which selective p-values like $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ are monotone in the null parameter. We show these conditions apply to the winner problem, and also argue that \eqref{eq:winning_lcb} has exact $1-\alpha$ coverage in \Cref{sec:winner_appdx}. We also show in \Cref{sec:winner_appdx} how to invert \Cref{cor:cond}'s test to get a CI (rather than LCB), and that both our CI and LCB match \cite{Fithian2017}'s approach in the Gaussian case. 
+
+Writing the conditional inference in terms of p-values helps us better understand \cite{Fithian2017}'s conditional LCB \eqref{eq:winning_lcb}. In particular, we learn that \Cref{fig:lcb}'s LCB stretches back exactly to the $\hat{\theta}$ under which it is $1/\alpha = 10$ times less likely to see something as extreme as the winner than something as extreme as the runner-up. \Cref{fig:tail_prob} provides an illustration for the Gaussian case. It demonstrates why why the LCB diverges to $-\infty$ as the winner and runner-up get closer. If the winner and runner-up are very close, we will need the LCB $\hat{\mu}$ to be very far back for the winner to be ten times more extreme than the runner-up. Thanks to the decay of the Gaussian tail, however, we can always find such a mean if we go far back enough. 
+
+For non-Gaussian data, the amount the conditional LCB \eqref{eq:winning_lcb} stretches back depends on the tail decay of $P_{\theta}$. The faster the tail decays, the larger the first $\hat{\theta}$ for which the winner is $1/\alpha = 10$ times as extreme as the runner-up. Seeing as the Gaussian distribution, whose tail shrinks as $e^{-x^2}$, still often results in very low lower bounds, we should expect that the distance from the winning observation to the lower bound will often be quite large in many settings.  
+
+As an example, consider observing independent exponential random variables $X_i \sim \text{Exp}(\lambda_i)$. The exponential distribution has a tail $e^{-x}$ that decays fast, but not as fast as the Gaussian tail. Crucially, it also has a parameter space $\lambda \in (0, \infty)$ that is bounded below. The exponential distribution has an MLR in $T(x) = 1/x$, so the UMP test for $H^{\lambda_0}_{0, i}: \lambda_i \leq \lambda_0$ uses a p-value $p^{\lambda_0}_i$ that rejects when $X_i$ is small. It turns out that 
+\begin{equation*}
+    \lim_{\lambda^0 \downarrow 0} p^{\lambda_0}_{(1)}/p^{\lambda_0}_{(2)} = X_{(1)}/X_{(2)},
+\end{equation*}   
+so the conditional LCB for the winning parameter $\lambda_W$,
+\begin{equation}
+\label{eq:exp_winning_lcb}
+ \{\lambda_0 : p^{\lambda_0}_{(1)}/p^{\lambda_0}_{(2)}  > \alpha\},
+\end{equation}
+is vacuous whenever $X_{(1)}/X_{(2)} > \alpha$, i.e., with positive probability the confidence region \eqref{eq:winning_lcb} spans the whole parameter space $(0, \infty)$. A careful derviation of this test and result can be found in \Cref{sec:exponential_winner_appdx}. 
+
+The failure of the conditional LCB \eqref{eq:exp_winning_lcb} often manifests in real data examples. On a dataset of car engine failure times \citep{Molotaliev}, we find that the conditional LCB \eqref{eq:exp_winning_lcb} is always vacuous. The dataset has the failure times of one-hundred car engines, which we model as independent exponentials. Taking a random subsample of just $n=2$ failure times, the LCB \eqref{eq:winning_lcb} does inference on the worse of the two engines, but always gives a vacuous lower bound of zero. In contrast, the simultaneous approach always gives a non-vacuous lower bound. \Cref{fig:car_engine} depicts the results.  
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{car_eng.pdf} % 
+    \caption{Over $B=1000$ different subsamples of $n=2$ failure times from the dataset \cite{Molotaliev}, the distribution of the LCB for the ``winning'' parameter resulting from the conditional and simulatneous approaches. The conditional LCB is always vacuous.}
+    \label{fig:car_engine}
+\end{figure}
+
+\subsubsection{More discoveries via the closure principle}
+
+Once written in terms of p-values, it is natural to treat \Cref{cor:cond}'s test as a test of the global null and try to close it (as in \cite{Marcus}). Closing a global null test precludes us from making confidence regions, but it allows us to make more individual discoveries. Closed global null testing procedures are often computationally intractable to implement, so it is interesting that \Cref{cor:cond}'s global null test admits a tractable closure.  
 
 \begin{corollary}[Closed testing for winners]
     \label{cor:cond_closed}
-    Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$. As shorthand, let $H_{0, (j)}$ denote the null corresponding to the $j$th smallest p-value and define $p_{(n+1)} = 1$.  Rejecting the null hypotheses $H_{0, (k)}$ for which $p_{(j)} \leq \alpha p_{(j-1)} $ for every $j \leq k$ controls FWER error at level $\alpha$. 
+    Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$. As shorthand, let $H_{0, (j)}$ denote the null corresponding to the $j$th smallest p-value (ties broken randomly) and define $p_{(n+1)} = 1$.  Rejecting the null hypotheses $H_{0, (k)}$ for which $p_{(j)} \leq \alpha p_{(j-1)} $ for every $j \leq k$ controls FWER error at level $\alpha$. 
 \end{corollary}
 
-This closed procedure is also best understood sequentially. We reject $H_{0, (1)}$ if $p_{(1)} \leq \alpha p_{(2)}$. Then, if we rejected  $H_{0, (1)}$, we reject $H_{0, (2)}$ if $p_{(2)} \leq \alpha p_{(3)}$, so on and so forth until we fail to reject.  
-
-\subsubsection{Generalizing to MLR Families}
-
-Written in terms of p-values, the conditional LCB  \eqref{eq:cond_set_p_val} also easily generalizes to any MLR family. Suppose $P_{\theta}$ is an MLR family and we observe $n$ independent samples $X_i \sim P_{\theta_i}$ where the $\theta_i$ are unknown. Let $p^{\theta_0}_i$ be the UMP p-value for testing $H_{0, i} : \theta_i \leq  \theta_0$ as in \eqref{eq:ump_mlr}.  Because the auxiliary randomness we use in \eqref{eq:ump_mlr} is shared across different $\theta_0$, the index of the smallest p-value will be the same for every $\theta_0$. Hence, we can unambigously define the winning index $W = \argmin_{i \in [n]} p^{\theta_0}_i$ to be the index of the smallest p-value.
-
-\Cref{cor:cond_mlr} tells us how to make an LCB for the winning parameter $\theta_W$ that is valid conditioanlly on $W$. 
-
-\begin{corollary}[Conditional inference for MLR families ]
-    \label{cor:cond_mlr}
-    Let $P_{\theta}$ be a MLR family parameterized by $\theta \in \R$. If $X_i \sim P_{\theta_i}$ are $n$ independent samples and $p^{\theta_0}_i$ is the UMP p-value \eqref{eq:ump_mlr} for testing $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0 $, then 
-    \begin{equation}
-    \label{eq:cond_lcb_mlr}
-    \{\theta_0 :  p^{\theta_0}_{(1)} > \alpha p^{\theta_0}_{(2)}\} 
-    \end{equation}
-    is an LCB for $\theta_W$ that holds conditionally on $W$ (and therefore also marginally) with probability exactly $1-\alpha$. 
-\end{corollary}
-
-The proof of \Cref{cor:cond_mlr} is essentially that the proposed LCB results from inverting the test of the winning null $H^{\theta_0}_{0, W}: \theta_W \leq \theta_0$ from \Cref{thm:cond}. 
-
-We point out that the distance from the winning value $X_W$ to the conditional LCB \eqref{eq:cond_lcb_mlr} will depend on quickly the tail of $P_{\theta}$ decays. If the the tail decays faster, then the first $\theta_0$ for which the largest observation is $1/\alpha = 20$ times as extreme as the second largest observation will be larger. Seeing as the Gaussian distribution, which has an exponentially decaying tail, still often results in very low lower bounds, we should expect that this distance can often be quite large. 
+As is often the case for closed procedures, \Cref{cor:cond_closed} procedure is best understood sequentially. We reject $H_{0, (1)}$ if $p_{(1)} \leq \alpha p_{(2)}$. Then, if we rejected  $H_{0, (1)}$, we reject $H_{0, (2)}$ if $p_{(2)} \leq \alpha p_{(3)}$, so on and so forth until we fail to reject. 
 
 \subsection{Hybrid Inference}
 
-Lastly we provide the same analysis for hybird inference, which tries to balance the benefits of the classical and conditional approaches. 
+Hybrid inference, originally proposed by \cite{Andrews2023}, is an inference on winners procedure that attempts to balance the benefits of the simultaneous and conditional approaches. It is a very elegant idea, but it currently only applies to Gaussian data and can be difficult to parse and implement. Using our selective dominance framework, we give a simpler exposition of hybrid inference that enables its application in more general settings, provided that the data is independent. As a bonus, our new procedure is very easy to undestand and implement.
 
-\subsubsection{The Hybrid LCB}
 
-Like before, we want to make a LCB for the mean $\mu_{W}$ of the winner $W = \argmax_{i \in [n]} X_i$ in the case of independent Gaussian data $X \sim N(\mu, I_n)$ with unknown mean $\mu \in \R^n$. 
+\subsubsection{Hybrid Test for the Winner}
 
-The core idea behind hybrid inference is giving a confidence region $C_{hyb}(X)$ that has a very high probability of containing $\mu_W$ on a ``good'' event $G_{\mu}$. Oddly, this good event depends on the unknown parameter. For some $\beta < \alpha$, we need $G_{\mu}$ to happen with probability at least $1-\beta$. Then, if we ensure that $C_{hyb}(X)$ has at least $(1-\alpha)/(1-\beta)$ coverage on the $G_{\mu}$, it will achieve $1-\alpha$ coverage overall:
-\begin{align*}
-       P_{\mu}(\mu_{W} \in C_{hyb}(X)) &= P_{\mu}(G_{\mu})P_{\mu}(\mu_{W} \in C_{hyb}(X) | G_{\mu}) + P_{\mu}(G_{\mu}^c)P_{\mu}(\mu_{W} \in C_{hyb}(X) | G_{\mu}^c)\\
-       &\geq (1-\beta)\left(\frac{1-\alpha}{1-\beta} \right)\\
-       &=1-\alpha.
-\end{align*}
+\Cref{cor:hyb} presents our hybrid testing procedure. We provide a proof sketch and defer a detailed proof to \Cref{sec:...}. 
 
-Considering some $\beta < \alpha$ and defining $\beta_n = 1 - (1-\beta)^{\frac{1}{n}}$ as in \eqref{eq:bonf_quantile}, our good event is that the confidence lower bounds $X_i -  z_{1-\beta_n}$ for the means $\mu_i$ all simultaneously hold:
-\begin{equation*}
-    G_{\mu} = \{X_i < \mu_i + z_{1-\beta_n} \text{ for all } i \in [n] \}.
-\end{equation*}
-From our earlier reasoning, we know that this good event happens with probability exactly $1-\beta$. 
-
-Now, we can make a confidence region that contains the mean with probability at least $(1-\alpha)/(1-\beta)$ on this good event. If we condition on $G_{\mu}$ along with $W$ and $X_{-W}$, the deviation of $X_W$ from $\mu_W$ has a truncated normal distribution like \eqref{eq:cond_dist} that is further truncated from above:
-\begin{equation}
-    \label{eq:hyb_dist}
-    X_W - \mu_W \mid W, X_{-W}, G_{\mu} \sim TN(0, 1, X_{R} - \mu_{W}, z_{1-\beta_n} ).
-\end{equation}
-On the good event $G_{\mu}$, we always have that $X_R - \mu_{W} < X_W - \mu_{W} < z_{1-\beta_n}$, so the lower truncation is indeed below the upper one. Let
-\begin{equation}
-\label{eq:hyb_quantile}
-    q^{h}_{\frac{1-\alpha}{1-\beta}}(w, x_{-w}, \mu_w) = \text{Quantile}_{\mu}\left(\frac{1-\alpha}{1-\beta}, X_W -  \mu_{W} \mid W=w, X_{-w} = x_{-w}, G_{\mu}\right)
-\end{equation}
-denote the $(1-\alpha)/(1-\beta)$ quantile of the conditional distribution \eqref{eq:hyb_dist}. Per the prior discussion, the function \eqref{eq:hyb_quantile} only makes sense if the largest value in $x_{-w}$ at most $z_{1-\beta_n}$, and we will take the quantile \eqref{eq:hyb_quantile} to be $-\infty$ if it is not. It is then straightforward to show that
-\begin{equation}
-\label{eq:hyb_set}
-     C_{hyb}(X) = \{\eta : \eta > X_{W} - q^{h}_{\frac{1-\alpha}{1-\beta}}(W, X_{-W}, \eta)  \} 
-\end{equation}
-contains $\mu_{W}$ with high probability conditional on $W$, $X_{-W}$, and the event $G_{\mu}$:
-\begin{equation*}
-    P_{\mu}( \mu_{W} \in C_{hyb}(X) | W, X_{-W}, G_{\mu})  = P_{\mu}( X_W - \mu_W < q^{h}_{\frac{1-\alpha}{1-\beta}}(W, X_{-W}, \mu_{W}) |W, X_W, G_{\mu}) = \frac{1-\alpha}{1-\beta}.
-\end{equation*}
-Based on our earlier discussions, this is sufficient to imply that $C_{hyb}(X)$ from $\eqref{eq:hyb_set}$ will contain $\mu_{W}$ with probability at least $1-\alpha$. 
-
-As was the case for our conditional confidence region \eqref{eq:cond_set}, the hybrid confidence region \eqref{eq:hyb_set} is a little hard to interpret at first. We will get a clearer sense of its benefits when we write it in terms of p-values. As a teaser, the rightmost panel of \Cref{fig:lcb} plots distance between the winner $X_W$ and the hybrid LCB for a $n=10$ dimensional problem. We argue (using our upcoming p-value viewpoint) in \Cref{sec:hybrid_gap_appdx} that, once we fix $\alpha$ and $\beta$, this distance is a function of just the gap $X_W - X_R$ between the winner and runner up and the problem dimension $n$. 
-
-\subsubsection{The Hybrid LCB with p-Values}
-
-As we did for the conditional LCB, imagine rejecting the winning null $H^{\mu_0}_{0, W}: \mu_{W} \leq \mu_0$ when the hybrid LCB is at least $\mu_0$. Again, we will check this condition by examining the p-values $p^{\mu_0}_i = 1- \Phi(X_i - \mu_0)$.  
-
-It turns out that the hybrid LCB allows us to reject $H_{0, W}^{\mu_0}$ when the winning (smallest) p-value is smaller than a mixture of the runner-up (second smallest) p-value and the level $\beta$ classical cutoff:
-\begin{equation}
-\label{eq:hybrid_cutoff}
-    p^{\mu_0}_{(1)}\leq \frac{\alpha-\beta}{1-\beta}p^{\mu_0}_{(2)}  + \left(1 - \frac{\alpha - \beta}{1 - \beta}\right)\beta_n
-\end{equation}
-Hence, we can write the hybrid LCB \eqref{eq:hyb_set} as 
-\begin{equation}
-    \label{eq:hyb_set_p_val}
-        C_{hyb}(X) = \left\{ \mu_0 \in \R:  p^{\mu_0}_{(1)} > \frac{\alpha-\beta}{1-\beta}p^{\mu_0}_{(2)}  + \left(1 - \frac{\alpha - \beta}{1 - \beta}\right) \beta_n \right\}. 
-\end{equation}
-The derivations needed to show this can be found in \Cref{sec:hybrid_appdx}. 
-
-\Cref{thm:hyb} tells us that, when our p-values are independent and selectively dominant, rejecting the most promising null according the hybrid cutoff \eqref{eq:hybrid_cutoff} is a Type I error controlling procedure. The derivations required to show this are similar to those in \Cref{exm:winner}, but a bit more involved, so we have moved the proof to the appendix. 
-
-\begin{theorem}[Hybrid test for the winner]
-    \label{thm:hyb}
+\begin{corollary}[Hybrid test for the winner]
+    \label{cor:hyb}
     Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$, let $W$ be the index of the smallest p-value, and fix some $\beta < \alpha$. Rejecting $H_{0, W}$ when 
     \begin{equation}
         \label{eq:hybrid_cutoff_thm}
         p_{(1)} \leq \frac{\alpha-\beta}{1-\beta}p_{(2)}  + \left(1 - \frac{\alpha - \beta}{1 - \beta}\right) \beta_n
     \end{equation} 
     controls Type I error at level $\alpha$. The same is thus true for rejecting the global null $\cap_{i=1}^n H_{0, i}$ whenever \eqref{eq:hybrid_cutoff_thm} holds.   
-\end{theorem}
+\end{corollary}
 
-Once written in terms of p-values, it is much easier to see how the hybrid approach balances the benefits of the classical and conditional approaches.  When the other p-values provide essentially no evidence against the null (i.e., $p_{(2)} \approx 1$), hybrid rejects when $p_{(1)}$ is less than a cutoff that is bounded away from zero. Hence, when the winner is well seperated, the hybrid approach avoids the curse of dimensionality, at least on par with the conditional procedure run at level  $(1-\alpha)/(1-\beta)$. On the other hand, even if some other p-value provides as much evidence against the null as the smallest, hybrid still rejects whenever the level $\beta$ classical LCB does. This is because when $p_{(1)} \leq \beta_n$, the hybrid cutoff is a mixture of two things that are larger than $p_{(1)}$, and we will reject. When we set $\beta = 0$ then the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} becomes $\alpha p_{(2)}$ and we recover the conditional method, and if we set $\beta=\alpha$ it becomes $\alpha_n$ and we recover the classical method. 
+\begin{proof}[Proof sketch]    
+    Let $B$ be the event that the smallest p-value comes from a null and is at most $\beta_n$. We know from Sidak's procedure that $P(B) \leq \beta$. Hence, on the complementary event $B^c$, which has probability $\geq 1-\beta$, it suffices to ensure that we fail to falsely reject $H_{0, W}$ with probability at least $(1-\alpha)/(1-\beta)$. Supposing $H_{0, j}$ is true, imagine testing $H_{0, j}$ using $p_j$ only when $B^c$ happens and $W=j$. This is exactly like selecting $p_j$ to use for inference when it is between $\beta_n$ and $\max_{i \neq j} p_i $. For this selection, \Cref{thm:adjustment}'s selective p-value is given by $(p_j - \beta_n)/(\max_{i \neq j} p_i  - \beta_n)$, so we can ensure that we fail to reject $H_{0, j}$ with probability at least $(1-\alpha)/(1-\beta)$ if we fail to reject whenever
+    \begin{equation*}
+        \frac{p_j - \beta_n}{\max_{i \neq j} p_i  - \beta_n} > 1 - \frac{1-\alpha}{1-\beta} = \frac{\alpha - \beta}{1 - \beta}.
+    \end{equation*}
+    Our hybrid inference procedure turns out to fail to reject exactly in this case. 
+\end{proof}
 
-Interestingly, the hybrid global null test from \Cref{thm:hyb} also admits a tractable closure that allows us to make more discoveries. 
+
+Written in terms of p-values, it is easy to see how the hybrid approach balances the benefits of the simultaneous and conditional approaches. It will reject both when the smallest p-value is small in absolute terms or when it small relative to the second smallest p-value. When the other p-values provide essentially no evidence against the null (i.e., $p_{(2)} \approx 1$), hybrid rejects when $p_{(1)}$ is less than a cutoff that is bounded away from zero. In this situation, it performs at least on par with the conditional procedure run at level $(1-\alpha)/(1-\beta)$. On the other hand, even if some other p-value provides as much evidence against the null as the smallest, hybrid still rejects whenever the level $\beta$ simultaneous approach does. This is because when $p_{(1)} \leq \beta_n$, the hybrid cutoff is a mixture of two things that are larger than $p_{(1)}$, and we will reject. 
+
+The parameter $\beta$ allows hybrid inference to interpolate between the simultaneous and conditional approaches. When we set $\beta = 0$ then the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} becomes $\alpha p_{(2)}$ and we recover the conditional method, and if we set $\beta=\alpha$ it becomes $\alpha_n$ and we recover the classical method. 
+
+\subsubsection{Confidence Regions}
+
+Recalling \Cref{exm:confidence_region}'s setting where we had independent samples from an MLR family, we can invert \Cref{cor:hyb}'s test to get confidence lower bounds 
+\begin{equation}
+    \left\{ \theta_0 \in \R:  \frac{p^{\theta_0}_{(1)} - \beta_n}{p^{\theta_0}_{(2)} - \beta_n} > \frac{\alpha - \beta}{1 - \beta} \right\},
+\end{equation}
+as well as confidence intervals, 
+
+\begin{equation}
+    \left\{ \theta_0 \in \R:   1 - \frac{\alpha - \beta}{2(1- \beta)}> \frac{p^{\theta_0}_{(1)} - \beta_n}{p^{\theta_0}_{(2)} - \beta_n} > \frac{\alpha - \beta}{2(1 - \beta)} \right\}.
+\end{equation}
+
+In hybrid inference, the selection event actually does depend on the specific $\theta_0$ of the nulls $H^{\theta_0}_{0, i}: \theta_i \leq \theta_0$ that we are testing. Thus our discussion from \Cref{sec:...} does not apply, and it is not immediate that these confidence regions are actually lower bounds and intervals. In \Cref{sec:hybrid_monotone_appdx}, however, we use the monotonicity of the conditional selective p-values to show that this is indeed the case. 
+
+
+
+\subsubsection{Comparison to the Union Bound}
+
+Another way to balance the benefits of the conditional and simultaneous approaches would be to apply a union bound. Naively, we can reject the winning null whenever the level $\beta$ simultaneous approach rejects or the level $\alpha -\beta$ conditional approach rejects, i.e., whenever
+\begin{equation}
+    \label{eq:union_bound_cutoff}
+    p_{(1)} \leq \max\{(\alpha - \beta) p_{(2)}, \beta_n\}.
+\end{equation}
+The union bound harshly switches between the simultaneous and conditional approaches, whereas the hybrid approach smoothly interpolates between them. This is illustrated in \Cref{fig:lcb}, which compares the LCBs resulting from the hybrid versus union bound approaches in the $n=10$ dimensional  Gaussian case.  
+
+Written in terms of p-values, we easily see that the hybrid approach dominates the union bound approach. Both methods reject when $p_{(1)} \leq \beta_n$, and when $p_{(1)} > \beta_n$  the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} is clearly strictly larger than the union bound cutoff \eqref{eq:union_bound_cutoff}, meaning hybrid will reject whenever the union bound does and more \footnote{the authors \cite{Andrews2023} only point out that hybrid dominates the level $\beta$ classical approach, which is weaker than our statement}. 
+
+
+There are two reasons hybrid inference out performs the union bound. First, union bounds are not tight and waste some of the Type I error budget. This is captured by the fact that the coefficient on $p_{(2)}$ is larger in the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} than the union bound cutoff \eqref{eq:union_bound_cutoff}.  Second, conditioning on the ``good event'' in the hybrid approach causes an upper truncation in \eqref{eq:hyb_dist}, which results in $\left(1 - \frac{\alpha - \beta}{1 - \beta}\right)\beta_n$ being added to the cutoff \footnote{the authors \cite{Andrews2023} mention these differences between the union bound and hybrid inference in a footnote, but they only point out that hybrid dominates the level $\beta$ classical approach, which is weaker than our statement.}.
+
+Practically speaking, however, hybrid inference typically results in very little improvement over the union bound. This is already somewhat evident in \Cref{fig:lcb}'s rightmost panel, where we see that the hybrid LCB and union bound LCB are very similar. Even when the hybrid cutoff is larger than that of the union bound, it is provably not much larger. We detail why in \Cref{sec:hybrid_sim_appdx}, where we also run a number of simulations comparing the power of the hybrid and union bound approaches. We are hard pressed to find a setting where the hybrid approach results in a meaningful power gain. 
+
+Hence, we suggest adopting the view that hybrid inference's main contribution is squeezing out the little power that is left from the union bound approach. As it is not computationally more expensive and our p-value viewpoint makes it equally easy to implement, we feel it is still worth using. 
+
+
+\subsubsection{Applying the Closure Principal}
+
+
+Like was true in the conditional case, treating \Cref{cor:hyb}'s test as a global null test and closing it results in a tractable procedure that allows us to make more discoveries. As we allow $\beta$ to range from $0$ to $\alpha$, this closed procedure interpolates between \Cref{cor:cond_closed}'s closed procedure and the Holm-Sidak procedure, which is the closure of Sidak's global null test. 
 
 \begin{corollary}[Closed hybrid testing for winners]
     \label{cor:hyb_closed}
@@ -640,81 +516,26 @@ Interestingly, the hybrid global null test from \Cref{thm:hyb} also admits a tra
     for every $j \leq k$ controls FWER error at level $\alpha$. 
 \end{corollary}
 
-This closed procedure is also best understood sequentially. We reject $H_{0, (1)}$ if $p_{(1)} \leq \frac{\alpha - \beta}{1-\beta} p_{(2)} + (1 - \frac{\alpha - \beta}{1-\beta}) \beta_n$. Then, if we rejected $H_{0, (1)}$, we reject $H_{0, (2)}$ if $p_{(2)} \leq  \frac{\alpha - \beta}{1-\beta} p_{(3)} + (1 - \frac{\alpha -\beta }{1-\beta}) \beta_{n-1}$, so on and so forth until we fail to reject.  
-
-
-\subsubsection{Comparison to Union Bound}
-
-In contrast to hybrid inference, a naive union bound approach rejects the winning null whenever the level $\beta$ classical approach rejects or the level $\alpha -\beta$ conditional approach rejects, i.e., it rejects whenever 
-\begin{equation}
-    \label{eq:union_bound_cutoff}
-    p_{(1)} \leq \max\{(\alpha - \beta) p_{(2)}, \beta_n\}.
-\end{equation}
-The union bound harshly switches between the classical and conditional approaches, whereas the hybrid approach smoothly interpolates between them. This is illustrated in the rightmost panel of \Cref{fig:lcb}, which compares the LCBs resulting from the hybrid versus union bound approaches. 
-
-Written in terms of p-values, we easily see that the hybrid approach dominates the union bound approach. Both methods reject when $p_{(1)} \leq \beta_n$, and when $p_{(1)} > \beta_n$  the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} is clearly strictly larger than the union bound cutoff \eqref{eq:union_bound_cutoff}, meaning hybrid will reject whenever the union bound does and more. There are two reasons hybrid inference out performs the union bound. First, union bounds are not tight and waste some of the Type I error budget. This is captured by the fact that the coefficient on $p_{(2)}$ is larger in the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} than the union bound cutoff \eqref{eq:union_bound_cutoff}.  Second, conditioning on the ``good event'' in the hybrid approach causes an upper truncation in \eqref{eq:hyb_dist}, which results in $\left(1 - \frac{\alpha - \beta}{1 - \beta}\right)\beta_n$ being added to the cutoff \footnote{the authors \cite{Andrews2023} mention these differences between the union bound and hybrid inference in a footnote, but they only point out that hybrid dominates the level $\beta$ classical approach, which is weaker than our statement.}.
-
-Practically speaking, however, hybrid inference typically results in very little improvement over the union bound. This is already somewhat evident in \Cref{fig:lcb}'s rightmost panel, where we see that the hybrid LCB and union bound LCB are very similar. Even when the hybrid cutoff is larger than that of the union bound, it is provably not much larger. We detail why in \Cref{sec:hybrid_sim_appdx}, where we also run a number of simulations comparing the power of the hybrid and union bound approaches. We are hard pressed to find a setting where the hybrid approach results in a meaningful power gain. Hence, we suggest adopting the view that hybrid inference's main contribution is squeezing out the little power that is left from the union bound approach. As it is not computationally more expensive and our p-value viewpoint makes it equally easy to implement, we feel it is still worth using. 
-
-
-\subsubsection{Generalizing to MLR Families}
-
-Now written in terms of p-values, the hybrid LCB for the winning parameter \eqref{eq:hyb_set_p_val} immediately generalizes to any MLR family. Like before, suppose $P_{\theta}$ is an MLR family and we observe $n$ independent samples $X_i \sim P_{\theta_i}$ where the $\theta_i$ are unknown. Again, let $p^{\theta_0}_i$ be the UMP p-value for testing $H_{0, i} : \theta_i \leq  \theta_0$ as in \eqref{eq:ump_mlr} and let $W = \argmin_{i \in [n]} p^{\theta_0}_i$ be the index of the smallest p-value.
-
-\Cref{cor:hyb_mlr} tells us how to make a hybrid LCB for the winning parameter $\theta_W$. For the same reasons as in the Gaussian setting, the hybrid LCB continues to balance the benefits of the conditional and classical approaches in the more general MLR setting. 
-
-\begin{corollary}[Hybrid inference for MLR families ]
-    \label{cor:hyb_mlr}
-    Let $P_{\theta}$ be a MLR family parameterized by $\theta \in \R$ and fix some $\beta < \alpha$. If $X_i \sim P_{\theta_i}$ are $n$ independent samples and $p^{\theta_0}_i$ is the UMP p-value \eqref{eq:ump_mlr} for testing $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0 $, then 
-    \begin{equation}
-            \label{eq:hyb_lcb_mlr}
-            \left\{\theta_0 :  p^{\theta_0}_{(1)} \leq \frac{\alpha-\beta}{1-\beta}p^{\theta_0}_{(2)}  + \left(1 - \frac{\alpha - \beta}{1 - \beta}\right) \beta_n \right\}
-    \end{equation}
-     is an LCB for the winning parameter $\theta_W$ that holds with probability at least $1-\alpha$. 
-\end{corollary}
-
-Again, the proof of \Cref{cor:hyb_mlr} is essentially that the proposed LCB is the inversion of the test of the winning null $H^{\theta_0}_{0, W}: \theta_W \leq \theta_0$ from \Cref{thm:hyb}. 
+This closed procedure is also best understood sequentially. We reject $H_{0, (1)}$ if $p_{(1)} \leq \frac{\alpha - \beta}{1-\beta} p_{(2)} + (1 - \frac{\alpha - \beta}{1-\beta}) \beta_n$. Then, if we rejected $H_{0, (1)}$, we reject $H_{0, (2)}$ if $p_{(2)} \leq  \frac{\alpha - \beta}{1-\beta} p_{(3)} + (1 - \frac{\alpha -\beta }{1-\beta}) \beta_{n-1}$, so on and so forth until we fail to reject. 
 
 
 \section{Rank Verification in Exponential Families}
 \label{sec:rank_verification}
 
-In this section we consider the problem of verifying that that the winning parameter is actually larger than the other parameters, i.e., rather than doing inference on the winning parameter, we do inference on the gap between the winning parameter and the remaining parameters. Mainly, we give a corrected accounting of the seminal work \cite{Hung2019}'s main results in the language of selected dominance. It illustrates how our selective dominance machinery allows us to correctly design fairly intricate statistical procedures.  
+In this section we consider the problem of verifying that that the winning parameter is actually larger than the other parameters, i.e., rather than doing inference on the winning parameter, we do inference on the gap between the winning and remaining parameters. Mainly, we give an account of the seminal work \cite{Hung2019} in our selective dominance framework. We show, however, that \cite{Hung2019} do not correctly handle cases where there can be ties between the winner. This is a subtle point, but it is a mistake that is easy to avoid when using our selective dominance framework.
 
-Our goal is to give a more intuitive derivation and a corrected accounting of how to apply the method when there are ties. For examples of the method's application, of which there are many, we refer the reader to the original article. 
+Overall, the section serves to illustrate how our selective dominance machinery provides a straightforward way to correctly design intricate and counter-intuitive selective procedures. For examples of how one may apply these methods, we refer the reader to the original article \cite{Hung2019}, where there are many. 
 
 \subsection{Warm-up: Rank Verification and Type III Error Control}
 
-To motivate the rank verification problem and shed some light on how it relates to selective dominance, we consider a seemingly unrelated classical statistical question about Type III errors. 
+To motivate the rank verification problem and shed some light on its relationship with selective dominance, we consider a seemingly unrelated classical statistical question about Type III errors. 
 
-A friend of yours tests whether the unknown means of two univariate Gaussian samples, $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, are different. They end up rejecting the null hypothesis $H_0: \mu_1 = \mu_2$ because the two-sided UMPU p-value $1 - \Phi(|X_1 - X_2|)$ is at most $\alpha$. After rejecting, they note $X_1 > X_2$, and claim ``not only am I confident that the two means are different, but they must be different because $\mu_1$ is bigger than $\mu_2$''. Your friend, however, only rejected the null that the means are equal. Can they make a claim about the direction of inequality? This is a quesiton of Type III error, and we can use our selective dominance framework to show that your friends claims are actually statistically valid. 
+A researcher wants to test if the unknown means of two univariate Gaussian samples, $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, are different. They end up rejecting the null hypothesis $H_0: \mu_1 = \mu_2$ because the two-sided p-value $2(1 - \Phi(|X_1 - X_2|))$ they learned in introductory statistics is at most $\alpha$. After rejecting, they note $X_1 > X_2$, and claim ``not only are the two means are different, but they must be different because $\mu_1$ is bigger than $\mu_2$''. Your friend, however, only rejected the null that the means are equal. Can they make a claim about the direction of inequality? This is a quesiton of Type III error, and we can use our selective dominance framework to show that the researcher's claim is actually statistically valid. 
 
-Based on their claim, it seems that what your friend really wants to do is test the one-sided null $H_{0, 1} : \mu_1 \leq \mu_2$ whenever they observe that $X_1 > X_2$, and test the complementary one-sided null $H_{0, 2} : \mu_2 \leq \mu_1$ whenever they observe that $X_2 < X_1$. To test the null $H_{0, j} : \mu_{j} \leq \mu_{-j}$ we normally use the UMP p-value  $1 - \Phi(X_j - X_{-j})$. In your friend's case, however, they only select this p-value to use for inference when they observe that $X_j > X_{-j}$, or equivalently that $p_j < 1/2$. \Cref{exm:rank_verification} illustrates how, using our selective dominance framework, your friend could develop a procedure that delivers valid inferences in spite of this selection.  
+Based on the claim, it seems that what the researcher really wants to do is test the one-sided null $H_{0, 12} : \mu_1 \leq \mu_2$ whenever they observe that $X_1 > X_2$, and test the complementary one-sided null $H_{0, 21} : \mu_2 \leq \mu_1$ whenever they observe that $X_2 < X_1$. To test the null $H_{0, ij} : \mu_i \leq \mu_j$ we normally use the UMP p-value $p_{ij} = 1 - \Phi(X_i - X_j)$. In the researcher's case, however, they only select this p-value to use for inference when they observe that $X_j > X_{-j}$, or equivalently that $p_{ij} < 1/2$. Since the $p_{ij}$ are selectively dominant, \Cref{thm:adjustment} tells us that, when using $p_{ij}$ to test $H_{0, ij}$, they should correct for this selection when $2p_{ij} \leq \alpha \iff p_{ij} \leq \alpha/2$. 
 
-\begin{example}[Rank verification in a simple case]
-\label{exm:rank_verification}
-Suppose that $p$ is a selectively dominant p-value for testing the null $H_0$, but we only choose to test $H_0$ when $p < 1/2$. Applying our framework with the p-value $p$ and selection function $s(x) = I_{x < 1/2}$, \Cref{thm:adjustment} tells us that we control selective Type I error if we reject according to the adjusted p-value from \eqref{eq:adjustment} is $p_{adj} = 2p$:
-\begin{equation}
-    \label{eq:rank_verification_error_control}
-    P_{H_{0}}\left(p_j \leq \frac{\alpha}{2} | S = 1\right) \leq \alpha.
-\end{equation} 
+The procedure we describe above verifies the rank of the winning mean with Type I error control, i.e., it affirms not just that the means are different, but that the mean of the winning observation is the larger of the two. The procedure, which rejects when the smaller of the two one-sided p-valuesis at most $\alpha/2$, is identical to the procedure that rejects when the above two-sided p-value is at most $\alpha$! Hence, for reasons likely unbeknowst to them, the researcher's original claim is indeed statistically valid. We walk through deriving this procedure much more carefully in \Cref{sec:rank_verification_warm_up_appdx}, where we give a treatment whos level of detail is similar to \Cref{exm:winner}
 
-Now, consider data $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, the one-sided nulls $H_{0, j}: \mu_j \leq \mu_{-j}$, and their corresponding selectively dominant p-values $p_j = 1 - \Phi(X_j - X_{-j})$ (selective dominance follows from \Cref{exm:mlr}). Denoting the winner $W = \argmax_{j = 1, 2} X_j$, it is now clear rejecting the data-dependent null $H_{0, W}: \mu_W \leq \mu_{-W}$ when $p_{W} \leq \alpha/2$ maintains Type I error control both conditionally on $W$ and marginally. If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is identical to the event $p_j < 1/2$, and hence is the same event as selecting $p_j$ for inference in \eqref{eq:rank_verification_error_control}. Therefore, 
-\begin{align*}
-    P(\text{falsely reject } H_{0, W} \mid W = j) &= P\left(p_W \leq \frac{\alpha}{2}  \mid W = j\right)\\
-    &= P\left(p_j \leq \frac{\alpha}{2}  \mid W = j \right) \\
-    &\leq \alpha,
-\end{align*}
-implying error control conditional on $W$. Marginal error control then follows from the law of total probability:
-\begin{align*}
-    P(\text{falsely reject } H_{0, W}) &= \sum_{j=1, 2} P(\text{falsely reject } H_{0, j} \mid W = j)P(W=j) \\
-                                      &\leq \alpha \sum_{j = 1, 2} P(W=j)\\
-                                      &=\alpha. 
-\end{align*}
-If $\mu_1 = \mu_2$ then the inequalities become equalities and our error control is tight. 
-\end{example}
-
-In \eqref{exm:rank_verification}, we provide a procedure that verifies the rank of the winning mean with Type I error control, i.e., it affirms not just that the means are different, but that the winning mean $\mu_W$ is larger than the other mean.  The procedure, which rejects when the smaller of the two one-sided p-values $p_i = 1 - \Phi(X_i - X_{-i})$ is at most $\alpha/2$, is identical to the procedure that rejects when the two-sided p-value $1 - \Phi(|X_1 - X_2|)$ is at most $\alpha$! Hence, for reasons likely unbeknowst to them, your friend's original claim is indeed statistically valid. 
 
 In what follows, we generalize \eqref{exm:rank_verification}'s rank verification procedure to the exponential family setting. Although this generalization appears quite a bit more complicated, the core idea remains the same. 
 
@@ -840,54 +661,13 @@ Our derivation of the test for $H_{0, Wj}$ differs from that given in \cite{Hung
 
 In closing, we mention that the the final result (\Cref{thm:rank_verification}) is perhaps not as surprising as \cite{Hung2019} originally suggest. In \cite{Hung2019}, there are further computations showing that if the exponential family density \eqref{eq:exp_fam} is such that $T(X) = X$, the function $g(x)$ is Schur concave (see \cite[Definition 2]{Hung2019}), and there are no ties, then (1) the maximum in \eqref{eq:rank_verification_lcb} is achieved by the runner up $R$ (the index $j \in S$ with second largest sufficient statistic $T_j$) and (2) $q^{0}_{WR}$ is equal to $1/2$. Hence, in this restricted setting, we can claim that the winning parameter is indeed the largest whenever $p^{0}_{WR} \leq \alpha/2$, i.e., whenever the two-sided test comparing the winner and runner-up rejects. Since this test has non-vanishing level even as $n$ grows, the authors claim that it seems to surprisingly circumvent a multiple comparisons issue. However, \Cref{exm:rank_verification} already illustrates why verifying rank by running a two-sided test comparing the winner and loser gives Type I error control in the $n=2$ dimensional case. It should be obvious then that running a two-sided test to compare the winner to the best of $n-1$ losers in the $n > 2$ dimensional case is a more conservative procedure. In other words, the multiplicty correction does not appear in the level of the test, but it is baked in by the fact that we compare the winner to the largest of $n-1$ different losers, which scales with $n$. 
 
-\subsection{Inference on Winners in Exponential Families}
-
-We can use the same tools from the previous sub-section  to do inference on the winner in multiparameter exponential families. Again consider data $X$ drawn from the exponential family \eqref{eq:exp_fam} and let the winner $W$ be the index $i \in \mathcal{S} \subseteq [p]$ corresponding to the largest sufficient statistic $T_i$, with ties broken randomly.
-
-The p-value 
-\begin{equation}
-    \label{eq:ump_exp_fam}
-    p_i^{\theta_0}(T(X)) = G^{\theta_0, +}_i(T_i|T_{-i}) + U_{i, aux}(G^{\theta_0}_i(T_i|T_{-i}) - G^{\theta_0, +}_i(T_i|T_{-i})),
-\end{equation}
-corresponds to the UMP test for $H_{0, i}^{\theta_0}: \theta_i \leq \theta_0$, where, like before,
-\begin{equation*}
-    G^{\theta_0}_i(t_i | t_{-i}) = P_{\theta_0}(T_i \geq t | T_{-i} = t_{-i}) \qquad G^{\theta_0, +}_i(t) = \lim_{u \downarrow t}(T_i \geq t | T_{-i} = t_{-i} ),
-\end{equation*}
-denote the conditional left-continuous survival function of $T_i$ and its right-hand limit, and $U_{i, aux}$ are $\text{Unif}([0,1])$ random variables that are independent from each other and $X$.
-
-To come up with a test for the data dependent null $H_{0, W}^{\theta_0}$ (which we will then invert to get an LCB for the winning parameter), we need to apply a similar adjustment to our p-value as in \Cref{exm:rank_verification_exp_fam}. Rather than re-work through essentially identical arguments, we simply define the analogous quantities to those from the previous sub-section,
-\begin{equation}
-    \label{eq:exp_fam_lower}
-    q^{\theta_0, +}_i(T_{-i}) = G^{\theta_0, +}_i(\max_{k \in \mathcal{S} - i } T_k | T_{-i}), 
-\end{equation} 
-\begin{equation}
-    \label{eq:exp_fam_upper}
-    q^{\theta_0}_i(T_{-i}) = G^{\theta_0}_i(\max_{k \in \mathcal{S} - i } T_k | T_{-i}),
-\end{equation} 
-\begin{equation}
-    \label{eq:exp_fam_num_ties}
-    N_i(T_{-i}) = 1 + | \{k \neq i: T_k = \max_{\ell \in \mathcal{S} - i} T_\ell \}|,
-\end{equation}
-and state the final result in \Cref{cor:cond_exp_fam}. In \Cref{coming_soon} we use a modification of the arguments in \cite{Fithian2017} to show that our test $H^{\theta_0}_{0, W}$ is selectively UMPU, meaning it is UMPU amongst all tests that are are valid conditional on $W$. Hence, as stated in \Cref{cor:cond_exp_fam}, its inversion is selectively uniformly most accurate unbaised (UMAU) in the analogous sense. 
-
-\begin{corollary}[Conditional inference for multiparameter exponential families ]
-    \label{cor:cond_exp_fam}
-    Let $X$ be drawn from the exponential family \eqref{eq:exp_fam} and let $W$ be the index $i \in \mathcal{S}$ corresponding to the largest sufficient statistic $T_i$ (with ties broken randomly). If $p^{\theta_0}_i$ is the UMP p-value \eqref{eq:ump_exp_fam} for testing $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0 $ and $q^{\theta_0, +}_i$, $q^{\theta_0}_i$, and $N_i$ are as in \eqref{eq:exp_fam_lower}, \eqref{eq:exp_fam_upper}, and \eqref{eq:exp_fam_num_ties}, then 
-    \begin{equation}
-    \label{eq:cond_lcb_exp_fam}
-    \left\{\theta_0 :  \frac{p^{\theta_0}_W - \left(1 - \frac{1}{N_i} \right)(p^{\theta_0}_W - q^{\theta_0, +}_W)_+ }{q^{\theta_0, +}_W + \frac{1}{N_i}(q^{\theta_0}_W - q^{\theta_0, +}_W) } > \alpha \right\} 
-    \end{equation}
-    is an LCB for $\theta_W$ that holds with probability exactly $1-\alpha$ conditional on $W$ (and therefore also marginally), and it is selectively UMAU conditional on $W$.
-\end{corollary}
-
-Briefly, we point out that selecting the largest sufficient statistic does not always correspond to selecting the ``most promising'' effect. Even though $T_i > T_j$, it might be the case that $p^{\theta_0}_{j}$ is smaller than $p^{\theta_0}_{i}$.  Unlike in \Cref{sec:winner}, we cannot simply have the winner correspond to the smallest p-value for two reasons. First, in this more general setting, the index resulting in the smallest p-value changes depending on $\theta_0$ (see \Cref{sec:small_p_val_appdx} for an example). Hence, it is not well-defined to determine the winner by looking at the smallest p-value (and we thus have to deal with ties). Second, even if we settled on a $\theta_0$ to prioritize, because the p-values have intricate correlation strucutre, the selection event $p^{\theta_0}_{i} < \max_{j \neq i} p^{\theta_0}_{j}$ corresponds to a very complicated selection function that we would have to try and characterize on a case-by-case basis. Indeed, this discussion applies to the rank verification problem for exponential families we discussed previously as well. 
-
 \section{New Selective Methods}
 
 In this section we illustrate how our selective dominance framework allows us to easily design new methods for selective inference, global null testing, and dealing with publication bias.   
 
 Rather than just selecting just one p-value as in \Cref{sec:dominance}, some of this section's methods select multiple p-values to use for inference. As such, we need to slightly generalize our framework from \Cref{sec:dominance}. The generalization is intuitive, and for sake of brevity we have deferred a formal account of it to \Cref{sec:multiple_p_vals_appdx}. The proofs of validity for this section's methods, which are in the appendix, often rely on \Cref{sec:multiple_p_vals_appdx}. 
 
+\iffalse 
 \subsection{Simultaneous Inference on the Top $k$}
 
 Rather than doing inference on just the most promising effect, we may want to do simultaneous inference on the top $k$ most promising effects. Written in terms of p-values, it is easy to give a conditional inferential procedure that does just that. 
@@ -909,6 +689,7 @@ Similarly, it is straightforward to do simultaneous hybrid infernce on the top $
 \end{corollary}
 
 Like before, simultaneous hybrid inference maintains some benefits of conditional simultaneous inference while never doing worse than level $\beta$ classical inference (where now $\beta$ is at most $\alpha_k$). Again, in \Cref{sec:class_mlr}'s parameteric setting, we can get simultaneously valid hybrid LCBs for the top $k$ winning parameters by inverting \Cref{cor:hyb_top_k}'s tests. 
+\fi 
 
 \subsection{Adaptive Versions of Fisher's Combination Test}
 
@@ -970,32 +751,6 @@ To illustrate the benefits and drawbacks of these methods, we display their powe
 As expected, the new methods outperform Fisher's original method when conservative nulls are present. When $\ell=3$ and the bottom three p-values are much smaller than the rest, the conditional method does incredibly well. But its performance quickly degrades when $\ell = 5, 10$ and the fourth smallest p-value becomes often close to the bottom three. By focusing inference on just the top five p-values, the truncated method still considerably improves power when $\ell=5$. Unsurprisingly, both methods perform worse than Fisher's original method when $\ell=10$ and every $\mu_i$ is a signal. 
 
 
-\subsection{Selecting by the Biggest Gap}
-
-As we saw previously, methods for doing inference using the top $k$ effects can be powerful, but they are plagued by the question of how to choose $k$. These methods work well when the ratio between $p_{(k)}$ and $p_{(k+1)}$ is large, but poorly otherwise. This begs the question, why not select the p-value $p_{(j)}$ whose ratio with $p_{(j+1)}$ is the largest?
-
-\begin{theorem}
-    \label{thm:ratio_testing}
-    Suppose that $p_i$ are $n$ independent and selectively dominant p-values under the nulls $H_{0, i}$. Defining $p_{(0)}=0$ and $p_{(n+1)}=1$, let $G_j = \frac{p_{(j)} - p_{(j - 1)}}{p_{(j+1)} - p_{(j)}}$ be the gap... Defining $W = \argmax_{j \in [p]} G_j$ as the index of the largest gap, the procedure that rejects $H_{0, W}$ when 
-    \begin{equation}
-        \label{eq:gap_cutoff}
-        p_{(W)} \leq \alpha (G_{(2)}\alpha p_{(W+1) + (1 - G_{(2)}p_{(W - 1)}) })   
-    \end{equation}
-    controls Type I error at level $\alpha$ conditional on $W$ (and therefore also marginally)
-\end{theorem}
-
- 
-
-\subsection{Correcting for Publication Bias}
-
-Selectively dominant p-values also allow us to make valid inferences in the presence of publication bias. Under two models of publication bias, we use our selective dominance machinery to argue that the reader can be confident that a study's result is significant when the associated p-value is at most $\alpha^2$, even if they are worried about publication bias. \newline 
-
-\noindent \textbf{Filtered Studies: } Suppose that a study tests the null $H_0$ at significance level $\alpha$ using a selectively dominant p-value $p$. If the study is only written-up and accepted for publication when the test is significant, then the study is essentially selecting $p$ to use for inference when $p \leq \alpha$ (i.e., the selection function is $s(x) = I_{x \leq 1/2}$). \Cref{thm:adjustment} tells us that, to account for this selection, we should reject when the adjusted p-value $p/\alpha$ is at most $\alpha$. In other words, we still control (selective) Type I error if we reject when $p \leq \alpha^2$. More generally, we show in \Cref{sec:publication_bias_appdx} that rejecting when $p \leq \alpha^2$ controls selective Type I error whenever the authors or publishers are using a selection function that is constant on $[0, \alpha]$ and potentially non-zero on $(\alpha, 1]$ (some non-significant p-values may be published). \newline 
-
-\noindent \textbf{p-Hacking: } Rather than discard a study after observing a p-value that is more than $\alpha$, a researcher may continue making tweaks to their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, encompasses a vast range of techniques, and has therefore been noted to be difficult to study theoretically \citep{Hung2020}. It has been emprically well established, however, that p-hacked p-values have a left-skewed distribution under the null, i.e. p-hacked p-values can be reasonably modeled as having an increasing density under the null with support on $[0,\alpha]$ \citep{Simonsohn, Hung2020}. The transformed p-value $p/\alpha$ then has an increasing density on $[0, 1]$ under the null, and \Cref{thm:density} therefore tells us that $p/\alpha$ is a (selectively dominant) p-value. Thus we can still control Type I error if we reject when $p/\alpha \leq \alpha \iff p \leq \alpha^2$. \newline  
-
-If, in the presence of publication bias, we want to combine evidence from independent studies using selectively dominant p-values, we can run Fisher's truncated combination test (\Cref{cor:tfisher}) with truncation point $\tau_j = \alpha$ for studies we think suffer from publication bias and $\tau_j = 1$ for those that we think do not (e.g., we may not suspect publication bias if a study reports a p-value larger than $\alpha$, or if we are running a new study and are only concerned about publication bias in the previous studies). This combination test, however, requires very strong signals to reject, and, like the procedure of rejecting when $p < \alpha^2$, it will be very conservative if publication bias is not actually present. 
-
 \section*{Acknowledgements}
 We thank John Cherian, Yash Nair, and Will Hartog for helpful discussions.
 
@@ -1005,16 +760,6 @@ We thank John Cherian, Yash Nair, and Will Hartog for helpful discussions.
 \begin{appendix}
 
 \section{Additional Derivations, Details, and Comments}
-
-\subsection{Distance Between $X_W$ and Conditional LCB }
-\label{sec:gap_appdx}
-
-Consider observing Gaussian data $X \sim N(\mu, I_n)$ and let $W$ and $R$ be the indicies of the winner and runner up respectively. We briefly justify that the distance between $X_W$ and the conditional LCB for $\mu_W$ depends only on the gap between $X_W - X_R$. Define $D = X_W - \mu_0$ to be distance between $X_W$ and the conditional LCB $\hat{\mu}$. The conditional LCB $\hat{\mu}$ satisfies 
-\begin{equation*}
-    \frac{p^{\hat{\mu}}(X_W)}{p^{\hat{\mu}}(X_R)} = \alpha \iff \frac{1 - \Phi(X_W - \hat{\mu})}{1 - \Phi(X_R - \hat{\mu})} = \alpha \iff \frac{1 - \Phi(D)}{1 - \Phi(D - (X_W - X_R))} =\alpha.
-\end{equation*}
-Clearly then $D$ is a function of $X_W - X_R$.
-
 
 \subsection{Comparing Conditional and Sidak Global Null Testing}
 \label{sec:beta_dist_appdx}
@@ -1039,43 +784,45 @@ In other words, the conditional procedure can only reject when $p_{(1)} \leq C_{
     P(p_{(1)} \leq \alpha p_{2} \text{ and } p_{(1)} > C_{\epsilon}/n) \leq P(A_{\epsilon}^c) \leq \epsilon.  
 \end{equation*}
 
-\subsection{Distance Between $X_W$ and Hybrid LCB }
-\label{sec:hybrid_gap_appdx}
 
-Consider observing Gaussian data $X \sim N(\mu, I_n)$ and let $W$ and $R$ be the indicies of the winner and runner up respectively. We briefly justify that the distance between $X_W$ and the chybrid LCB for $\mu_W$ depends only on the gap between $X_W - X_R$ and the dimension $n$. Define $D = X_W - \mu_0$ to be distance between $X_W$ and the hybrid LCB $\hat{\mu}$. The hybrid LCB $\hat{\mu}$ satisfies 
-\begin{align*}
-    & p^{\hat{\mu}}(X_W) = \frac{\alpha-\beta}{1-\beta} p^{\hat{\mu}}(X_R) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n\\
-    & 1 - \Phi(X_W - \hat{\mu}) = \frac{\alpha-\beta}{1-\beta} (1 - \Phi(X_R - \hat{\mu})) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n\\ 
-    &\iff 1 - \Phi(D) = \frac{\alpha-\beta}{1-\beta} (1 - \Phi(D - (X_W - X_R))) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n.
-\end{align*}
-Clearly then $D$ is a function of $X_W - X_R$ and $n$.
+\subsection{Conditional Inference on Winners}
+\label{sec:cond_appdx}
 
-%\subsection{More on Conditional Confidence Regions for the Winner}
-%\label{sec:conditional_confidence_region_appdx}
+\subsubsection{Standard Derivation}
 
-%In \ref{sec:..} we show that the set
-%\begin{equation*}
-%    \{ \mu_0 \in \R:  (1- \frac{\alpha}{2})p_{(2), \mu_0} > p_{(1), \mu_0} >  \frac{\alpha}{2} p_{(2), \mu_0} \}
-%\end{equation*}
-%corresponds to the standard two-sided conditional confidence interval (CI) for the mean $\mu_W$ of the winner, and we also discuss how to construct such conditional CIs and CLBs in non-Gaussian settings.  
+Suppose we observe independent Gaussian data $X \sim N(\mu, I_n)$ and want to make a LCB for the mean $\mu_W$ of the winner $W = \argmax_{i \in [n]} X_i$. 
 
+The conditional approach tries to avoid the classical approach's curse of dimensionality by providing inferences for only the winning mean. It does so by delivering an LCB for $\mu_W$ that is valid conditionally on $W$. To construct the conditional LCB, we follow the framework of \cite{Fithian2017}. Letting $R$ be the index of the runner-up (second largest observation), we note that the deviation of $X_{W}$ from $\mu_{W}$ has a truncated normal distribution once we condition on $W$ and $X_{-W}$:
+\begin{equation}
+    \label{eq:cond_dist}
+    X_W - \mu_W \mid W, X_{-W} \sim TN(0, 1, X_{R} - \mu_{W}, \infty).
+\end{equation}
+Letting 
+\begin{equation}
+    \label{eq:cond_quantile}
+    q_{1-\alpha}(w, x_{-w}, \mu_w) = \text{Quantile}_{\mu}(1-\alpha, X_W -  \mu_{W} \mid W=w, X_{-w} = x_{-w})
+\end{equation}
+denote the $1-\alpha$ quantile of this conditional distribution \eqref{eq:cond_dist}, it is straightforward to show that
+\begin{equation}
+\label{eq:cond_set}
+     C_{cond}(X) = \{\eta : \eta > X_{W} - q_{1-\alpha}(W, X_{-W}, \eta)  \} 
+\end{equation}
+is a $1-\alpha$ confidence region for $\mu_{W}$ that is valid  conditional on $W$ and  $X_{-W}$:
+\begin{equation*}
+    P_{\mu}( \mu_{W} \in C_{cond}(X) | W, X_{-W})  = P_{\mu}( X_W - \mu_W < q_{1-\alpha}(W, X_{-W}, \mu_{W}) |W, X_W) = 1-\alpha.
+\end{equation*}
+Since $\eta$ appears on both sides of the membership condition in \eqref{eq:cond_set}, it is not clear that $C_{cond}(X)$ actually provides a lower bound for $\mu_{W}$. We will see, however, that we can rewrite $C_{cond}(X)$ as 
+\begin{equation}
+\label{eq:cond_lcb}
+     C_{cond}(X) = \{\eta : \eta > X_{W} - L(X_W - X_R)  \}. 
+\end{equation}
+where $L: \R \rightarrow \R$ is a complicated ``length'' function that determines the distance from the winner $X_W$ to the lower confidence bound. We will de-mistify $L(\cdot)$ in the next sub-section. For now, we provide a plot of it in the middle panel of \Cref{fig:lcb}.
 
-%\subsection{The p-Value Viewpoint and CLB for the Winner under Correlation}
-%\label{sec:conditional_correlation_appdx}
+As can be seen in \Cref{fig:lcb}, the conditional LCB has very interesting behavior. In some situations, it indeed seems to avoid the curse of dimensionality. If the gap between $X_W$ and $X_R$ is large, then the conditional LCB for $\mu_W$ will be roughly $X_{W} - z_{1-\alpha}$, i.e, what we expect in a one-dimensional inference problem. But the cost of using the conditional approach can be tremendous. As the runner-up gets close to the winner, the conditional LCB goes quickly to $-\infty$ and can give much worse inferences than the classical approach. For example, if the runner-up is within just one standard deviation of the winner, we get inferences similar to those in the $n = 100$ dimensional classical problem. 
 
-%When working with Gaussian data, we can still do inference on winners in the presence of correlations. In the independent case, we could write the event $W = i $ of $X_i$ winning as $X_i$ being larger than $\max_{j \neq i} X_j$, a random variable that is independent of $X_i$. This independence is what allows us to establish that the conditional distribution \eqref{eq:cond_dist} we used for inference is a truncated normal. In the dependent case where $X \sim N(\mu, \Sigma)$ has unknown mean $\mu$ but known covariance $\Sigma$, we can do the same thing. Because the observations have difference variance, it makes most sense for the winner $W = \argmax_{i \in [p]} X_i/\sqrt{\Sigma_{ii}} $ to correspond to the largest entry after standardization 
+Compared to the classical approach, which provides a lower bound that is a fixed distance from the winner, the conditional approach is much harder to interpret. Its quality depends on a somewhat opaque relationship between the runner-up and the winner. How separated does the winner need to be from the runner-up for the conditional approach to be useful? And how close can the winner and runner-up be before the classical approach is better? We shed light on these questions by rewriting the conditional procedure in terms of p-values. 
 
-%Defining the residual vector $\epsilon_{i}(X) \in \R^n$ with entries $\epsilon_{ij}(X) = X_j - \frac{\Sigma_{ji}}{\Sigma_{ii}}$, it turns out that that (1) $X_i$ and $\epsilon_{ij}(X)$ are independent (2) we can write the winning event as 
-%\begin{equation*}
-%    \{ W = i \} \iff \{ \}
-%\end{equation*}
-
-%The key insight is to write the winning event $W = i$
-
-%If the data is Gaussian, the same trick allows us to do inference on winners with p-values. Defining  $q_i = 1 - \Phi(\max_{j \neq i} \epsilon_{ij}(X) ) $
-
-%The same trick allows us to do inference on winners. Now the selection event $S_i = i$ of selecting the $i$th p-value because it was the lowest amounts to truncating $p_i$ to be smaller than 
-\subsection{The p-Value Viewpoint of Conditional Inference}
+\subsubsection{p-Value Viewpoint }
 \label{sec:cond_appdx}
 
 Considering data $X \sim N(\mu, I_n)$ with unknown mean $\mu$ and the p-values $p^{\mu_0
@@ -1089,9 +836,69 @@ Solving for $Q$ gives $Q = \Phi^{-1}(1 - \alpha(1 - \Phi(X_R - \mu_0)))$, meanin
     &\iff p^{\mu_0}_{(1)} \leq \alpha p^{\mu_0}_{(2)}.
 \end{align*}
 
+\subsubsection{Distance Between $X_W$ and Conditional LCB }
+\label{sec:gap_appdx}
 
-\subsection{The p-Value Viewpoint of Hybrid Inference}
+Consider observing Gaussian data $X \sim N(\mu, I_n)$ and let $W$ and $R$ be the indicies of the winner and runner up respectively. We briefly justify that the distance between $X_W$ and the conditional LCB for $\mu_W$ depends only on the gap between $X_W - X_R$. Define $D = X_W - \mu_0$ to be distance between $X_W$ and the conditional LCB $\hat{\mu}$. The conditional LCB $\hat{\mu}$ satisfies 
+\begin{equation*}
+    \frac{p^{\hat{\mu}}(X_W)}{p^{\hat{\mu}}(X_R)} = \alpha \iff \frac{1 - \Phi(X_W - \hat{\mu})}{1 - \Phi(X_R - \hat{\mu})} = \alpha \iff \frac{1 - \Phi(D)}{1 - \Phi(D - (X_W - X_R))} =\alpha.
+\end{equation*}
+Clearly then $D$ is a function of $X_W - X_R$.
+
+\subsubsection{The selective p-value }
+coming soon
+
+\subsubsection{Confidence lower bound}
+coming soon
+
+\subsubsection{Confidence interval}
+coming soon
+
+\subsection{Hybrid Inference on Winners}
+
+\subsubsection{Standard Deviation}
+
+Like before, we want to make a LCB for the mean $\mu_{W}$ of the winner $W = \argmax_{i \in [n]} X_i$ in the case of independent Gaussian data $X \sim N(\mu, I_n)$ with unknown mean $\mu \in \R^n$. 
+
+The core idea behind hybrid inference is giving a confidence region $C_{hyb}(X)$ that has a very high probability of containing $\mu_W$ on a ``good'' event $G_{\mu}$. Oddly, this good event depends on the unknown parameter. For some $\beta < \alpha$, we need $G_{\mu}$ to happen with probability at least $1-\beta$. Then, if we ensure that $C_{hyb}(X)$ has at least $(1-\alpha)/(1-\beta)$ coverage on the $G_{\mu}$, it will achieve $1-\alpha$ coverage overall:
+\begin{align*}
+       P_{\mu}(\mu_{W} \in C_{hyb}(X)) &= P_{\mu}(G_{\mu})P_{\mu}(\mu_{W} \in C_{hyb}(X) | G_{\mu}) + P_{\mu}(G_{\mu}^c)P_{\mu}(\mu_{W} \in C_{hyb}(X) | G_{\mu}^c)\\
+       &\geq (1-\beta)\left(\frac{1-\alpha}{1-\beta} \right)\\
+       &=1-\alpha.
+\end{align*}
+
+Considering some $\beta < \alpha$ and defining $\beta_n = 1 - (1-\beta)^{\frac{1}{n}}$ as in \eqref{eq:bonf_quantile}, our good event is that the confidence lower bounds $X_i -  z_{1-\beta_n}$ for the means $\mu_i$ all simultaneously hold:
+\begin{equation*}
+    G_{\mu} = \{X_i < \mu_i + z_{1-\beta_n} \text{ for all } i \in [n] \}.
+\end{equation*}
+From our earlier reasoning, we know that this good event happens with probability exactly $1-\beta$. 
+
+Now, we can make a confidence region that contains the mean with probability at least $(1-\alpha)/(1-\beta)$ on this good event. If we condition on $G_{\mu}$ along with $W$ and $X_{-W}$, the deviation of $X_W$ from $\mu_W$ has a truncated normal distribution like \eqref{eq:cond_dist} that is further truncated from above:
+\begin{equation}
+    \label{eq:hyb_dist}
+    X_W - \mu_W \mid W, X_{-W}, G_{\mu} \sim TN(0, 1, X_{R} - \mu_{W}, z_{1-\beta_n} ).
+\end{equation}
+On the good event $G_{\mu}$, we always have that $X_R - \mu_{W} < X_W - \mu_{W} < z_{1-\beta_n}$, so the lower truncation is indeed below the upper one. Let
+\begin{equation}
+\label{eq:hyb_quantile}
+    q^{h}_{\frac{1-\alpha}{1-\beta}}(w, x_{-w}, \mu_w) = \text{Quantile}_{\mu}\left(\frac{1-\alpha}{1-\beta}, X_W -  \mu_{W} \mid W=w, X_{-w} = x_{-w}, G_{\mu}\right)
+\end{equation}
+denote the $(1-\alpha)/(1-\beta)$ quantile of the conditional distribution \eqref{eq:hyb_dist}. Per the prior discussion, the function \eqref{eq:hyb_quantile} only makes sense if the largest value in $x_{-w}$ at most $z_{1-\beta_n}$, and we will take the quantile \eqref{eq:hyb_quantile} to be $-\infty$ if it is not. It is then straightforward to show that
+\begin{equation}
+\label{eq:hyb_set}
+     C_{hyb}(X) = \{\eta : \eta > X_{W} - q^{h}_{\frac{1-\alpha}{1-\beta}}(W, X_{-W}, \eta)  \} 
+\end{equation}
+contains $\mu_{W}$ with high probability conditional on $W$, $X_{-W}$, and the event $G_{\mu}$:
+\begin{equation*}
+    P_{\mu}( \mu_{W} \in C_{hyb}(X) | W, X_{-W}, G_{\mu})  = P_{\mu}( X_W - \mu_W < q^{h}_{\frac{1-\alpha}{1-\beta}}(W, X_{-W}, \mu_{W}) |W, X_W, G_{\mu}) = \frac{1-\alpha}{1-\beta}.
+\end{equation*}
+Based on our earlier discussions, this is sufficient to imply that $C_{hyb}(X)$ from $\eqref{eq:hyb_set}$ will contain $\mu_{W}$ with probability at least $1-\alpha$. 
+
+As was the case for our conditional confidence region \eqref{eq:cond_set}, the hybrid confidence region \eqref{eq:hyb_set} is a little hard to interpret at first. We will get a clearer sense of its benefits when we write it in terms of p-values. As a teaser, the rightmost panel of \Cref{fig:lcb} plots distance between the winner $X_W$ and the hybrid LCB for a $n=10$ dimensional problem. We argue (using our upcoming p-value viewpoint) in \Cref{sec:hybrid_gap_appdx} that, once we fix $\alpha$ and $\beta$, this distance is a function of just the gap $X_W - X_R$ between the winner and runner up and the problem dimension $n$. 
+
+\subsubsection{p-Value Viewpoint} 
 \label{sec:hybrid_appdx}
+
 
 Considering data $X \sim N(\mu, I_n)$ with unknown mean $\mu$ and the p-values $p^{\mu_0
 }_i = 1 - \Phi(X_i - \mu_0)$, we want to characterize when the hybrid LCB is at least $\mu_0 \in \R$. Examining \eqref{eq:hyb_dist}, \eqref{eq:hyb_quantile}, and \eqref{eq:hyb_set}, we can consider two cases to figure out when this happens. \newline 
@@ -1123,6 +930,17 @@ It turns out we can combine these two cases. Because $p^{\mu_0}_{(1)} \leq p^{\m
     p^{\mu_0}_{(1)} \leq  \frac{\alpha-\beta}{1-\beta}p^{\mu_0}_{(2)}  + \left(1 - \frac{\alpha - \beta}{1 - \beta}\right)\beta_n. 
 \end{equation}
 Therefore, if we reject according to \eqref{eq:hybrid_cuttoff_appdx}, we will always reject in Case One, and we will reject at the appropriate times in Case Two. 
+
+\subsubsection{Distance Between $X_W$ and Hybrid LCB}
+\label{sec:hybrid_gap_appdx}
+
+Consider observing Gaussian data $X \sim N(\mu, I_n)$ and let $W$ and $R$ be the indicies of the winner and runner up respectively. We briefly justify that the distance between $X_W$ and the chybrid LCB for $\mu_W$ depends only on the gap between $X_W - X_R$ and the dimension $n$. Define $D = X_W - \mu_0$ to be distance between $X_W$ and the hybrid LCB $\hat{\mu}$. The hybrid LCB $\hat{\mu}$ satisfies 
+\begin{align*}
+    & p^{\hat{\mu}}(X_W) = \frac{\alpha-\beta}{1-\beta} p^{\hat{\mu}}(X_R) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n\\
+    & 1 - \Phi(X_W - \hat{\mu}) = \frac{\alpha-\beta}{1-\beta} (1 - \Phi(X_R - \hat{\mu})) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n\\ 
+    &\iff 1 - \Phi(D) = \frac{\alpha-\beta}{1-\beta} (1 - \Phi(D - (X_W - X_R))) + \left(1 - \frac{\alpha-\beta}{1-\beta} \right)\beta_n.
+\end{align*}
+Clearly then $D$ is a function of $X_W - X_R$ and $n$.
 
 \subsection{Comparing Hybrid Inference to the Union Bound}
 \label{sec:hybrid_sim_appdx}
@@ -1170,7 +988,6 @@ Our simulation results indicate that hybrid inference typically results in a fai
 
 \noindent \textbf{Two possible signals: } Seeing as the hybrid and union bound approaches both reject based on the winning and running-up p-value, we ran a simulation for all pairs $\mu_1, \mu_2 \in \{-3, -2.9, \dots, 2.9, 3 \}$ with $\mu_1 > \mu_2$ and $\mu_1 > 0$. We forcibly set $\mu_i = -\infty$ for $i > 2$. For each setting we ran $N=10000$ to get an empirical estimate of power for each method. Across the $1492$ simulated settings, the median emprical power increase from hybrid was $\approx 0.003$, the $90$th percentile empirical power increase was $\approx 0.023$ and the maximum empirical power increase was $\approx 0.042$. As the results indicate, the power increases from hybrid were negligble for most settings. We also re-ran the same simulations but sampled $X_1 \sim N(\mu, \sigma_1^2)$ and $X_2 \sim N(\mu, \sigma_2^2)$ for various values of $\sigma_1$ and $\sigma_2$, which we assume are known. The results were not appreciably different, and, if anything, the difference in power was notably smaller for some values of $\sigma_1$ and $\sigma_2$.  
 
-
 \begin{figure}
     \centering
     \hspace{-0.035\textwidth}
@@ -1197,6 +1014,39 @@ Our simulation results indicate that hybrid inference typically results in a fai
     \label{fig:hybrid_union_power}
 \end{figure}
 
+\subsection{Conditional inference on winners for exponentials}
+\label{sec:exponential_winner_appdx}
+
+Recall the exponential distribution $X \sim \text{Exp}(\lambda_i)$ which has PDF
+\begin{equation*}
+    f_{\lambda}(x) = 
+\begin{cases} 
+\lambda e^{-\lambda x} & x > 0, \\ 
+0 & x \leq 0 
+\end{cases}.
+\end{equation*}
+Defining $T(x) = 1/x$, we see for $x > 0$ and $\lambda_2 \geq \lambda_1$, the ratio  
+\begin{equation*}
+   f_{\lambda_2}(x)/f_{\lambda_1}(x) = \frac{\lambda_2}{\lambda_1} \exp\left( - \frac{\lambda_2 - \lambda_1}{T(x)}\right)
+\end{equation*}
+is monotone non-decreasing in $T(x)$. Thus this family has an MLR in $T(x)$, and the UMP test for $H_0 : \lambda \leq \lambda_0$ thus rejects when $T(X)$ is large, or correspondingly when $X$ is small. In particular, noting that the CDF of $X$ is given by 
+\begin{equation*}
+F_X(x) = 
+\begin{cases} 
+1 - e^{-\lambda x} & x > 0, \\ 
+0 & x \leq 0 
+\end{cases}
+\end{equation*}
+it rejects according to the p-value $p^{\lambda^0} = 1 - e^{-\lambda_0 X}$ (see \Cref{sec:one_sided_mlr_appdx} for details).
+
+Now consider observing some independent data $X_i \sim \text{Exp}(\lambda_i)$. We know from \Cref{sec:cond_appdx} that the selective p-value $p^{\lambda_0}_{(1)}/p^{\lambda_0}_{(2)}$ is monotone non-decreasing in $\lambda_0$. Using L'hopital's rule, we can compute that 
+\begin{align*}
+    \lim_{\lambda_0 \downarrow 0} \frac{p^{\lambda_0}_{(1)}}{p^{\lambda_0}_{(2)}} &=  \lim_{\lambda_0 \downarrow 0}  \frac{1 - e^{-\lambda_0 X_{(1)}} }{1 - e^{-\lambda_0 X_{(2)}}}\\
+    &= \lim_{\lambda_0 \downarrow 0} \frac{X_{(1)}e^{-\lambda_0 X_{(1)}}}{X_{(2)}e^{-\lambda_0 X_{(2)}}}\\
+    &= \frac{X_{(1)}}{X_{(2)}},
+\end{align*}
+which suffices to imply our claims in the main text. 
+
 \subsection{p-value Adjustment for Exponential Families}
 \label{sec:rank_verficiation_adj_appdx}
 
@@ -1222,6 +1072,78 @@ which can be re-written as
    p_{adj} = \frac{p - (1-\frac{1}{N(Z)})(p - q^+(Z))_+ }{q^+(Z) + \frac{1}{N(Z)}(q^+(Z) - q(Z))}.
 \end{equation*}
 This is sufficient to imply the claim from the main text. 
+
+\subsection{Rank verification warm-up additional details}
+\label{sec:rank_verification_warm_up_appdx}
+
+\begin{example}[Rank verification in a simple case]
+    \label{exm:rank_verification}
+    Suppose that $p$ is a selectively dominant p-value for testing the null $H_0$, but we only choose to test $H_0$ when $p < 1/2$. Applying our framework with the p-value $p$ and selection function $s(x) = I_{x < 1/2}$, \Cref{thm:adjustment} tells us that we control selective Type I error if we reject according to the adjusted p-value from \eqref{eq:adjustment} is $p_{adj} = 2p$:
+    \begin{equation}
+        \label{eq:rank_verification_error_control}
+        P_{H_{0}}\left(p_j \leq \frac{\alpha}{2} | S = 1\right) \leq \alpha.
+    \end{equation} 
+    
+    Now, consider data $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, the one-sided nulls $H_{0, j}: \mu_j \leq \mu_{-j}$, and their corresponding selectively dominant p-values $p_j = 1 - \Phi(X_j - X_{-j})$ (selective dominance follows from \Cref{exm:mlr}). Denoting the winner $W = \argmax_{j = 1, 2} X_j$, it is now clear rejecting the data-dependent null $H_{0, W}: \mu_W \leq \mu_{-W}$ when $p_{W} \leq \alpha/2$ maintains Type I error control both conditionally on $W$ and marginally. If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is identical to the event $p_j < 1/2$, and hence is the same event as selecting $p_j$ for inference in \eqref{eq:rank_verification_error_control}. Therefore, 
+    \begin{align*}
+        P(\text{falsely reject } H_{0, W} \mid W = j) &= P\left(p_W \leq \frac{\alpha}{2}  \mid W = j\right)\\
+        &= P\left(p_j \leq \frac{\alpha}{2}  \mid W = j \right) \\
+        &\leq \alpha,
+    \end{align*}
+    implying error control conditional on $W$. Marginal error control then follows from the law of total probability:
+    \begin{align*}
+        P(\text{falsely reject } H_{0, W}) &= \sum_{j=1, 2} P(\text{falsely reject } H_{0, j} \mid W = j)P(W=j) \\
+                                          &\leq \alpha \sum_{j = 1, 2} P(W=j)\\
+                                          &=\alpha. 
+    \end{align*}
+    If $\mu_1 = \mu_2$ then the inequalities become equalities and our error control is tight. 
+    \end{example}
+    
+
+
+\subsection{Inference on Winners in Exponential Families}
+
+We can use the same tools from the previous sub-section  to do inference on the winner in multiparameter exponential families. Again consider data $X$ drawn from the exponential family \eqref{eq:exp_fam} and let the winner $W$ be the index $i \in \mathcal{S} \subseteq [p]$ corresponding to the largest sufficient statistic $T_i$, with ties broken randomly.
+
+The p-value 
+\begin{equation}
+    \label{eq:ump_exp_fam}
+    p_i^{\theta_0}(T(X)) = G^{\theta_0, +}_i(T_i|T_{-i}) + U_{i, aux}(G^{\theta_0}_i(T_i|T_{-i}) - G^{\theta_0, +}_i(T_i|T_{-i})),
+\end{equation}
+corresponds to the UMP test for $H_{0, i}^{\theta_0}: \theta_i \leq \theta_0$, where, like before,
+\begin{equation*}
+    G^{\theta_0}_i(t_i | t_{-i}) = P_{\theta_0}(T_i \geq t | T_{-i} = t_{-i}) \qquad G^{\theta_0, +}_i(t) = \lim_{u \downarrow t}(T_i \geq t | T_{-i} = t_{-i} ),
+\end{equation*}
+denote the conditional left-continuous survival function of $T_i$ and its right-hand limit, and $U_{i, aux}$ are $\text{Unif}([0,1])$ random variables that are independent from each other and $X$.
+
+To come up with a test for the data dependent null $H_{0, W}^{\theta_0}$ (which we will then invert to get an LCB for the winning parameter), we need to apply a similar adjustment to our p-value as in \Cref{exm:rank_verification_exp_fam}. Rather than re-work through essentially identical arguments, we simply define the analogous quantities to those from the previous sub-section,
+\begin{equation}
+    \label{eq:exp_fam_lower}
+    q^{\theta_0, +}_i(T_{-i}) = G^{\theta_0, +}_i(\max_{k \in \mathcal{S} - i } T_k | T_{-i}), 
+\end{equation} 
+\begin{equation}
+    \label{eq:exp_fam_upper}
+    q^{\theta_0}_i(T_{-i}) = G^{\theta_0}_i(\max_{k \in \mathcal{S} - i } T_k | T_{-i}),
+\end{equation} 
+\begin{equation}
+    \label{eq:exp_fam_num_ties}
+    N_i(T_{-i}) = 1 + | \{k \neq i: T_k = \max_{\ell \in \mathcal{S} - i} T_\ell \}|,
+\end{equation}
+and state the final result in \Cref{cor:cond_exp_fam}. In \Cref{coming_soon} we use a modification of the arguments in \cite{Fithian2017} to show that our test $H^{\theta_0}_{0, W}$ is selectively UMPU, meaning it is UMPU amongst all tests that are are valid conditional on $W$. Hence, as stated in \Cref{cor:cond_exp_fam}, its inversion is selectively uniformly most accurate unbaised (UMAU) in the analogous sense. 
+
+\begin{corollary}[Conditional inference for multiparameter exponential families ]
+    \label{cor:cond_exp_fam}
+    Let $X$ be drawn from the exponential family \eqref{eq:exp_fam} and let $W$ be the index $i \in \mathcal{S}$ corresponding to the largest sufficient statistic $T_i$ (with ties broken randomly). If $p^{\theta_0}_i$ is the UMP p-value \eqref{eq:ump_exp_fam} for testing $H^{\theta_0}_{0, i} : \theta_i \leq \theta_0 $ and $q^{\theta_0, +}_i$, $q^{\theta_0}_i$, and $N_i$ are as in \eqref{eq:exp_fam_lower}, \eqref{eq:exp_fam_upper}, and \eqref{eq:exp_fam_num_ties}, then 
+    \begin{equation}
+    \label{eq:cond_lcb_exp_fam}
+    \left\{\theta_0 :  \frac{p^{\theta_0}_W - \left(1 - \frac{1}{N_i} \right)(p^{\theta_0}_W - q^{\theta_0, +}_W)_+ }{q^{\theta_0, +}_W + \frac{1}{N_i}(q^{\theta_0}_W - q^{\theta_0, +}_W) } > \alpha \right\} 
+    \end{equation}
+    is an LCB for $\theta_W$ that holds with probability exactly $1-\alpha$ conditional on $W$ (and therefore also marginally), and it is selectively UMAU conditional on $W$.
+\end{corollary}
+
+Briefly, we point out that selecting the largest sufficient statistic does not always correspond to selecting the ``most promising'' effect. Even though $T_i > T_j$, it might be the case that $p^{\theta_0}_{j}$ is smaller than $p^{\theta_0}_{i}$.  Unlike in \Cref{sec:winner}, we cannot simply have the winner correspond to the smallest p-value for two reasons. First, in this more general setting, the index resulting in the smallest p-value changes depending on $\theta_0$ (see \Cref{sec:small_p_val_appdx} for an example). Hence, it is not well-defined to determine the winner by looking at the smallest p-value (and we thus have to deal with ties). Second, even if we settled on a $\theta_0$ to prioritize, because the p-values have intricate correlation strucutre, the selection event $p^{\theta_0}_{i} < \max_{j \neq i} p^{\theta_0}_{j}$ corresponds to a very complicated selection function that we would have to try and characterize on a case-by-case basis. Indeed, this discussion applies to the rank verification problem for exponential families we discussed previously as well. 
+
+\iffalse
 
 \subsection{Smallest p-value and the Winner}
 \label{sec:small_p_val_appdx}
@@ -1264,21 +1186,80 @@ One example that is relevant to our publication bias application is where $s_1(x
 Examine the last inequality. When $p > \alpha$ the numerator of the right-hand side of is $0$, so it must be true. If $p \leq \alpha$, then the denominators of both sides of the last inequality are equal but the numerator of the left-hand side is at least that of the numerator of the right-hand side, which is at most $c(\alpha - p)$. Therefore, the entire string of inequalities, including the first one, is true, implying that $p_{adj, 2} \leq p_{adj, 1}$. 
 
 Now we briefly consider the case that $c=0$, so $s_2(x)$ is $0$ on the interval $[0, \alpha]$. It is clear for $p$ such that $\int_0^p s_2(x)dx = 0$ that the first inequality is true (the remaining inequalities are no longer well defined since they require dividing by zero). If $p$ is such that  $\int_0^p s_2(x)dx > 0$, then we must have $p > \alpha$, so again the last inequality is true by the same reasoning as above (now the remaining inequalities are well defined). Again, we find that $p_{adj, 2} \leq p_{adj, 1}$.
+ 
 
-\section{Scratch-work}
+\subsection{Normal with different variances}
 
-\subsection{Data Carving for File Drawer Adjustment}
+Imagine observing $n$-dimensional data $X \sim N(\mu, \Sigma)$ where $\Sigma$ is a diagonal matrix that is known. We consider testing the nulls $H_{, i}^{\mu_0}: \mu_i \leq \mu_0 $ using the p-values $p^{\mu_0}_i = 1 - \Phi((X_i - \mu_0)/\sqrt{\Sigma_{ii}})$. 
 
-We have two data samples $X_1 \sim N(\mu, 2)$ and $X_2 \sim N(\mu, 2)$ that are independent and want to test $H_0 : \mu \leq 0$. Suppose we only do inference because we observed that $X_1  > t$ for some threshold $t$. If we consider the p-value $p = 1 - \Phi((X_1 + X_2)/2  )$, then our selection function is given by 
+We want to test according to the most promising p-value for testing the null $H_{0, i}^{0}: \mu_i \leq 0 $. That is, we define the winning index $W = \argmax_{i \in [n]} X_i/ \sqrt{\Sigma_{ii}}$ and want to do inference on the winning mean $\mu_W$. Define $q^{\mu_0}_{jk} = 1 - \Phi(X_k/\sqrt{\Sigma_{kk}} - \mu_0/\sqrt{\Sigma_{ii}} )$, so that $W = j$ exactly when $p^{\mu_0}_j \leq q^{\mu_0}_{jk}$ 
+
+
+
+We cover two ways of doing so. 
+
+\textbf{Conditional Inference: } In the conditional inference case, we select $p^{\mu_0}_j$ to use for inference exactly when it is less than $\max_{k \neq j} q^{\mu_0}_{jk}$. Thus, 
+\begin{equation*}
+    \{ \mu_0 :  p^{\mu_0}_W > \alpha \max_{k \neq W} q^{\mu_0}_{Wk} \}
+\end{equation*}
+gives a CLB for $\mu_W$ that has exact $1-\alpha$ coverage conditional on $W$. \newline
+
+\textbf{Hybrid Inference: }
+\begin{equation*}
+    \left\{ \mu_0 :  p^{\mu_0}_W > \frac{\alpha - \beta}{1-\beta} \max_{k \neq W} q^{\mu_0}_{Wk} + \left(1 - \frac{\alpha-\beta}{1-\beta} \right) \beta_n \right\}
+\end{equation*}
+
+
+Now we consider the case of data splitting, so we have data $X^1_{i}, X^2_{i} \overset{i.i.d}{\sim} N(\mu_i, 2\Sigma_{ii})$. We select the winner according to the first split, so $\widetilde{W} = \argmax_{i \in [n]} X^1_{i}/ \sqrt{\Sigma_{ii}}$. Define the split p-values $p^{\mu_0, \ell}_i = 1 - \Phi((X^{\ell}_{i} - \mu_0)/\sqrt{2 \Sigma_{ii}} ) $. Like earlier, define the split thresholds $q^{\mu_0, \ell}_{jk} = 1 - \Phi(X^{\ell}_k/\sqrt{\Sigma_{kk}} - \mu_0/\sqrt{\Sigma_{ii}} )$ \newline 
+
+
+\textbf{Data Splitting: } In data splitting we select according to the first p-value and the do inference using the second:
+
+\begin{equation*}
+    \{\mu_0 : p^{\mu_0, 2}_{\widetilde{W}} > \alpha \}
+\end{equation*}
+
+This gives an LCB for $\mu_0$ that holds conditionally on $\tilde{W}$ with probability exactly $1-\alpha$. 
+
+
+
+\textbf{Data Carving: } In data carving we select according to the first p-value but still do inference by combining both p-values:
+
+\begin{equation*}
+    \left\{\mu_0 : -2  \left( \log\left( \frac{p^{\mu_0, 1}_{\widetilde{W}}}{\max_{k \neq \tilde{W}} q^{\mu_0, 2}_{\widetilde{W}k}} \right) + \log\left( p^{\mu_0, 2}_{\widetilde{W}} \right)\right) > \alpha \right\}
+\end{equation*}
+
+\textbf{Data Carving: } In most powerful data carving we still use the joint p-value 
+\begin{equation*}
+    p_i = 1 - \Phi\left( \frac{ \frac{X_i^1 + X_i^2}{2} - \mu_0}{\sqrt{\Sigma_{ii}}} \right) 
+\end{equation*}
+
+We select because $X^1_i > \sqrt{\frac{\Sigma_{ii}}{\Sigma_{jj}}} X^1_j$. So the selection probability is 
+\begin{align*}
+    s(x) &= P( X^1_i > t | p_i = x ) \\
+         &=  P( X^1_i > t | \frac{X^1_i + X^2_i}{2} =  \sqrt{\Sigma_{ii}}\Phi^{-1}(1 -x) + \mu_0 )\\
+         &= 1 - \Phi((t - \mu_0)/\sqrt{\Sigma_{ii}} - \Phi^{-1}(1 - x))
+\end{align*}
+
+Where we have noted that $X_i^1 |  (X_i^1 + X_i^2)/2 = y \sim N(y, \Sigma_{ii})$ 
+\fi 
+
+\subsection{Post selection inference for the LASSO}
+\label{sec:lasso_appdx}
+
+Coming soon. 
+
+\subsection{Data carving for Gaussian file-drawer}
+\label{sec:carve_appdx}
+
+We have two data samples $X_1 \sim N(\mu, 2)$ and $X_2 \sim N(\mu, 2)$ that are independent and want to test $H_0 : \mu \leq 0$. Suppose we only do inference because we observed that $X_1  > t$ for some threshold $t$. If we consider the p-value $p_{full} = 1 - \Phi((X_1 + X_2)/2  )$, then our selection function is given by 
 
 \begin{align*}
-    s(x) &= P( X_1 > t | p = x ) \\
+    s(x) &= P( X_1 > t | p_{full} = x ) \\
          &=  P( X_1 > t | \frac{X_1 + X_2}{2} =  \Phi^{-1}(1 -x) )\\
          &= 1 - \Phi(t - \Phi^{-1}(1 - x))
 \end{align*}
-
 where we have used that 
-
 \begin{equation*}
     \begin{bmatrix}
     X_1 \\ \frac{X_1 + X_2}{2}
@@ -1288,38 +1269,84 @@ where we have used that
             2  & 1 \\ 1 & 1
             \end{bmatrix} \right)
 \end{equation*}
-
+so 
 \begin{equation*}
     X_1 | \frac{X_1 + X_2}{2} = y \sim N(y, 1)
 \end{equation*}
-
-
 Thus our corrected p-value is given by 
-
 \begin{equation*}
-    p_{adj} = \frac{\int_0^p  1 - \Phi(t - \Phi^{-1}(1-x) )   dx }{\int_0^1 1 - \Phi(t - \Phi^{-1}(1-x) ) dx}
+    p_{carve} = \frac{\int_0^{p_{full}}  1 - \Phi(t - \Phi^{-1}(1-x) )   dx }{\int_0^1 1 - \Phi(t - \Phi^{-1}(1-x) ) dx}
 \end{equation*}
 \begin{equation*}
-    p_{adj} = \frac{\int_{\bar{X}}^{\infty} \phi(z) (1 - \Phi(t - z))   dz }{\int_{-\infty}^{\infty} \phi(z) (1 - \Phi(t - z))  dz } = \frac{\int_{\bar{X}}^{\infty} \phi(z) (1 - \Phi(t - z))   dz }{1 - \Phi(t/\sqrt{2})   }
+    p_{carve} = \frac{\int_{\bar{X}}^{\infty} \phi(z) (1 - \Phi(t - z))   dz }{\int_{-\infty}^{\infty} \phi(z) (1 - \Phi(t - z))  dz } = \frac{\int_{\bar{X}}^{\infty} \phi(z) (1 - \Phi(t - z))   dz }{1 - \Phi(t/\sqrt{2})   }
 \end{equation*}
 
-Letting $Z$ and $Y$ be independent standard normal random variables and fixing some constant $a$, this adjusted p-value is just 
+We now show that $p_{carve}$ is monotone non-decreasing in $t$. Letting $Z$ and $Y$ be independent standard normal random variables and fixing some constant $a$, the selective p-value is given by 
 \begin{equation*}
-   p_{adj} = \frac{P(Z + Y > t, Z > a)}{P(Z + Y > t)} = P(Z > a | Z + Y > t)
+   p_{carve} = \frac{P(Z + Y > t, Z > a)}{P(Z + Y > t)} = P(Z > a | Z + Y > t)
 \end{equation*}
 for $a = \bar{X}$. Letting $W = Z + Y$ we can write $Z = \frac{1}{2}W +\epsilon$ where $\epsilon$ is independent of $W$. This gives us 
 \begin{equation*}
-    p_{adj} = P(\frac{1}{2} W + \epsilon > a | W > t) = E[P(W > 2(a - \epsilon)| W > t, \epsilon)| W > t ] = E[P(W > 2(a - \epsilon)| W > t, \epsilon)]
+    p_{carve} = P(\frac{1}{2} W + \epsilon > a | W > t) = E[P(W > 2(a - \epsilon)| W > t, \epsilon)| W > t ] = E[P(W > 2(a - \epsilon)| W > t, \epsilon)]
 \end{equation*}
-Then the fact that $p_{adj}$ is monotone non-decreasing in $t$ follows from the fact that $P(W > c | W > t)$ is monotone non-decreasing in $t$ for every constant $c$:
+Then the fact that $p_{carve}$ is monotone non-decreasing in $t$ follows from the fact that $P(W > c | W > t)$ is monotone non-decreasing in $t$ for every constant $c$:
 \begin{equation*}
 {P(W > c |W >t)} = \begin{cases} 
-\frac{P(W > c)}{P(W > t)} & \text{if } c \geq t \\
-1 & \text{if } c < t 
+\frac{P(W > c)}{P(W > t)} & \text{if } t \leq c, \\
+1 & \text{if } t > c.
 \end{cases}
 \end{equation*}
 
 
+\section{Inverting selective tests to get selective confidence regions}
+\label{sec:sel_conf_region_appdx}
+
+In parametric settings, we can  invert tests of data dependent null hypotheses to get selective confidence regions. These confidence regions cover a \underline{random} parameter. \Cref{exm:confidence_region} gives the beginnings of an illustrative example. 
+
+\begin{example}[Confidence region for the winner] 
+    \label{exm:confidence_region}
+    Suppose the $X_i \sim P_{\theta_i}$ are $n$ independent samples from an MLR family $P_{\theta}$, and $p^{\theta_0}_j =  p^{\theta_0}(X_j)$ are the UMP p-values for testing $H_{0, j} : \theta_j \leq \theta_0$. Define the parameter vector $\Theta = (\theta_1, \dots, \theta_n)$ and let $W$ be the index of the smallest p-value, so that $X_W = \max_{i \in [n]} X_i$ is a winner. We can get a $1-\alpha$ confidence region for the winning parameter $\theta_W$ that is valid conditional on $W$ by inverting \Cref{exm:winner}'s test of the winning null $H_{0, W} : \theta_W \leq \theta_0$:
+    \begin{align*}
+        \label{eq:winner_cr}
+        P_{\Theta}\left( \theta_W \in \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\} | W=j \right) &= P_{\Theta}\left( \theta_j \in \left\{ \theta_0 : \frac{p^{\theta_0}_{j}}{ \min_{i \neq j} p^{\theta_0}_i} > \alpha \right\} | W=j \right)\\
+                                     &= P_{\Theta}\left(  \frac{p^{\theta_j}_{j}}{ \min_{i \neq j} p^{\theta_j}_i} > \alpha  | W=j \right)\\
+                                    &= 1-\alpha,
+    \end{align*} 
+    where we have equality because $p^{\theta_j}_j$ has an exact uniform distribution given $p^{\theta_j}_{-j}$ under $P_{\Theta}$. 
+\end{example}
+
+Since the region in \Cref{exm:confidence_region} results from inverting a one sided test, we would hope that it is not just a confidence region, but a confidence lower bound. This is not obvious, however. While the p-values $p^{\theta_0}_j$ are known to be monotone in $\theta_0$, it is less clear whether the selective p-values $p^{\theta_0}_{j}/ \min_{i \neq j} p^{\theta_0}_i$ resulting from \Cref{thm:adjustment} are. Indeed confirming that selective confidence regions are actually invervals or lower bounds can be tricky in selective problems, and proving that they are is sometimes done on a case by case basis \citep{Benjamini, Lee} or not at all \citep{Sengupta}. 
+
+It turns out that selective p-values resulting from UMP or UMPU one-sided testing are essentially always monotone in the null parameter $\theta_0$. Suppose we observe data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. This setting is general enough to encompass both when we have independent samples from an MLR family as in \Cref{exm:confidence_region} and also when we have data from an exponential family. Conditional on $Z = z$, the UMP p-value $p^{\theta_0}$ for testing $H_0: \theta \leq \theta_0$ is a deterministic function of $T(X)$ and an independent uniform $U_{aux}$ (see \Cref{sec:one_sided_appdx}):
+\begin{equation}
+    p^{\theta_0} = m^{\theta_0}(T(X), U_{aux}, z).
+\end{equation}
+We usually get the selective p-value $p^{\theta_0}_{sel}$ by applying \Cref{thm:adjustment}'s adjustment with the selection function $s^{\theta_0}(x, z)$. The resulting selective p-value $p^{\theta_0}_{sel}$ from \Cref{thm:adjustment} will be monotone non-decreasing in $\theta_0$ whenever $s^{\theta_0}(x, z)$ depends on $\theta_0$ only through $m^{\theta_0}$, i.e., if 
+\begin{equation*}
+   \text{there exists } \tilde{s} \text{ such that } s^{\theta_0}(x, z) = \tilde{s}(t, u, z) \text{ for all } t, u \text{ with } x = m^{\theta_0}(t, u, z).
+\end{equation*}
+Essentially, this condition requires that the selection event, once written in terms of the data, has no dependence on the specific parameter $\theta_0$ that we are testing. Admittedly, this is the one case where writing our problem in terms of p-values instead of the original data adds an additional complication. But, since this condition holds for essentially all selective problems, a practioner seldom has to worry about this complication.  
+
+In \Cref{sec:winner_monotone}, we carefully show that the selective p-values from \Cref{exm:confidence_region} satisfy the above condition. This allows us to give a more refined version of our above example. 
+
+\begin{example}[Confidence lower bound and interval for the winner] 
+    \label{exm:confidence_interval}
+    Recall the setting of \Cref{exm:confidence_region}. Then 
+    \begin{equation}
+        \label{eq:mlr_cond_lcb}
+        \left\{ \theta_0 : \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \alpha \right\}
+    \end{equation}
+    and 
+    \begin{equation}
+        \label{eq:mlr_cond_ci}
+        \left\{ \theta_0 : 1 - \frac{\alpha}{2}> \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}} > \frac{\alpha}{2} \right\}
+    \end{equation}
+    are a CLB and CI that cover the winning parameter  $\theta_W$ with probability exactly $1-\alpha$ conditional on $W$. In the CI, we can replace the left bound with $1-\alpha_1$ and the right bound with $\alpha_2$ for any $\alpha_1, \alpha_2 $ such that $\alpha_1 + \alpha_2 = \alpha$. The choice $\alpha_1 = \alpha_2 = \alpha/2$ ensures we miscover because the CI lies above and below the parameter with equal probability. 
+\end{example}
+
+The CI and CLB from \Cref{exm:confidence_interval} immediately generalize the conditional CI and CLB for the winner that one gets by following \cite{Fithian2017} to any MLR family. These confidence regions are normally only presented in the Gaussian case, and we show explicitly in \Cref{sec:winner_monotone_appdx} that our CI and CLB match those in the existing literature in the Gaussian case. 
+
+Something about p-values makes it easy to see that it only depends on the gap... 
 
 \section{Selecting Multiple p-Values for Inference}
 \label{sec:multiple_p_vals_appdx}
@@ -1371,8 +1398,6 @@ In this appendix, we establish the selective dominance property for UMP p-values
 \label{sec:one_sided_mlr_appdx}
 
 We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta < \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e, for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
-
-%To be fully general we only define the likelihood ratio when at least one of the numerator and denominator are non-zero and let it equal $\infty$ when the denominator is zero.
 
 Recall that for a testing problem, the critical function $\phi(x)$ (see \cite[Section 3.1]{Lehmann}) tells us the probability of rejecting the null having observed data $x$, so $\phi(X) = P(\text{reject } H_0 | X)$. From Theorem 3.4.1 of \cite{Lehmann} we know the test governed by the critical function 
 \begin{equation}
@@ -1766,199 +1791,6 @@ But the fact that
     & < 2
 \end{align*}
 implies that $P(p \leq t |Z=z',  S = 1) > \frac{1}{2} $, which means that $p$ is not selectively dominant. 
-\iffalse 
-\subsection{Selective dominance for one-sided testing in MLR families}
-\label{sec:mlr_selective_dominance_appdx}
-
-We closely follow the discussion and proof strategy in \cite[Appendix B.1]{Lei}.
-
-As a refresher, we are considering a parametric family $P_{\theta}$ that has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. These densities are such that for any $\theta < \theta'$ the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is itself a non-decreasing function of some real-valued function $T(x)$. We will suppose the likelihood ratio is always finite. 
-
-%To be fully general we only define the likelihood ratio when at least one of the numerator and denominator are non-zero and let it equal $\infty$ when the denominator is zero.
-
-Recall that for a testing problem, the critical function $\phi(x)$ (see \cite[Section 3.1]{Lehmann}) tells us the probability of rejecting the null having observed data $x$, so $\phi(X) = P(\text{reject } H_0 | X)$. From \cite[Theorem 3.4.1]{Lehmann} we know that the UMP test for testing $H_0 : \theta \leq \theta_0$ against the alternatives $H_a : \theta > \theta_0 $ is governed by the critical function 
-\begin{equation}
-    \label{eq:mlr_test}
-    \phi(x) = \begin{cases}
-        1 &\text{if } T(X) > C  \\
-        \gamma &\text{if } T(X) = C  \\
-        0 & \text{otherwise }
-    \end{cases}
-\end{equation}
-where $C$ and $\gamma$ are chosen to satisfy
-\begin{equation*}
-    P_{\theta_0}(T(X) > X) + \gamma P_{\theta_0}(T(X) = C) = \alpha.
-\end{equation*}
-Denote the left-continuous survival function of $T(X)$ and its righthand limit under $P_{\theta_0}$ as
-\begin{equation*}
-    G(t) = P_{\theta_0}(T(X) \geq t) \qquad G^+(t) = \lim_{u \downarrow t} G(u).
-\end{equation*}
-Let $U_{aux} \sim \text{Unif}([0, 1])$ be auxiliary randomness that is independent of $X$. Then the p-value, termed as a fuzzy p-value by \cite{Geyer}, given by
-\begin{equation}
-    \label{eq:mlr_p_val}
-    p = G^+(T(X)) + U_{aux}(G(T(X)) - G^+(T(X)))
-\end{equation}
-corresponds to the test \eqref{eq:mlr_test} in the following sense: if we instantiate \eqref{eq:mlr_test} by rejecting when $T(X) > C$ or rejecting when $T(X) = C$ and $U_{aux} \leq \gamma$, then we reject exactly when $p \leq \alpha$ using the p-value in \eqref{eq:mlr_p_val}. 
-
-First we argue that $p \sim \text{Unif}([0, 1])$ under $P_{\theta_0}$
-
-\begin{lemma}
-    \label{lem:uniform}
-    Under $P_{\theta_0}$, the p-value \eqref{eq:mlr_p_val} has a $\text{Unif}([0, 1])$ distribution.
-\end{lemma}
-
-\begin{proof}
-    
-Define
-\begin{equation*}
-    G^{-1}(z) = \sup \{ t : G(z) \geq z\}
-\end{equation*}
-Then, 
-\begin{align*}
-        &P_{\theta_0}(G^+(T(X)) + U_{aux}(G(T(X)) - G^+(T(X))) \leq z)\\
-        &= P_{\theta_0}(T(X) > G^{-1}(z)) + P_{\theta_0}\left(T(X) = G^{-1}(z),  U \leq \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\right)\\
-        &= P_{\theta_0}(T(X) > G^{-1}(z)) + P_{\theta_0}(T(X) = G^{-1}(z)) P_{\theta_0}\left(U \leq \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\right)\\
-        &=G^+(G^{-1}(z)) + (G(G^{-1}(z)) - G^{+}(G^{-1}(z))) \cdot \frac{z - G^+(G^{-1}(z))}{G(G^{-1}(z)) - G^{+}(G^{-1}(z))}\\
-        &= z,
-    \end{align*}
-implying our claim. 
-
-\end{proof}
-
-With \Cref{lem:uniform} under our belt, our next lemma is sufficient to imply the claim.
-
-\begin{lemma}
-    \label{lem:mlr}
-    Consider some $\theta \leq \theta_0$ and any selection function $s(x)$ for which $p$ has positive probability of selection under both $\theta$ and $\theta_0$. Then 
-    \begin{equation*}
-        P_{\theta}(p \leq z | S = 1)  \leq P_{\theta_0}(p \leq z | S = 1)
-    \end{equation*}
-\end{lemma}
-
-\begin{proof}
-
-For $\theta \leq \theta_0$ define $g_{\theta}(T(x)) = p_{\theta}(x)/p_{\theta_0}(x)$ to be the non-increasing likelihood ratio. Let $\nu$ be the measure of $T(X)$ under $X \sim P_{\theta_0}$:
-\begin{equation*}
-    \nu(A) = \int I(T(X) \in A) p_{\theta_0}(x) \mu(dx)
-\end{equation*}
-Using the ``standard machine'' (see the discussion after Equation 42 in \cite{Lei}) one can show that 
-\begin{equation*}
-    P_{\theta}(T(X) \in A) = \int_{A} g_{\theta}(t) \nu(dt)
-\end{equation*}
-If we let $\omega$ denote the product measure of $\nu$ and the Lesbesgue measure on $[0, 1]$. This is the distribution of $(T(X), U_{aux})$ under $P_{\theta_0}$. Then one can show using the $\pi-\lambda$ theorem that 
-\begin{equation*}
-    P_{\theta_0}((T(X), U) \in B) = \int_B g_{\theta}(t) \omega(dt, du) 
-\end{equation*}
-
-Let $s(t, u)$ be the selection function written as a function of $T(X)$ and $U_{aux}$:
-\begin{equation*}
-    s(t, u) = s(x) \text{ for } x = G^+(t) + u(G(t) - G^+(t)). 
-\end{equation*}
-Also, let $H$ be the transformation such that $p = H(T, U)$ and $H^{-1}(\cdot)$ be its pre-image. Then it is straightforward to show that via Bayes rule that 
-\begin{equation*}
-    P_{\theta}(p \in A| S = 1) = \frac{\int_{H^{-1}(A)} g_{\theta}(t) s(t, u) \omega(dt, du) }{\int_{H^{-1}([0, 1])} g_{\theta}(t) s(t, u) \omega(dt, du)}. 
-\end{equation*}
-
-If $z$ is such that $P_{\theta}(p \leq z | S = 1)  = 0$ then the desired inequality is trivial. To handle the non-trival case, note that if $(t, u) \in H^{-1}([0, z])$ then $t \leq G^{-1}(z)$, and if $(t, u) \in H^{-1}((z, 1])$ then $t \geq G^{-1}(z)$. Also, because $H$ is an invertible mapping, $H^{-1}([0, z])$ and $H^{-1}((z, 1])$ are disjoint. Thus, 
-\begin{align*}
-     \frac{1}{P_{\theta}(p \leq z | S = 1)} &= \frac{\int_{H^{-1}([0, 1])} g_{\theta}(t) s(t, u) \omega(dt, du) }{\int_{H^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) }\\
-                                            &= \frac{\int_{H^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) + \int_{H^{-1}((z, 1])} g_{\theta}(t)  s(t, u)\omega(dt, du) }{\int_{H^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du) }\\
-                                            &= 1 + \frac{\int_{H^{-1}((z, 1])} g_{\theta}(t) s(t, u) \omega(dt, du)}{\int_{H^{-1}([0, z])} g_{\theta}(t) s(t, u) \omega(dt, du)}\\
-                                            &\geq 1 + \frac{g_{\theta}(G^{-1}(z))  \int_{H^{-1}((z, 1])}  s(t, u) \omega(dt, du)}{g_{\theta}(G^{-1}(z)) \int_{H^{-1}([0, z])} s(t, u) \omega(dt, du)} \\
-                                            &= 1 + \frac{\int_{H^{-1}((z, 1])} s(t, u) \omega(dt, du)}{ \int_{H^{-1}([0, z])} s(t, u) \omega(dt, du)} \\
-                                            &= \frac{1}{P_{\theta_0}(p \leq z | S = 1)}, 
-\end{align*}
-where at the end, we have noted essentially that $g_{\theta_0}(t) = 1$ everywhere. This is sufficient to imply the claim. 
-\end{proof}
-
-\subsection{Proof of \Cref{cor:class_mlr}, \Cref{cor:cond_mlr}, and \Cref{cor:hyb_mlr}}
-
-In this appendix, we prove the validity of all our LCBs for MLR families. We consider a MLR family  $P_{\theta}$ parameterized by $\theta \in \R$ as in \Cref{sec:mlr_selective_dominance_appdx}. Suppose we observe $n$ independent samples $X_i \sim P_{\theta_i}$, and are imagining using the UMP p-values $p_i^{\theta_0}$ for the test $H_{0, i} : \theta_i \leq \theta_0$ as given in \eqref{eq:ump_mlr}.
-
-Proving that our provided confidence regions have at least $1-\alpha$ coverage is straightforward, but arguing that the resulting confidence regions are actually LCBs is more tricky. We first need a simple analysis lemma. 
-
-\begin{lemma}
-    \label{lem:analysis}
-    If $f(x) \geq 0$ is non-increasing real-valued function in $x\in \R$ and $a \geq b$ with $a, b \in (0, 1)$, then 
-    \begin{equation}
-        \frac{a h(x) + (1-a)}{b h(x) + (1-b)}
-    \end{equation}
-    is also a non-increasing function in $x$.
-\end{lemma}
-\begin{proof}
-    Considering some $y \leq z$, rearranging things shows that 
-    \begin{align*}
-        \frac{a h(y) + (1-a)}{b h(y) + (1-b)} \geq \frac{a h(z) + (1-a)}{b h(z) + (1-b)} &\iff \frac{(a - b)(h(y) - h(z)) }{(ah(x) + (1-a))(b h(x) + (1-b))} \geq 0\\
-        &\iff (a - b)(h(y) - h(z)) \geq 0
-    \end{align*}
-    and the right-hand inequality is clearly true. 
-\end{proof}
-
-And then another key lemma. 
-
-\begin{lemma}
-    Both $p^{\theta_0}_{(1)}$ and $p^{\theta_0}_{(1)}/p^{\theta_0}_{(2)}$ are non-decreasing in $\theta_0$.  
-\end{lemma}
-
-\begin{proof}
-    For a $t$ and $u$, let $A_{t, u} = \{(x, y) : x > t \text{ or } x = t \text{ and } y \leq u \}$. Then  
-    \begin{align*}
-        \frac{p^{\theta}_{(1)}}{p^{\theta}_{(2)}} &= \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2}} g_{\theta}(t) \omega(dt, du)} \\
-        &= 1 + \frac{ \int_{A_{t_1, u_1}}  g_{\theta}(t) \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}} g_{\theta}(t) \omega(dt, du)} \\
-        &\leq 1 + \frac{ g_{\theta}(t_1) \int_{A_{t_1, u_1}}   \omega(dt, du)}{ g_{\theta}(t_1)\int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
-        &= 1 + \frac{ \int_{A_{t_1, u_1}}   \omega(dt, du)}{ \int_{A_{t_2, u_2} \setminus A_{t_1, u_1}}  \omega(dt, du)} \\
-        &=  \frac{p^{\theta_0}_{(1)}}{p^{\theta_0}_{(2)}}
-    \end{align*}
-\end{proof}
-
-\begin{proof}
-    Define the mapping 
-    \begin{equation*}
-        H^{\theta_0}(t, u) = G^{\theta_0, +}(t) + u (G^{\theta_0}(t) -  G^{\theta_0, +}(t)) = uG^{\theta_0}(t)  + (1-u) G^{\theta_0, +}(t)
-    \end{equation*}
-    It suffices to show that $H^{\theta_0}(t_1, u_1)/H^{\theta_0}(t_2, u_2)$ is non-decreasing in $\theta_0$ whenever $t_1 > t_2$ or $t_1 = t_2$ and $u_1 \leq u_2$. To see this is the case, consider some $\theta \leq \theta_0$. As in the proof of \Cref{lem:mlr}, let $\nu$ denote the measure of $T(X)$ under $P_{\theta_0}$ and $g_{\theta}(t) = p_{\theta}(x)/p_{\theta_0}(x)$ dentote the non-increasing likelihood ratio. We argued in \Cref{lem:mlr}'s proof that 
-    \begin{equation*}
-        \nu(A) = \int I(T(X) \in A)p_{\theta_0}(x) \mu(dx).
-    \end{equation*}
-    Let $A_{B} =  I(T(X) \in B)$ be the indicator that $T(X)$ is in $B$. We will need to use the fact that for any $t_1 \in \R$, 
-    \begin{equation*}
-        \frac{G^{\theta}(t_1)}{G^{\theta, +}(t_1)}
-    \end{equation*}
-    is non-increasing in $\theta$. This is because
-    \begin{align*}
-        \frac{G^{\theta}(t_1)}{G^{\theta, +}(t_1)} &= \frac{\int_{A_{[t_1, \infty)}} g_{\theta}(t) d \nu }{\int_{A_{(t_1, \infty)}} g_{\theta}(t) d \nu}\\
-        &= 1 + \frac{\int_{A_{[t_1, t_1]}} g_{\theta}(t) d \nu }{\int_{A_{(t_1, \infty)}} g_{\theta}(t)  d \nu}\\
-        &\geq 1 +  \frac{ g_{\theta}(t_1) \int_{A_{[t_1, t_1]}}  d \nu }{g_{\theta}(t_1) \int_{A_{(t_1, \infty)}}  d\nu}\\
-        &= 1 +  \frac{  \int_{A_{[t_1, t_1]}}  d \nu }{\int_{A_{(t_1, \infty)}}  d\nu}\\
-        &=  \frac{G^{\theta_0}(t_1)}{G^{\theta_0, +}(t_1)}. 
-    \end{align*}
-    Now we handle two cases:\newline 
-
-    \noindent \textbf{Case One -  $t_1 = t_2$ and $u_1 \leq u_2$}: we apply \Cref{lem:analysis} to see that 
-    \begin{align*}
-        \frac{H^{\theta}(t_2, u_2)}{H^{\theta}(t_1, u_1)} &= \frac{u_2G^{\theta}(t_1)  + (1-u_2) G^{\theta, +}(t_1)}{u_1 G^{\theta}(t_1)  + (1-u_1) G^{\theta, +}(t_1)}\\
-        &= \frac{u_2 \frac{G^{\theta}(t_1)}{G^{\theta, +}(t_1)}   + (1-u_2) }{u_1 \frac{G^{\theta}(t_1)}{G^{\theta, +}(t_1)}  + (1-u_1) }\\
-        &\geq \frac{u_2 \frac{G^{\theta_0}(t_1)}{G^{\theta_0, +}(t_1)}   + (1-u_2) }{u_1 \frac{G^{\theta_0}(t_1)}{G^{\theta_0, +}(t_1)}  + (1-u_1) }\\
-        &= \frac{u_2G^{\theta_0}(t_1)  + (1-u_2) G^{\theta_0, +}(t_1)}{u_1 G^{\theta_0}(t_1)  + (1-u_1) G^{\theta_0, +}(t_1)}\\
-        &=\frac{H^{\theta_0}(t_2, u_2)}{H^{\theta_0}(t_1, u_1)}
-    \end{align*}
-    which is sufficient. \newline 
-
-    \noindent \textbf{Case Two -  $t_1 > t_2$}: we use the result from the previous case along with some more computations to see that 
-
-    \begin{align*}
-        \frac{H^{\theta}(t_2, u_2)}{H^{\theta}(t_1, u_1)} &= \frac{u_2G^{\theta_0}(t_2)  + (1-u_2) G^{\theta_0}(t_2)}{u_1 G^{\theta_0}(t_1)  + (1-u_1) G^{\theta_0}(t_1)}\\
-        &= \frac{u_2  \int_{A_{[t_2, \infty)}}g_{\theta}(t) \nu(dt)  + (1-u_2) \int_{A_{(t_2, \infty)}} g_{\theta}(t) \nu(dt)}{u_1 \int_{A_{[t_1, \infty)}} g_{\theta}(t) \nu(dt)  + (1-u_1) \int_{A_{(t_1, \infty)}} g_{\theta}(t) \nu(dt)}\\
-        &= \frac{u_2  \int_{A_{[t_1, \infty)}}g_{\theta}(t) \nu(dt)  + (1-u_2) \int_{A_{(t_1, \infty)}} g_{\theta}(t) \nu(dt)}{u_1 \int_{A_{[t_1, \infty)}} g_{\theta}(t) \nu(dt)  + (1-u_1) \int_{A_{(t_1, \infty)}} g_{\theta}(t) \nu(dt)} + \frac{u_2  \int_{A_{[t_2, t_1)}}g_{\theta}(t) \nu(dt)  + (1-u_2) \int_{A_{(t_2, t_1]}} g_{\theta}(t) \nu(dt)}{u_1 \int_{A_{[t_1, \infty)}} g_{\theta}(t) \nu(dt)  + (1-u_1) \int_{A_{(t_1, \infty)}} g_{\theta}(t) \nu(dt)}\\
-        &= \frac{u_2G^{\theta}(t_1)  + (1-u_2) G^{\theta, +}(t_1)}{u_1 G^{\theta}(t_1)  + (1-u_1) G^{\theta, +}(t_1)} + \frac{u_2  \int_{A_{[t_2, t_1)}}g_{\theta}(t) \nu(dt)  + (1-u_2) \int_{A_{(t_2, t_1]}} g_{\theta}(t) \nu(dt)}{u_1 \int_{A_{[t_1, \infty)}} g_{\theta}(t) \nu(dt)  + (1-u_1) \int_{A_{(t_1, \infty)}} g_{\theta}(t) \nu(dt)}\\
-        &\geq \frac{u_2G^{\theta_0}(t_1)  + (1-u_2) G^{\theta_0, +}(t_1)}{u_1 G^{\theta}(t_1)  + (1-u_1) G^{\theta_0, +}(t_1)} + \frac{u_2 g_{\theta}(t_1) \int_{A_{[t_2, t_1)}} \nu(dt)  + (1-u_2) g_{\theta}(t_1)  \int_{A_{(t_2, t_1]}}  \nu(dt)}{u_1 g_{\theta}(t_1) \int_{A_{[t_1, \infty)}}  \nu(dt)  + (1-u_1) g_{\theta}(t_1) \int_{A_{(t_1, \infty)}} \nu(dt)}\\
-        &= \frac{u_2G^{\theta_0}(t_1)  + (1-u_2) G^{\theta_0, +}(t_1)}{u_1 G^{\theta}(t_1)  + (1-u_1) G^{\theta_0, +}(t_1)} + \frac{u_2 \int_{A_{[t_2, t_1)}} \nu(dt)  + (1-u_2)   \int_{A_{(t_2, t_1]}}  \nu(dt)}{u_1  \int_{A_{[t_1, \infty)}}  \nu(dt)  + (1-u_1) \int_{A_{(t_1, \infty)}} \nu(dt)}\\
-        &= \frac{H^{\theta_0}(t_2, u_2)}{H^{\theta_0}(t_1, u_1)}
-    \end{align*}
-    which is sufficient. 
-
-\end{proof}
-\fi 
 
 \subsection{Proof of \Cref{cor:sidak_closed}}
 
@@ -2058,36 +1890,6 @@ Now suppose that $I$ is size $n-j+1$.  Its smallest p-value is the $\ell$th smal
     &\leq \frac{\alpha-\beta}{1-\beta} p_{(m)} + \left(1 - \frac{\alpha - \beta}{1-\beta} \right)\beta_{ n - j + 1} \\
     &= \frac{\alpha-\beta}{1-\beta} p_{(m)} + \left(1 - \frac{\alpha - \beta}{1-\beta} \right)\beta_{|I|}.
 \end{align*}
-
-\subsection{Proof of \Cref{thm:ratio_testing}}
-
-
-Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the null hypotheses $H_{0, i}$. We restrict our attention to $j \in \mathcal{J}$ for which their is positive probability that the ratio of $p_j$ to the next largest p-value is the smallest (with this ratio defined to be just the p-value itself for the largest p-value). For $x \in \R$ and $z \in \R^{n-1}$, define $y(x, z) \in \R^{n-1}$ to be the sorted vector $y_1(x, z) \leq \dots \leq y_n(x, z) \leq y_{n+1}(x, z) = 1$ whose entries are composed of $x$, the entries of $z$, and ends with a one. Let $k(x, z)$ be the smallest index such that $y_{k(x, z)}(x, z) = x$. Then, we can apply \Cref{sec:dominance}'s framework with $p=p_j$, $Z = p_{-j}$ and the selection function 
-\begin{equation*}
-s(x, z) =
-\begin{cases}
-1 & \text{if } \frac{y_{k(x, z)}(x, z)}{y_{k(x, z)}(x, z)} \leq \min_{j \in [n]: j \neq k(x, z)} \frac{y_j}{y_{j + 1}} \\
-0, & \text{otherwise}
-\end{cases}
-\end{equation*}
-where we take $0/0 = 1$. An equivalent characterization of this selection function is, defining the sorted vector $\tilde{y}(z) \in \R^n$ be the entries of $z$ with a one tacked on at the end. Let $I$ be the set of indices for which $\tilde{y}_i(z)/\tilde{y}_{i+1}(z)$ is minimized. Then $s(x, z)$ is one when $x \in \bigcup_{i \in I} [\tilde{y}_i(z)]  $
-
-$s(x, z) = I_{\beta_n < p_j < \min_{i \neq j} p_i}$. It is straightforward to see that our adjusted p-value $p_{adj}$ is $(p_j - \beta_n)/(\min_{i \neq j} p_i - \beta_n)$, and \Cref{thm:adjustment} therefore tells us that 
-\begin{equation*}
-    P_{H_{0, j}}\left( \frac{p_j - \beta_n}{\min_{i \neq j} p_i - \beta_n} \leq \frac{\alpha -\beta}{1-\beta}  \;\middle|\; p_{-j}, S=1 \right) \leq \frac{\alpha - \beta}{1-\beta}.
-\end{equation*}
-Re-arranging things we get 
-\begin{equation}
-    \label{eq:hybrid_tool}
-    P_{H_{0, j}}\left( p_j  \leq \frac{\alpha -\beta}{1-\beta}\min_{i \neq j} p_i  + \left( 1 - \frac{\alpha -\beta}{1-\beta}\right) \beta_n  \;\middle|\; p_{-j}, S=1  \right) \leq \frac{\alpha - \beta}{1-\beta}.
-\end{equation}
-
-
-Letting $W$ be the index of the smallest p-value, we can now prove the claim that rejecting $H_{0, W}$ when 
-\begin{equation*}
-    p_{(1)} \leq \frac{\alpha-\beta}{1-\alpha} p_{(2)} + \left(1 - \frac{\alpha-\beta}{1-\alpha} \right) \beta_n 
-\end{equation*}
-controls Type I error at level $\alpha$. Let $\widetilde{W}$ be the index of the smallest p-value if all the p-values are strictly larger than $\beta_n$. If some p-value is at most $\beta_n$, then force $\widetilde{W}=0$. Let $G_P$ be the event that a p-value corresponding to a true null is at most $\beta_n$ (note the event $G$ depends on the data generating process $P$). We know from Sidak's procedure (\Cref{thm:sidak_testing}) that $P(G_P) \leq \beta$. Three facts are immediate: 
 
 
 \end{appendix}
