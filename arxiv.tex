@@ -793,11 +793,13 @@ In other words, the conditional procedure can only reject when $p_{(1)} \leq C_{
 \subsection{Conditional Inference on Winners}
 \label{sec:cond_appdx}
 
+We first provide the standard derivation for the LCB and CI for the winning mean in the setting of independent Gaussian data. Then we show that it matches our p-value viewpoint. After that we use are p-value viewpoint to argue that the (standardized) distance between the winner $X_W$ and LCB is purely a function of the (standardized) distance between the winner $X_W$ and runner-up $X_R$. Finally we close by proving some facts about more general conditional LCB and CI for MLR families, which is written in terms of p-values. 
+
 \subsubsection{Standard Derivation}
 
 Suppose we observe independent Gaussian data $X \sim N(\mu, I_n)$ and want to make a LCB for the mean $\mu_W$ of the winner $W = \argmax_{i \in [n]} X_i$. 
 
-The conditional approach tries to avoid the classical approach's curse of dimensionality by providing inferences for only the winning mean. It does so by delivering an LCB for $\mu_W$ that is valid conditionally on $W$. To construct the conditional LCB, we follow the framework of \cite{Fithian2017}. Letting $R$ be the index of the runner-up (second largest observation), we note that the deviation of $X_{W}$ from $\mu_{W}$ has a truncated normal distribution once we condition on $W$ and $X_{-W}$:
+To construct the conditional LCB, we follow the framework of \cite{Fithian2017}. Letting $R$ be the index of the runner-up (second largest observation), we note that the deviation of $X_{W}$ from $\mu_{W}$ has a truncated normal distribution once we condition on $W$ and $X_{-W}$:
 \begin{equation}
     \label{eq:cond_dist}
     X_W - \mu_W \mid W, X_{-W} \sim TN(0, 1, X_{R} - \mu_{W}, \infty).
@@ -1387,7 +1389,7 @@ In this appendix, we establish the selective dominance property for UMP p-values
 \subsection{MLR Families}
 \label{sec:one_sided_mlr_appdx}
 
-We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta < \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e, for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
+We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta \leq \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e, for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
 
 Recall that for a testing problem, the critical function $\phi(x)$ (see \cite[Section 3.1]{Lehmann}) tells us the probability of rejecting the null having observed data $x$, so $\phi(X) = P(\text{reject } H_0 | X)$. From Theorem 3.4.1 of \cite{Lehmann} we know the test governed by the critical function 
 \begin{equation}
@@ -1544,6 +1546,7 @@ As such, we sometimes write our selection function as a function of $T(X)$ and $
 We use this abuse of notation in our next lemma, which characterizes the conditional distribution of $T(X)$ given selection.
 
 \begin{lemma}[Distribution of $(T(X), U_{aux})$ given selection]
+    \label{lem:cond_dist}
     For any selection function $s(x)$ under which $p$ has a positive probability of selection under $P_{\theta}$, 
     \begin{equation*}
         P_{\theta}((T(X), U_{aux}) \in B| S = 1 ) = \frac{\int_{B} g_{\theta}(t)s(t, u) \omega(dt, du)}{ \int g_{\theta}(t) s(t, u) \omega(dt, du) }
@@ -1641,67 +1644,76 @@ is at most $\alpha$. Our work from the previous section also implies that this p
 \subsection{Montonicty of Selective MLR p-Values}
 \label{sec:one_sided_monotone_appdx}
 
-In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Letting
+In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Because we do everything conditional on $Z=z$, we can imagine without loss of generality there is no $Z$ and just work with $X$. Letting
 \begin{equation*}
-    G^{\theta_0}(t |z) = P_{\theta_0}(T(X) \geq t | Z=z) \qquad G^{\theta_0, +}(t|z) = \lim_{u \downarrow t} G^{\theta_0}(u|z)
+    G^{\theta_0}(t) = P_{\theta_0}(T(X) \geq t) \qquad G^{\theta_0, +}(t) = \lim_{u \downarrow t} G^{\theta_0}(u)
 \end{equation*}
 we let 
 \begin{equation*}
-    p^{\theta_0} = G^{\theta_0, +}(T(X) |Z) + U_{aux}(G^{\theta_0}(T(X)|Z) - G^{\theta_0, +}(T(X))|Z)
+    p^{\theta_0} = G^{\theta_0, +}(T(X)) + U_{aux}(G^{\theta_0}(T(X)) - G^{\theta_0, +}(T(X)))
 \end{equation*}
-be the UMP p-value for testing $H_{0}: \theta \leq \theta_0$ conditional on $Z=z$. Again, $U_{aux}$ is an uniform random variable independent of the data. Let 
+be the UMP p-value for testing $H_{0}: \theta \leq \theta_0$. Again, $U_{aux}$ is a uniform random variable independent of the data. Let 
 \begin{equation*}
-    m^{\theta_0}(t, u, z) = G^{\theta_0, +}(t|z) + u(G^{\theta_0}(t|z) - G^{\theta_0, +}(t|z))
+    m^{\theta_0}(t, u) = G^{\theta_0, +}(t) + u(G^{\theta_0}(t) - G^{\theta_0, +}(t))
 \end{equation*}
-be the map such that $m^{\theta_0}(T(X), U, Z) = p^{\theta_0}$. 
+be the map such that $m^{\theta_0}(T(X), U) = p^{\theta_0}$. 
 
-Considering a class of selection functions $s^{\theta_0}(x, z)$ under which $p^{\theta_0}$  and $U$ both have a positive probability of selection given $Z=z$, we want to show that the selective p-values 
+Considering a class of selection functions $s^{\theta_0}(x)$ under which $p^{\theta_0}$ and $U$ both have a positive probability of selection given, we want to show that the selective p-values from \Cref{thm:adjustment}, 
 \begin{equation*}
-    p^{\theta_0}_{sel} = \frac{\int_{0}^{p^{\theta_0}} s^{\theta_0}(x) dx}{\int_{0}^{1} s^{\theta_0}(x) dx}.
+    p^{\theta_0}_{sel} = \frac{\int_{0}^{p^{\theta_0}} s^{\theta_0}(x) dx}{\int_{0}^{1} s^{\theta_0}(x) dx},
 \end{equation*}
-are monotone non-decreasing in $\theta_0$. We will show that this is true the selection function $s^{\theta_0}(x, z)$ is independent of $\theta_0$ when written in terms of the data (i.e., the selection really depends on the data, not the null parameter being tested). That is, whenever there exists $\tilde{s}(\cdot, \cdot)$ such that 
+are monotone non-decreasing in $\theta_0$. Specifically, we will show that this is true when the selection function $s^{\theta_0}(x)$ is independent of $\theta_0$ once written in terms of the data (i.e., selection can be stated in terms of the data without reference to the null parameter being tested). Formally, we establish monotonicity whenever there exists $\tilde{s}(\cdot, \cdot)$, independent of $\theta_0$, such that 
 \begin{equation*}
-    s^{\theta_0}(x, z) = \tilde{s}(t, u, z) \text{ for all } t, u \text{ with } x = m^{\theta_0}(t, u, z), 
+    s^{\theta_0}(x) = \tilde{s}(t, u) \text{ for all } t, u \text{ with } x = m^{\theta_0}(t, u), 
 \end{equation*}
 
-\begin{proposition}
+Like before, we now consider some fixed $\theta \leq \theta_0$ and let $g_{\theta}(T(x))$ be the non-increasing function that equals the likelihood ratio $p_{\theta}(x)/p_{\theta_0}(x)$ on the support. The next lemma allows us to rewrite the selective p-value in a useful way. 
+
+\begin{lemma} Letting $E_{r, s} = \{(t, u) : t > r \text{ or } t = r \text{ and } u \leq s \}$. For any $t$ and $u$ such that $m^{\theta}(t, u) = y$,
+\begin{equation*}
+    \int_0^y s^{\theta}(x) dx = \int_{E_{t, u}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du). 
+\end{equation*}
+\end{lemma}
+\begin{proof}
+   First we handle the case that $s^{\theta}(x) = I(x \in B_{\theta})$ is an indicator of membership to some set. Then the left-hand side of the equation is the Lesbesgue measure of the set $\{x : x \leq y \}$ intersected with $B_{\theta}$. By \Cref{lem:uniform} this is the same as the probability under $P_{\theta}$ of the p-value $p^{\theta}$ being at most $y$ and in $B_{\theta}$. By our choice of $t$ and $u$, the set difference between $E_{t, u}$ and the set $\{(t, u): m^{\theta_0}(t, u) \leq y \}$ is measure zero under $P_{\theta}$. Thus by \Cref{lem:pi_lambda} and how $\tilde{s}$ is defined, the right-hand side of the equation is also the probability  probability under $P_{\theta}$ of the p-value $p^{\theta}$ being at most $y$ and in $B_{\theta}$. We again get the result for general selection functions $s^{\theta}(x)$ by applying the standard machine. 
+\end{proof}
+
+According the the previous lemma, 
+\begin{equation*}
+    p^{\theta}_{sel} = \frac{\int_{0}^{p^{\theta}} s^{\theta}(x) dx}{\int_{0}^{1} s^{\theta}(x) dx} = \frac{\int_{E_{T(X), U_{aux}}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }{\int g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }
+\end{equation*}
+Hence it would suffice to show that for all $r$ and $s$, 
+\begin{equation*}
+  \frac{\int_{E_{r, s}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }{\int g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }
+\end{equation*}
+is montone in non-decreasing in $\theta$. This is the subject of our next lemma.  
+
+\begin{lemma}
     \label{prop:monotone_adjustment}
-    Let $s_{\theta}(x)$ be a selection function such that for $\theta \leq \theta_0$, $s_{\theta_0}(x)= 0 \implies s_{\theta}(x) = 0$ and the ratio $s_{\theta_0}(x)/s_{\theta}(x)$ is non-decreasing in $x$. Then, if $p^{\theta}_{adj}$ is the adjustment from $F_{U | S_{\theta} = 1}(p^{\theta})$ then $p^{\theta}_{adj}$ is monotone non-decreasing increasing in $\theta$.  
-
-\end{proposition}
-
-
+    For any $r$ and $s$, the quantity   
+    \begin{equation*}
+        \frac{\int_{E_{r, s}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }{\int g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }
+      \end{equation*}
+    is monotone non-decreasing in $\theta$. 
+\end{lemma}
 
 \begin{proof}
+    The proof strategy is the same as our earlier results. We would like to show that 
 
-        Fix a $t$ and $u$ and let $A_{r, s} = \{(t, u) : t > r \text{ or } t = r \text{ and } u \leq s \}$. Then it suffices to show that 
-        \begin{equation*}
-            \frac{ \int_{A_{t, u}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}{ \int g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}
-        \end{equation*}
-        is monotone non-decreasing. Equivalently that  
+    \begin{equation*}
+        \frac{\int_{E_{r, s}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) }{\int g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) } \leq  \frac{\int_{E_{r, s}} g_{\theta_0}(t) \tilde{s}(t, u) \omega(dt, du) }{\int g_{\theta_0}(t) \tilde{s}(t, u) \omega(dt, du) } 
+    \end{equation*}
 
-        \begin{equation*}
-            \frac{ \int_{A_{t, u}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}{ \int g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} \leq \frac{ \int_{A_{r, s}} s_{\theta_0}(t, u) \omega(dt, du)}{ \int s_{\theta_0}(t, u) \omega(dt, du)}
-        \end{equation*}
+    If the numerator of the left-hand side is zero then the inequality must hold. In the other case we see that 
 
-        If $\int_{A_{r, s}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du) = 0$ then the inequality is trivial. So it suffices to consider the other case and show that 
+    \begin{align*}
+        \frac{\int g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du)}{\int_{E_{r, s}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) } &= 1 + \frac{\int_{E_{r, s}^c} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du)}{\int_{E_{r, s}} g_{\theta}(t) \tilde{s}(t, u) \omega(dt, du) } \\
+        &\geq 1 + \frac{ g_{\theta}(r) \int_{E_{r, s}^c} \tilde{s}(t, u) \omega(dt, du)}{g_{\theta}(r)\int_{E_{r, s}}  \tilde{s}(t, u) \omega(dt, du) } \\
+        &= 1 + \frac{  \int_{E_{r, s}^c} \tilde{s}(t, u) \omega(dt, du)}{\int_{E_{r, s}}  \tilde{s}(t, u) \omega(dt, du) }\\
+        &= \frac{\int g_{\theta_0}(t) \tilde{s}(t, u) \omega(dt, du)}{\int_{E_{r, s}} g_{\theta_0}(t) \tilde{s}(t, u) \omega(dt, du) }
+    \end{align*}
 
-        \begin{equation*}
-            \frac{ \int g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} { \int_{A_{r, s}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} \geq \frac{ \int s_{\theta_0}(t, u) \omega(dt, du)}{ \int_{A_{r, s}} s_{\theta_0}(t, u) \omega(dt, du)}
-        \end{equation*}
-
-        \begin{equation*}
-            1 + \frac{ \int_{A_{r, s}^c} g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} { \int_{A_{r, s}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)}\geq 1 + \frac{ \int_{A_{r, s}^c} s_{\theta_0}(t, u) \omega(dt, du)}{ \int_{A_{r, s}} s_{\theta_0}(t, u) \omega(dt, du)}
-        \end{equation*}
-
-        Definining $0/0 = 0$, our assumptions allow us to do the following:
-        
-        \begin{align*}
-            \frac{ \int_{A_{r, s}^c} g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} { \int_{A_{r, s}}  g_{\theta}(t) s_{\theta}(t, u) \omega(dt, du)} &=\frac{ \int_{A_{r, s}^c} g_{\theta}(t) s_{\theta_0}(t, u) \left( \frac{s_{\theta}(t, u) }{s_{\theta_0}(t, u)} \right) \omega(dt, du)} { \int_{A_{r, s}}  g_{\theta}(t) s_{\theta_0}(t, u) \left( \frac{s_{\theta}(t, u) }{s_{\theta_0}(t, u)} \right) \omega(dt, du)}\\
-                &\geq \frac{g_{\theta}(G_{\theta}^{-1}(m(r, s))) \left( \frac{s_{\theta}(r, s) }{s_{\theta_0}(r, s)} \right)   \int_{A_{r, s}^c} s_{\theta_0}(t, u) \omega(dt, du)}{ g_{\theta}(G_{\theta}^{-1}(m(r, s))) \left( \frac{s_{\theta}(r, s) }{s_{\theta_0}(r, s)} \right)  \int_{A_{r, s}} s_{\theta_0}(t, u) \omega(dt, du)}\\
-                &= \frac{  \int_{A_{r, s}^c} s_{\theta_0}(t, u) \omega(dt, du)}{   \int_{A_{r, s}} s_{\theta_0}(t, u) \omega(dt, du)}\\
-        \end{align*}
-
+    where we have noted that if $(t, u) \in E_{r, s}$ then $t \geq r$ and if $(t, u) \in E_{r, s}$ then $t \leq r$, and also that $g_{\theta_0}(t) = 1$ almost everywhere in the measure $\omega$.  
 \end{proof}
 
 \subsection{additional}
@@ -1863,6 +1875,7 @@ But the fact that
 \end{align*}
 implies that $P(p \leq t |Z=z',  S = 1) > \frac{1}{2} $, which means that $p$ is not selectively dominant. 
 
+\iffalse
 \subsection{Proof of \Cref{cor:cond_closed}}
 
 It suffices to argue that closing our conditional global null testing procedure rejects $H_{0, (k)}$ if and only if $p_{(j)} \leq \alpha p_{(j + 1)} $ for every $1 \leq j \leq k$. We will define $p_{(n+1)} = 1$ and, for subsets $I \subseteq [p]$ of size one, we define the conditional procedure to reject the global null $H_{I, 0}$ when the lone p-value is at most $\alpha$. For subsets $I$ of size strictly more than one, the procedure rejects the global null $H_{I, 0}$ when the smallest p-value in $I$ is at most alpha times the second smallest p-value in $I$. \newline 
@@ -1877,6 +1890,7 @@ If it is of size at least two, suppose the smallest p-value in the set is then t
 \begin{equation*}
     p_{(\ell)} \leq \alpha p_{(\ell + 1)} \leq \alpha p_{(m)}.
 \end{equation*}
+\fi
 
 \subsection{Proof of \Cref{cor:hyb}}
 \label{sec:hyb_proof_appdx}
@@ -1924,7 +1938,7 @@ and if $H_{0, j}$ is not true then trivially $P(\text{falsely reject } H_{0, W} 
     &\leq \alpha. 
 \end{align*}
 
-\subsection{Proof of \Cref{cor:hyb_closed}}
+\subsection{Proof of \Cref{cor:hyb_closed} and  \Cref{cor:cond_closed}}
 
 It suffices to argue that closing our hybrid global null testing procedure rejects $H_{0, (k)}$ if and only if 
 \begin{equation*}
