@@ -149,7 +149,7 @@ Sequential selective hypothesis testing.
 
 In this section we define selectively dominant p-values, a class of p-values that enable us to easily do inference after selection. We give a precise characterization of when p-values are selectively dominant and illustrate that the most commonly used p-values are all selectively dominant. Finally, we provide examples of how to apply our selective dominance framework. 
 
-For this section and rest of the article, we consider the conditoinal probability of $A$ given $B$, notated as $P(A | B)$ to be zero whenever $B$ is a measure zero event.
+In this section, and throughout the remainder of the article, we will often encounter expressions like $P(A|X, B)$, where $P$ is a probability measure, $A$ and $B$ are events, and $X$ is a random variable. It is best to interpret this expression intuitively, but to be totally formal we specify that if $B$ is a probability zero event, i.e., $P(B) = 0$, we take the expression $P(A|X, B)$ to be identically zero. If not, we can define the conditional probability measure $Q(\cdot) = P(\cdot| B)$ given the event $B$, and we consider $P(A | X, B)$ to be the conditional expectation $E_Q[I_A| X]$ of the indicator $I_A$ under $Q$. %There are times (which we will specify) where an equality or inequality between random variables is almost sure with respect to the conditional measure $Q$ rather than the marginal measure $P$. %For this section and rest of the article, we consider the conditoinal probability of $A$ given $B$, notated as $P(A | B)$ to be zero whenever $B$ is a measure zero event.
 
 \subsection{Selective dominance}
 
@@ -176,22 +176,27 @@ For this section and rest of the article, we consider the conditoinal probabilit
     \label{fig:distributions}
 \end{figure}
 
-In classical statistics, a p-value is a random variable $p$ supported on $[0, 1]$ that stochastically dominates the uniform distribution $U \sim \text{Unif([0, 1])}$ under the null, i.e., $p \succeq_{H_0} U$. The left-most panel of \Cref{fig:distributions} gives an example of what a null p-value distribution may look like. When working with p-values, we maintain Type I error control if we reject the null $H_0$ when $p$ is small:
+In classical statistics, a p-value is a random variable $p \in [0, 1]$ that stochastically dominates the uniform distribution $U \sim \text{Unif([0, 1])}$ under the null, i.e., for any $t \in \R$ 
+
+\begin{equation*}
+    P(p \leq t) \leq P(U \leq t)= t.
+\end{equation*}
+The left-most panel of \Cref{fig:distributions} gives an example of what the distributation of a null p-value may look like. When working with p-values, we maintain Type I error control if we reject the null $H_0$ when $p$ is small:
 \begin{equation*}
     P_{H_0}(\text{reject null}) = P_{H_0}(p \leq \alpha) \leq P(U \leq \alpha)  = \alpha.
 \end{equation*}
 In essence, stochastic dominance allows us to use the uniform distribution as a reference distribution. We control the probability of $p$ being small under the null by comparing it to the probability of a uniform being small. 
 
-In the problems we consider, we use $p$ to test the null $H_0$ only after it has been ``selected''. In full generality, we consider a p-value $p$ for testing the null $H_0$ that is conditionally valid given some random vector $Z$, i.e., $p \mid Z = z \succeq_{H_0} U$:
+In the problems we consider, we use $p$ to test the null $H_0$ only after it has been ``selected''. In full generality, we consider a p-value $p$ for testing the null $H_0$ that is conditionally valid given some random vector $Z$, i.e., for any $t \in \R$ 
 \begin{equation}
     \label{eq:valid_given_z}
-    P_{H_0}(p \leq \alpha \mid Z =z) \leq P(U \leq \alpha)  = \alpha.
+    P_{H_0}(p \leq t | Z) \leq P(U \leq t)  = \alpha.
 \end{equation}
-Additionally, we consider a binary selection random variable $S \in \{0, 1\}$ that takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function},
+Additionally, we consider a binary selection random variable $S \in \{0, 1\}$ that takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function} \footnote{Formally, the selection function $s(\cdot, \cdot)$ such is an instantiation of the conditional expectation $s(p, Z) = E[S|p , Z ]$. },
 \begin{equation*}
     s(x, z) = P(S = 1 \mid p = x, Z = z).
 \end{equation*}
-Intuitively, we imagine observing $p=x$ and $Z=z$ and then flipping a biased coin that comes up heads with probability $s(x, z)$. We only use $p$ to test the null $H_0$ when this coin comes up heads, and otherwise do not perform inference. This process turns out to capture what happens in a wide range of selective inference problems. We decide the selection procedure in the problems we consider, so $s(x, z)$ is known. In cases where no $Z$ is present, we can imagine $Z=0$ and write the selection function $s(x)$ purely in terms of $x$. 
+Intuitively, we imagine observing $p=x$ and $Z=z$ and then flipping a biased coin that comes up heads with probability $s(x, z)$. We only use $p$ to test the null $H_0$ when this coin comes up heads, and otherwise do not perform inference. This process turns out to capture what happens in a wide range of selective inference problems. In the problems we consider, we decide the selection process, so $s(x, z)$ is known. In cases where no $Z$ is present, we can imagine $Z=0$ and write the selection function $s(x)$ purely in terms of $x$. 
 
 Because we only perform inference when the coin comes up heads, our goal should be to design a procedure that controls Type I error conditional on this selection event:
 \begin{equation}
@@ -208,63 +213,57 @@ Consider a p-value $p$ that is uniform on $[0, 1]$ under the null $H_0$. If we u
 \end{equation*}
 \end{example}
 
-\Cref{exm:publication_bias} is a standard example in the literature on publication bias. If researchers publish studies testing the null $H_0$ only when their p-values are below $\alpha$, the reader only gets to observe inferences made after this selection. As a consequence, the reader's observed type I error rate can be as high as one. \Cref{fig:distributions}'s middle panel displays the distribution of our earlier example p-value (left panel), but after it has been selected via \Cref{exm:publication_bias}'s selection function. It is clear from the picture that, after selection, the null p-value distribution is no longer stochastically dominanted by the uniform distribution. 
+\Cref{exm:publication_bias} is a standard example in the literature on publication bias. If researchers publish studies only when their p-values are below $\alpha$, readers always observe significant findings regardless of the true data generating distribution. As a consequence, the reader's observed type I error rate can be as high as one. \Cref{fig:distributions}'s middle panel displays the distribution of the left panel's p-value, but after it has been selected for inference via \Cref{exm:publication_bias}'s selection function. It is clear from the picture that, after selection, the null p-value distribution no longer stochastically dominates the uniform distribution. 
 
-Essentially, after selection, the uniform distribution no longer suffices as a reference distribution. Naturally, we may instead try and use the distribution of a uniform after it has been selected by the same selection function. Formally, suppose that $U$ has uniform distribution conditional on $Z$, i..e., $U \mid Z=z \sim \text{Unif}([0, 1])$, and let $S' \in \{0, 1\}$ be a different binary selection random variable whose joint distribution with $U$ and $Z$ is governed by the same selection function 
+Essentially, after selection, the uniform distribution no longer suffices as a reference distribution. Naturally, we may instead try and use the distribution of a uniform after it has been selected by the same selection function. Formally, imagine on the same probability space a uniform random variable $U$ that is independent of $Z$, and let $S' \in \{0, 1\}$ be a different binary selection random variable whose joint distribution with $U$ and $Z$ is governed by the same selection function \footnote{Again, formally $E[S'| U, Z]= s(U, Z)$. }
 \begin{equation*}
      P(S' = 1 \mid U = x, Z=z ) = s(x, z).
 \end{equation*}
-Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below \footnote{For the sake of simplicity, we require selective dominance to hold point-wise for \emph{every} $z$ rather than almost all, and our later results similarly hold point-wise. Our definition and results, however, can be modified to accomodate more general case.}. 
+Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below. 
 
 \begin{definition}[Selective dominance]
     \label{def:selective_dominance}
-    Considering a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}, we say that $p$ is \textbf{selectively dominant given $Z$} if, under the null $H_0$, it has a conditional probability density function (PDF) given $Z=z$ and satisfies
+    Consider a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}. We say that $p$ is \textbf{selectively dominant given $Z$} if, under the null $H_0$, it has a conditional probability density function (PDF) given $Z$, and it satisfies 
     \begin{equation}
     \label{eq:selective_dominance}
-    p \mid Z=z, S = 1 \succeq_{H_0} U \mid Z=z, S' = 1
+    P_{H_0}(p \leq t | Z, S=1) \leq P(U \leq t | Z, S'=1) \text{ for all } t \in [0, 1]
     \end{equation}
-    for every selection function $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected given $Z=z$. 
+    for any selection function $s(x, z)$.  
 \end{definition}
-\iffalse 
-\begin{definition}[Selective dominance]
-    Consider a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}. We say that $p$ is \textbf{selectively dominant given $Z$} if for any fixed distribution $P$ under the null $H_0$ and any selection function $s(x, z)$ for which $p$ and $U$ both have positive probability of selection, i.e., 
-    \begin{equation*}
-        P(S = 1), P(S'=1),
-    \end{equation*}
-    $p$ has a conditional PDF given $Z$ and 
-    \begin{equation}
-    p \mid Z, S = 1 \succeq U \mid Z, S' = 1
-    \end{equation}
-    meaning for all $t \in \R$ that 
-    \begin{equation*}
-        P(p \leq t | Z, S=1) \leq P(U \leq t | Z, S'=1)
-    \end{equation*}
-    where the inequality is almost sure. 
-\end{definition}
-\fi 
 
-As we will soon see, the majority of p-values that practitioners use are selectively dominant as described in \eqref{eq:selective_dominance}. In \Cref{def:selective_dominance}, we restrict to p-values with conditional PDFs under the null because it makes our theory and methods simpler to state. Because we can always make a p-value both have a conditional PDF and be more powerful via randomization, this restriction is never a practical issue. Also, after applying our machinery with randomized p-values, the user can always derandomize the resulting method if they would like. %We only consider selection functions $s(x, z)$ under which $p$ and $U$ both have a positive probability of selection in \Cref{def:selective_dominance} so that the conditioning events $S = 1$ is never probability zero. 
+Essentially, selective dominance requires that the null conditional distribution of $p$ given $Z$ and selection should stochastically dominate the conditional distribution of $U$ given $Z$ and the same selection. Moreover, this should be true for \underline{any} selection process. 
 
-To perform valid post-selection inference using a selectively dominant p-value, we can transform it so that it remains a p-value after selection. As \Cref{thm:adjustment} explains, we can ``undo'' the effects of selection by applying the conditional cumulative distribution function (CDF) $F_{U \mid Z, S' = 1}(\cdot)$ of $U$ given selection to $p$. In line with prior literature, we refer to this transformed p-value as a \textbf{selective p-value}. For simple selection functions, this selective p-value is often computable in closed form. 
+
+To be completely formal, in \Cref{def:selective_dominance} we require \eqref{eq:selective_dominance} to hold almost surely under the conditional probability measure given the event $S=1$. If $P(S=1) = 0$ (resp. $P(S'=1) = 0$) for some selection function, then we define the left-hand side (resp. right-hand side) of \eqref{eq:selective_dominance} to be zero. We show in \Cref{sec:measure_zero_appdx} that $P(S' = 1) \implies P(S=1)$, so this convention does not cause any problems. 
+
+As we will soon see, the majority of p-values that practitioners use are selectively dominant as described in \eqref{eq:selective_dominance}. In \Cref{def:selective_dominance}, we restrict to p-values with conditional PDFs under the null because it makes our theory and methods simpler to state. Because we can always make a p-value both have a conditional PDF and be more powerful via randomization, this restriction is never a practical issue. Also, after applying our machinery with randomized p-values, the user can always derandomize the resulting method if they would like.
+
+To perform valid post-selection inference using a selectively dominant p-value, we can transform it so that it remains a p-value after selection. As \Cref{thm:adjustment} displays, we can ``undo'' the effects of selection by applying the conditional cumulative distribution function (CDF) $F_{U \mid Z, S' = 1}(\cdot)$ of $U$ given $Z$ and selection to $p$. In line with prior literature, we refer to this transformed p-value as a \textbf{selective p-value}. For simple selection functions, this selective p-value is often computable in closed form. 
 
 \begin{theorem}
     \label{thm:adjustment}
-    Let  $F_{U \mid Z, S '= 1}(u)$ denote the CDF of $U$ conditional on selection. Then, under the null, the selective p-value 
+    If, for the null $H_0$, $p$ is a selectively dominant p-value given $Z$, then the selective p-value 
     \begin{equation}
     \label{eq:adjustment}
         p_{sel} = F_{U \mid Z, S' = 1}(p) = \frac{\int_0^p s(x, Z) dx}{\int_0^1 s(x, Z) dx}
     \end{equation}
-    stochastically dominates the uniform distribution conditional on $Z$ and selection,
+    has a null distribution that stochastically dominates the uniform conditional on $Z$ and selection for any selection function $s(x, z)$:
     \begin{equation}
         \label{eq:adjusted_error_control}
-        P_{H_0}(p_{sel} \leq \alpha \mid Z=z, S= 1) \leq \alpha, 
+        P_{H_0}(p_{sel} \leq \alpha \mid Z, S= 1) \leq \alpha \text{ and also }  P_{H_0}(p_{sel} \leq \alpha \mid S= 1) \leq \alpha.
     \end{equation}
-    for any selection function $s(x, z)$ under which $p$ and $U$ both have a positive probability of being selected given $Z=z$. Further, for any distribution in $H_0$ under which $p$ has an exact uniform distribution given $Z=z$, \eqref{eq:adjusted_error_control} holds with equality. 
+    Further, for a distribution $P$ in the null for which $p$ has an exaxct uniform distribution given $Z$ 
+    \begin{equation}
+        \label{eq:adjusted_error_control_equality}
+        P(p \leq t | Z) = t \text{ for all } t \in [0, 1]
+    \end{equation}
+    and selection function for which the probability $P(S=1)$ of selection is positive, 
+    \eqref{eq:adjusted_error_control} holds with equality. 
 \end{theorem}
 
-Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z=z, S' = 1$ rather than the $\alpha$ quantile of $U$. 
+Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z, S' = 1$ rather than the $\alpha$ quantile of $U$. More formally, the result \eqref{eq:adjusted_error_control} in \Cref{thm:adjustment} holds almost everywhere under the conditional probability measure given the event $S=1$, and to get exact equality in \eqref{eq:adjusted_error_control} we only need \eqref{eq:adjusted_error_control_equality} to hold almost everywhere under this same measure. Again, we define both the probabilities in \eqref{eq:adjusted_error_control} to be zero when $P(S=1)=0$. 
 
-The right-most panel of \Cref{fig:distributions} depicts what happens when we apply \Cref{thm:adjustment}'s correction to our example null p-value. Unlike the null distribution of $p$ given selection (middle panel), the null distribution of $p_{sel}$ (which we derive explicitly later in \Cref{exm:correction}) given selection is stochastically dominated by the uniform distribution. 
+The right-most panel of \Cref{fig:distributions} depicts what happens when we apply \Cref{thm:adjustment}'s correction to the left panel's p-value (we will derive this correction later). Unlike the null distribution of $p$ given selection (middle panel), the null distribution of $p_{sel}$ given selection again stochastically dominates the uniform distribution. 
 
 \subsection{Characterizing selectively dominant p-values and examples}
 
@@ -272,7 +271,7 @@ The right-most panel of \Cref{fig:distributions} depicts what happens when we ap
 
 \begin{theorem}[Selective dominance and increasing density]
     \label{thm:density}
-    If the conditional PDF of the p-value $p$ given $Z=z$ is always non-decreasing under the null, then it is selectively dominant given $Z$ as described in \Cref{def:selective_dominance}. Conversely, if ever under the null, the conditional PDF of $p$ given $Z=z$ is everywhere continuous and not non-decreasing, then $p$ is not selectively dominant given $Z$.  
+    If the conditional PDF of the p-value $p$ given $Z=z$ is always non-decreasing under the null $H_0$, then it is selectively dominant given $Z$ as described in \Cref{def:selective_dominance}. Conversely, if for some distribution $P$ in the null $H_0$, the conditional PDF of $p$ given $Z=z$ is everywhere continuous and but not non-decreasing for a set of $Z=z$ with positive measure under $P$, then $p$ is not selectively dominant given $Z$.  
 \end{theorem}
 
 In what follows, we give a number of examples of selectively dominant p-values. Our examples include all the common p-values that practitioners use in real life. We recommend that the unfamiliar reader review uniformly most powerful (UMP) and uniformly most powerful unbiased (UMPU) testing \cite[Chapter 3 and Chapter 4]{Lehmann} prior to proceeding.
@@ -1870,10 +1869,126 @@ This can be confirmed via Bayes rule. Consider a collection of sets $A_j$. Condi
 \end{align*}
 where we have used that the $p_j$ are independent conditional on $Z$.
 
-\section{Additional Proofs}
+\section{Proofs}
 \label{sec:proofs_appdx}
 
 \subsection{Proof of \Cref{thm:adjustment}}
+
+\iffalse 
+\subsubsection{Measure zero conditioning events}
+\label{sec:measure_zero_appdx}
+
+Prior to providing a proof of \Cref{thm:adjustment}, we clarify the precise definitions of the conditional probabilities in \eqref{eq:selective_dominance}. 
+
+Fix a distribution $P$ in the null $H_0$. First note that we have assumed under the null that $p$ has a conditional PDF given $Z$. Precisely, this PDF is just a function $f_{z}(x)$ with the property that 
+\begin{equation*}
+    E[I(p \in A) | Z] = e(Z) \text{ where } e(z) = \int_A f_{z}(x) dx
+\end{equation*}
+Likewise, $U$ also has a conditional PDF given $Z$ which is identicaly $1$ on the interval $[0, 1]$ that satisfies the same property. 
+
+
+Now we define the functions 
+\begin{equation*}
+    g_U(t, z) = \begin{cases}
+        \frac{\int_0^t s(x, z) \lambda dx}{\int_0^1 s(x, z) dx } & \text{if } \int_0^1 s(x, z) dx > 0\\
+        t & \text{otherwise}
+    \end{cases}
+\end{equation*}
+\begin{equation*}
+    g_p(t, z) = \begin{cases}
+        \frac{\int_0^t f_z(x)s(x, z) dx}{\int_0^1 f_z(z)s(x, z) dx} & \text{if } \int_0^1 f_z(z)s(x, z) dx > 0\\
+        g_U(t, z)& \text{otherwise}
+    \end{cases}
+\end{equation*}
+As it pertains to \eqref{eq:selective_dominance}, we adopt the custom that 
+\begin{equation*}
+    P(p \leq t | Z, S=1) = g_p(t, Z),
+\end{equation*}
+\begin{equation*}
+    P(U \leq t | Z, S'=1) = g_U(t, Z),
+\end{equation*}
+so the selective dominance requirement is just a statement that for all $t$, 
+\begin{equation*}
+    g_p(t, Z) \leq g_U(t, Z)
+\end{equation*}
+
+Let us take a moment to understand why this is a reasonable definition. Using the tower poperty, we can derive functions of $z$ that have the following properties 
+\begin{equation*}
+  E[S | Z] = h_p(Z) \text{ where } h_p(z) = \int f_z(x) s(x, z) dx
+ \end{equation*}
+\begin{equation*}
+ E[S' | Z] = h_U(Z) \text{ where } h_U(z) = \int s(x, z) dx
+\end{equation*}
+When $h_U(z) =0$, then $s(z, x) = 0$ Lesbesgue almost everywhere and therefore $h_p(z) =0$ as well. Therefore, for $Z$ such that $h_U(Z) = 0$ and/or $h_p(Z)$, the selective dominance condition is vacuously true by our custom. If selection $S=1$ is a probability zero event, then $E[S |Z] = h_p(Z) = 0$ and the selective dominance condition is vacuous. Since selective never happens in this case however, we have no issue with that. When selection $S=1$ has some positive probability, then $Z$ for which $h_p(Z) = 0$ occur with zero probability when selection happens:
+\begin{equation*}
+    E[ S I(h_p(Z) = 0 ) ] = E[I(h_p(Z)= 0)E[S|Z]] = E[I(h_p(Z) =0)h_p(Z)] = 0
+\end{equation*}
+Furthermore, for $Z$ such that $h_p(Z) > 0$, which are all the $Z$ when selection happens, the selective dominance condition tells us that
+\begin{equation*}
+    \frac{E[S I(p \leq t) | Z]}{E[S | Z]} \leq \frac{E[S' I(U \leq t) | Z]}{E[S'| Z]}
+\end{equation*}
+which is a meaningful statement that will allow us to make inferences conditional on $S=1$. 
+
+
+Finally, we can like-wise define 
+\begin{equation*}
+    g_{p_{sel}}(t, z) = 
+\end{equation*}
+and adopt the custom that 
+\begin{equation*}
+    P(p_{sel} \leq t | Z, S=1)
+\end{equation*}
+
+\iffalse
+\begin{equation*}
+    g(t, z) = F_{U |Z=z, S'=1}(t) = \begin{cases}
+        \frac{\int_0^t s(x, z) \lambda(dx)}{\int_0^1 s(x, z) \lambda(dx)} & \text{ if } h_U(z) > 0\\
+        0 & \text{ otherwise}
+    \end{cases}
+\end{equation*}
+
+
+Now, we discuss the relationhip between $P(S' = 1)$ and $P(S=1)$. We can show that $P(S'=1) = 0 \implies P(S =1) = 0$. This is because 
+
+\begin{align*}
+    P(S' = 1) = E[S' | Z, U]
+\end{align*}
+
+Define the conditional CDF of $U$ given selection and $Z=z$ as 
+
+\begin{equation*}
+    F_{}
+\end{equation*}
+
+Note that $h_U(z) = 0 \implies h_p(z) = 0$, because if $\int s(x, z) \lambda(dx) = 0$ for some $z$, then that means $s(x, z) = 0$ Lesbesgue almost everywhere for that $z$, so then we must have $h_p(z) = 0$ as well. We also define 
+\fi 
+
+
+\subsubsection{Proof}
+Consider the same fixed $P$ in the null $H_0$ as above. First we note that for every $z$ the function $g_U(t, z)$ is monotone in $t$ and continuous. Thus we can define 
+\begin{equation*}
+    g^{-1}(x, z)  = \inf \{t: g_U(t, z) > t  \}
+\end{equation*}
+continuity implies that $g(g^{-1}(x, z), z) = x$ and that $g_{U}(t, z) \leq x \iff t \leq g^{-1}(x)$. Combining these facts along with our selective dominance definition, we have that 
+
+\begin{align*}
+    P_{H_0}(g_{U}(p, z) \leq  t |Z, S=1) &= P_{H_0}(p \leq g_U^{-1}(t, z) | Z, S=1) \\
+    &\leq P_{H_0}(U \leq g_U^{-1}(t, z) | Z, S'=1) \\
+    &= g_U(t, z)\\
+    &=t. 
+\end{align*}
+
+\begin{align*}
+    P_{H_0}(F_{U | Z=z, S' = 1}(p) \leq  t |Z=z, S=1) &= P_{H_0}(p \leq F_{U |Z=z,  S' = 1}^{-1}(t) | Z=z, S=1) \\
+    &\leq P(U \leq F_{U |Z=z, S' = 1}^{-1}(t) |Z=z, S'=1) \\
+    &=F_{U|Z=z, S'=1}(F_{U|Z=z, S' = 1}^{-1}(t)) \\
+    &=t. 
+\end{align*}
+where we have used that $p | Z=z, S=1 \succeq_{H_0} U |Z=z, S'=1$ to get the middle inequality. The implication is that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$, which finishes the proof. 
+
+Further, if for some distribution under the null, $p$ has an exact uniform distribution given $Z=z$, then the distributions $U | Z = z, S= 1'$ and $p | Z= z , S=1$ are identical, so the fact that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$ also implies that $F_{U|Z=z, S' = 1}(p) |Z=z, S = 1 \sim \text{Unif}([0, 1])$, and therefore \eqref{eq:adjusted_error_control} holds with equality in this case. 
+
+\subsubsection{Proof}
 Recall we are considering a selection function such that the probability that $U$ is selected $P(S'=1 | Z= z) = \int_0^1 s(x, z) dx$ is positive. The CDF of $U$ given selection is continuous because it cannot have any point masses:
 \begin{equation*}
     P(U = x | Z=z, S' = 1) = \frac{P(U = x, S' = 1| Z=z)}{P(S'=1 |Z=z)} \leq \frac{P(U = x|Z=z)}{P(S'=1|Z=z)} =  0. 
@@ -1892,6 +2007,167 @@ continuity implies that $F_{U|Z=z, S =1}(F^{-1}_{U |Z=z, S=1}(t)) = t$ and $F_{U
 where we have used that $p | Z=z, S=1 \succeq_{H_0} U |Z=z, S'=1$ to get the middle inequality. The implication is that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$, which finishes the proof. 
 
 Further, if for some distribution under the null, $p$ has an exact uniform distribution given $Z=z$, then the distributions $U | Z = z, S= 1'$ and $p | Z= z , S=1$ are identical, so the fact that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$ also implies that $F_{U|Z=z, S' = 1}(p) |Z=z, S = 1 \sim \text{Unif}([0, 1])$, and therefore \eqref{eq:adjusted_error_control} holds with equality in this case. 
+
+
+\subsubsection{Proof}
+
+\fi 
+
+First we prove a useful lemma. 
+
+\begin{lemma}
+    \label{lem:ce}
+    For a measure $P$ and an event $B$ with $P(B)> 0$ define the conditional measure $Q(E) = P(E| B) = P(E \cap B)/P(B)$. Then, for a random variable $X$, 
+    \begin{equation*}
+        Q(A | X) = \frac{P(A, B | X) }{ P(B | X) } \text{ a.e. under } Q
+    \end{equation*} 
+\end{lemma}
+
+\begin{proof}
+
+    First note that $E_P[I( P(B| X) = 0 )  I(B)] = E_P[I( P(B| X) = 0 )  E_P[ I(B) | X] ] = 0$, so $P(B | X) > 0$ a.e. on the set $I_B$, Thus it must be the case that $P(B | X) > 0 $ a.e. under $Q$. Now we can compute for any Borel $C$ that  
+    \begin{align*}
+    &E_Q\left[\frac{P(A, B | X) }{ P(B | X) } I(P(B|X) > 0) I(X \in C) \right] \\
+    &= E_P\left[\frac{P(A, B | X) }{ P(B | X) } I(P(B| X) > 0) I(X \in C) I(B)\right] / P(B)  & \text{(standard machine)}\\
+    &= E_P\left[\frac{P(A, B | X) }{ P(B | X) } I(P(B| X) > 0) I(X \in C) P(B \mid X)\right] / P(B) & \text{(tower property)}  \\
+    &= E_P[P(A, B \mid X) I(P(B|X) > 0) I(X \in C)] / P(B) & \\
+    &= P(A, B, P(B|X) > 0, X \in C) / P(B) & \text{(definition of conditional expectation)}\\
+    &= Q(A, P(B|X) > 0, X \in C) & \text{ (definiton of $Q$)}\\
+    &= E_Q[I(A) I(X \in C)] & \text{ ($P(B|X)$ positive $Q$ a.e.)}\\ 
+    &= E_Q[Q(A \mid X) I(X \in C)]. & \text{(definition of conditional expectation)}
+    \end{align*}
+
+    Thus $\frac{P(A, B | X) }{ P(B | X) } I(P(B|X) > 0)$ satisfies the definition of the condtional expectation of $I_A$ given $X$ under $Q$. Since $I(P(B|X) > 0) = 1$ a.e., under $Q$ we are done.  
+
+\end{proof}
+
+Equipped with this lemma, we can provide a proof. 
+
+Fix a probability distribution $P$ in $H_0$ and let $f_z(x)$ be the conditional PDF of $p$ given $Z=z$. If $P(S=1) = 0$, then our convention is that $P(p_{sel} \leq \alpha | Z, S=1)$ and $P(p_{sel} \leq \alpha | S=1)$ are identically zero, so the result is immediate. 
+
+Now consider the non-trival case, where $P(S=1) > 0$ and the conditional probability measure $Q(A)= P(A | S=1) = P(A, S=1)/P(S=1)$ is well defined. We need \eqref{eq:adjusted_error_control} to hold a.e. under $Q$. 
+
+We start by showing that $P(S'=1) > 0$ also. First, we compute 
+\begin{equation*}
+    E_P[S | Z] = E_P[ E_P[S|p, Z]| Z] = E_P[s(p, Z)| Z] = \int_0^1 f_Z(x) s(x, Z) dx 
+\end{equation*}
+and likewise
+\begin{equation*}
+    E_P[S' | Z] = E_P[ E_P[S|U, Z]| Z] = E_P[s(U, Z)| Z] = \int_0^1 s(x, Z) dx. 
+\end{equation*}
+Whenever $\int_0^1 f_z(x) s(x, z) dx > 0$ it must be the case that for said $z$ that the function $s(x, z)$ is not zero Lesbesgue almost everywhere in $x$. Therefore $\int_0^1 f_z(x) s(x, z) dx > 0 \implies \int_0^1 f_z(x) s(x, z) dx > 0 $. Therefore we have both that 
+
+\begin{equation*}
+    E_P[S|Z] > 0 \implies E_P[S'| Z] > 0 \text{ a.e. under } P 
+\end{equation*}
+
+and the contrapositive
+
+\begin{equation*}
+    E_P[S'|Z] = 0 \implies E_P[S| Z] = 0 \text{ a.e. under } P 
+\end{equation*}
+
+Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0$ a.e. in $P$.  By the first implication above we must also have $P(S' = 1) = E_P[E_P[S'| Z]] > 0$ as well. Thus we can also define the conditional probability measure $Q'(A) = P(A | S'=1) = P(A, S'=1)/P(S'=1)$. Now, with both these probability measures at our disposal, we prove two lemma. 
+
+\begin{lemma}
+    \label{lem:pos_selection}
+    $E_P[S|Z]> 0$ a.e. under $Q$ and $E_P[S'|Z] > 0$ a.e. under $Q'$.
+\end{lemma}
+
+\begin{proof}
+    The fact that $E_P[S|Z]> 0$ a.e. under $Q$ follows from the fact that 
+    \begin{align*}
+        P(E_P[S| Z] = 0, S=1) &= E_P[ I(E_P[S| Z] = 0) S] \\
+                            &= E[ I(E[S| Z] = 0) E[S |Z]] \\
+                            &= 0
+    \end{align*}
+    The fact that $E_P[S'|Z] > 0$ a.e. under $Q'$ can be shown by an identical proof. 
+    
+\end{proof}
+
+
+\begin{lemma}
+    \label{lem:switch}
+    $Q'(Z \in A) = 0 \implies Q(Z \in A) = 0$, and as a consequence  $Q'(Z \in A) = 1 \implies Q(Z \in A) = 1$
+\end{lemma}
+
+\begin{proof}
+    If $P(Z \in A) = 0$ then both 
+    Since $Q'(Z \in A) = P(Z \in A, S'=1)/P(S'=1)$, we have
+    \begin{align*}
+        &Q'(Z \in A) = 0 \\
+        &\iff P(Z \in A, S'=1) = E_P[ I(Z \in A) E_P[ S' |Z]] = 0\\
+        &\iff I(Z \in A) E_P[ S' |Z] = 0 \text{ a.e. under } P \\
+        &\iff P(Z \in A, E_P[S'|Z]>0) = 0 
+    \end{align*} 
+    By our earlier reasoning, however,  $P(Z \in A, E_P[S|Z]>0) \leq P(Z \in A, E_P[S'|Z]>0) = 0$. Thus  $P(Z \in A, E_P[S|Z]>0) =0$, and the same set of equivalences tell us that $Q(Z \in A) = 0$. 
+
+    The consequence follows from the fact that $Q'(Z \in A) = 1 \implies Q'(Z \in A^c) = 0 \implies Q(Z \in A^c) = 0 \implies Q(Z \in A) = 1$. 
+\end{proof}
+
+
+Now, define the function 
+\begin{equation*}
+    F_{U|z, S'=1}(t) = \frac{\int_0^t s(x, z) dx }{\int_0^1 s(x, z) dx}
+\end{equation*}
+so that $p_{sel} = F_{U| z, S'}(t)$. For $z$ such that $\int_0^1 s(x, z) dx > 0$, the above is a monotone non-decreasing and continuous function of $t$. For such $z$, we can define its generalized inverse
+\begin{equation*}
+    F^{-1}_{U |z, S'=1}(x)  = \inf \{t : F_{U |z, S' = 1}(t) > x  \}
+\end{equation*}
+which satisfies $F_{U|z, S' =1}(F^{-1}_{U |z, S'=1}(t)) = t$ and $F_{U | z, S' = 1}(x) \leq t \iff x \leq  F^{-1}_{U | z, S' = 1}(t)$. By \Cref{lem:pos_selection} $F_{U|Z S'=1}(t)$ will be a continuous function of $x$ with probability one both under $Q$ and $Q'$. The following string of equalities and inequalities then hold almost surely under $Q$:
+
+\begin{align*}
+    &Q(F_{U | Z, S' = 1}(p) \leq t | Z)\\
+     &= Q(p \leq F_{U | Z, S' = 1}^{-1}(t) | Z) & \text{($F_{U|Z S'=1}(t)$ continuous a.e. under $Q$) } \\
+    &\leq Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) & \text{(selective dominance) } \\
+    &= t & \text{ (\Cref{lem:ce}) }
+\end{align*}
+We justify the last equality. First we use \Cref{lem:ce} to note that a.e. under $Q'$ we have 
+\begin{align*}
+    Q'(U \leq t |Z) &= \frac{P(U \leq t, S' = 1 | Z )}{P(U \leq t, S' = 1 | Z)}\\
+                    &= \frac{E[P(U \leq t, S' = 1 | U, Z ) | Z ] }{[P(U \leq t, S' = 1 | U, Z)| Z]}\\
+                    &= \frac{\int_0^t s(x, Z) dx }{\int_0^1 s(x, Z) dx}\\
+                    &= F_{U| Z, S'=1}(t)
+\end{align*}
+Thus a.e. $Q'$ it holds that
+\begin{equation*}
+    Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) = F_{U| Z, S'=1}(F^{-1}_{U| Z, S'=1}(t)) = t
+\end{equation*}
+Writing the event $Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) = t$ as $Z \in A$ for some Borel $A$, \Cref{lem:switch} tells us that $Q'(A) = 1 \implies Q(A) = 1$, which establishes the claim. 
+
+In the case that $Q(p \leq t | Z) = t$ a.e. under $Q$, then by the same computations as earlier we can directly compute that $Q(p \leq t | Z) = F_{U| Z, S'=1}(t)$ a.e. under $Q$, and we can directly compute that $Q(p \leq F^{-1}_{U | Z, S' = 1}(t) | Z) =  F_{U| Z, S'=1}(F^{-1}_{U | Z, S' = 1}(t)) = t $ a.e. under $Q$, i.e., we get exact equality a.e. under $Q$ as claimed in \eqref{eq:adjusted_error_control_equality}. 
+
+
+\iffalse 
+By our earlier discussion  
+
+Thus for $Z$ such that $E[S | Z]> 0$, the selective p-value $p_{sel}$ is well defined. As a consequence, we also find that 
+\begin{equation*}
+    P(S'=1) = E[E[S' |Z]]
+\end{equation*}
+
+Considering such $Z$, the function 
+
+\begin{equation*}
+    E[]
+\end{equation*}
+
+Because 
+
+Therefore, defining 
+\begin{equation*}
+    F^{-1}_{U |Z=z, S'=1}(t)  = \inf \{x: F_{U |Z=z, S' = 1}(x) > t  \}
+\end{equation*}
+continuity implies that $F_{U|Z=z, S =1}(F^{-1}_{U |Z=z, S=1}(t)) = t$ and $F_{U | Z=z, S = 1}(x) \leq t \iff x \leq  F^{-1}_{U | Z=z, S = 1}(t)$. Then 
+\begin{align*}
+    P_{H_0}(F_{U | Z=z, S' = 1}(p) \leq  t |Z=z, S=1) &= P_{H_0}(p \leq F_{U |Z=z,  S' = 1}^{-1}(t) | Z=z, S=1) \\
+    &\leq P(U \leq F_{U |Z=z, S' = 1}^{-1}(t) |Z=z, S'=1) \\
+    &=F_{U|Z=z, S'=1}(F_{U|Z=z, S' = 1}^{-1}(t)) \\
+    &=t. 
+\end{align*}
+where we have used that $p | Z=z, S=1 \succeq_{H_0} U |Z=z, S'=1$ to get the middle inequality. The implication is that $F_{U|Z=z, S' = 1}(U) |Z=z, S' = 1 \sim \text{Unif}([0, 1])$, which finishes the proof.
+
+\fi 
  
 \subsection{Proof of \Cref{thm:density}}
 Let $f_z$ be the density of $p |Z=z$ under a distribution in the null $H_0$. We start by showing that, if $f_z$ is non-decreasing, then $p |Z =z, S =1$ dominates $U |Z=z, S'=1$ . Fixing a selection function $s(x, z)$, it suffices to show that for any $t \in [0, 1]$. 
