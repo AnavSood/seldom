@@ -226,7 +226,7 @@ Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given
     Consider a p-value $p$ for the null $H_0$ that is valid given $Z$ as in \eqref{eq:valid_given_z}. We say that $p$ is \textbf{selectively dominant given $Z$} if, under the null $H_0$, it has a conditional probability density function (PDF) given $Z$, and it satisfies 
     \begin{equation}
     \label{eq:selective_dominance}
-    P_{H_0}(p \leq t | Z, S=1) \leq P(U \leq t | Z, S'=1) \text{ for all } t \in [0, 1]
+    P_{H_0}(p \leq t | Z, S=1) \leq P(U \leq t | Z, S'=1) \text{ for all } t \in [0, 1], \text{ a.e. under } P(\cdot |S=1)
     \end{equation}
     for any selection function $s(x, z)$.  
 \end{definition}
@@ -1873,6 +1873,7 @@ where we have used that the $p_j$ are independent conditional on $Z$.
 \label{sec:proofs_appdx}
 
 \subsection{Proof of \Cref{thm:adjustment}}
+\label{sec:adjustment_proof}
 
 \iffalse 
 \subsubsection{Measure zero conditioning events}
@@ -2037,7 +2038,7 @@ First we prove a useful lemma.
     &= E_Q[Q(A \mid X) I(X \in C)]. & \text{(definition of conditional expectation)}
     \end{align*}
 
-    Thus $\frac{P(A, B | X) }{ P(B | X) } I(P(B|X) > 0)$ satisfies the definition of the condtional expectation of $I_A$ given $X$ under $Q$. Since $I(P(B|X) > 0) = 1$ a.e., under $Q$ we are done.  
+    Thus $\frac{P(A, B | X) }{ P(B | X) } I(P(B|X) > 0)$ satisfies the definition of the condtional expectation of $I_A$ given $X$ under $Q$. Since $I(P(B|X) > 0) = 1$ a.e. under $Q$, we are done.  
 
 \end{proof}
 
@@ -2049,25 +2050,22 @@ Now consider the non-trival case, where $P(S=1) > 0$ and the conditional probabi
 
 We start by showing that $P(S'=1) > 0$ also. First, we compute 
 \begin{equation*}
-    E_P[S | Z] = E_P[ E_P[S|p, Z]| Z] = E_P[s(p, Z)| Z] = \int_0^1 f_Z(x) s(x, Z) dx 
+    E_P[S | Z] = E_P[ E_P[S|p, Z]| Z] = E_P[s(p, Z)| Z] = \int_0^1  s(x, Z)f_Z(x) dx 
 \end{equation*}
 and likewise
 \begin{equation*}
     E_P[S' | Z] = E_P[ E_P[S|U, Z]| Z] = E_P[s(U, Z)| Z] = \int_0^1 s(x, Z) dx. 
 \end{equation*}
-Whenever $\int_0^1 f_z(x) s(x, z) dx > 0$ it must be the case that for said $z$ that the function $s(x, z)$ is not zero Lesbesgue almost everywhere in $x$. Therefore $\int_0^1 f_z(x) s(x, z) dx > 0 \implies \int_0^1 f_z(x) s(x, z) dx > 0 $. Therefore we have both that 
-
+Whenever $\int_0^1 f_z(x) s(x, z) dx > 0$, it must be the case this $z$ that the function $s(x, z)$ is not zero Lesbesgue almost everywhere in $x$. Therefore $\int_0^1 s(x, z) dx > 0 \implies \int_0^1 f_z(x) s(x, z) dx > 0 $. Thus we have both that 
 \begin{equation*}
-    E_P[S|Z] > 0 \implies E_P[S'| Z] > 0 \text{ a.e. under } P 
+    E_P[S|Z] > 0 \implies E_P[S'| Z] > 0 \text{ everywhere } 
 \end{equation*}
-
 and the contrapositive
-
 \begin{equation*}
-    E_P[S'|Z] = 0 \implies E_P[S| Z] = 0 \text{ a.e. under } P 
+    E_P[S'|Z] = 0 \implies E_P[S| Z] = 0 \text{ everywhere } P 
 \end{equation*}
 
-Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0$ a.e. in $P$.  By the first implication above we must also have $P(S' = 1) = E_P[E_P[S'| Z]] > 0$ as well. Thus we can also define the conditional probability measure $Q'(A) = P(A | S'=1) = P(A, S'=1)/P(S'=1)$. Now, with both these probability measures at our disposal, we prove two lemma. 
+Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0$ a.e. under $P$.  By the first implication above we must then also have $P(S' = 1) = E_P[E_P[S'| Z]] > 0$ as well. Thus we can also define the conditional probability measure $Q'(A) = P(A | S'=1) = P(A, S'=1)/P(S'=1)$. Now, with both these probability measures at our disposal, we prove two lemmas. 
 
 \begin{lemma}
     \label{lem:pos_selection}
@@ -2078,7 +2076,7 @@ Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0
     The fact that $E_P[S|Z]> 0$ a.e. under $Q$ follows from the fact that 
     \begin{align*}
         P(E_P[S| Z] = 0, S=1) &= E_P[ I(E_P[S| Z] = 0) S] \\
-                            &= E[ I(E[S| Z] = 0) E[S |Z]] \\
+                            &= E_P[ I(E_P[S| Z] = 0) E_P[S |Z]] \\
                             &= 0
     \end{align*}
     The fact that $E_P[S'|Z] > 0$ a.e. under $Q'$ can be shown by an identical proof. 
@@ -2091,8 +2089,7 @@ Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0
     $Q'(Z \in A) = 0 \implies Q(Z \in A) = 0$, and as a consequence  $Q'(Z \in A) = 1 \implies Q(Z \in A) = 1$
 \end{lemma}
 
-\begin{proof}
-    If $P(Z \in A) = 0$ then both 
+\begin{proof} 
     Since $Q'(Z \in A) = P(Z \in A, S'=1)/P(S'=1)$, we have
     \begin{align*}
         &Q'(Z \in A) = 0 \\
@@ -2100,7 +2097,7 @@ Now, since $P(S = 1) = E_P[E_P[S| Z]]$, it cannot be the case that $E_P[S|Z] = 0
         &\iff I(Z \in A) E_P[ S' |Z] = 0 \text{ a.e. under } P \\
         &\iff P(Z \in A, E_P[S'|Z]>0) = 0 
     \end{align*} 
-    By our earlier reasoning, however,  $P(Z \in A, E_P[S|Z]>0) \leq P(Z \in A, E_P[S'|Z]>0) = 0$. Thus  $P(Z \in A, E_P[S|Z]>0) =0$, and the same set of equivalences tell us that $Q(Z \in A) = 0$. 
+    By our earlier results, however,  $P(Z \in A, E_P[S|Z]>0) \leq P(Z \in A, E_P[S'|Z]>0) = 0$. Thus  $P(Z \in A, E_P[S|Z]>0) =0$, and the same set of equivalences tell us that $Q(Z \in A) = 0$. 
 
     The consequence follows from the fact that $Q'(Z \in A) = 1 \implies Q'(Z \in A^c) = 0 \implies Q(Z \in A^c) = 0 \implies Q(Z \in A) = 1$. 
 \end{proof}
@@ -2110,11 +2107,11 @@ Now, define the function
 \begin{equation*}
     F_{U|z, S'=1}(t) = \frac{\int_0^t s(x, z) dx }{\int_0^1 s(x, z) dx}
 \end{equation*}
-so that $p_{sel} = F_{U| z, S'}(t)$. For $z$ such that $\int_0^1 s(x, z) dx > 0$, the above is a monotone non-decreasing and continuous function of $t$. For such $z$, we can define its generalized inverse
+so that $p_{sel} = F_{U| Z, S'}(p)$. For $z$ such that $\int_0^1 s(x, z) dx > 0$, the above is a monotone non-decreasing and continuous function of $t$. For such $z$, we can define its generalized inverse
 \begin{equation*}
     F^{-1}_{U |z, S'=1}(x)  = \inf \{t : F_{U |z, S' = 1}(t) > x  \}
 \end{equation*}
-which satisfies $F_{U|z, S' =1}(F^{-1}_{U |z, S'=1}(t)) = t$ and $F_{U | z, S' = 1}(x) \leq t \iff x \leq  F^{-1}_{U | z, S' = 1}(t)$. By \Cref{lem:pos_selection} $F_{U|Z S'=1}(t)$ will be a continuous function of $x$ with probability one both under $Q$ and $Q'$. The following string of equalities and inequalities then hold almost surely under $Q$:
+which satisfies $F_{U|z, S' =1}(F^{-1}_{U |z, S'=1}(x)) = x$ and $F_{U | z, S' = 1}(t) \leq x \iff t \leq  F^{-1}_{U | z, S' = 1}(x)$. By \Cref{lem:pos_selection} and the fact that $E_P[S' | Z] > E_P[S|Z]$ everywhere, $F_{U|Z S'=1}(t)$ will be a continuous function of $x$ with probability one both under $Q$ and $Q'$. The following string of equalities and inequalities then hold almost surely under $Q$:
 
 \begin{align*}
     &Q(F_{U | Z, S' = 1}(p) \leq t | Z)\\
@@ -2124,16 +2121,16 @@ which satisfies $F_{U|z, S' =1}(F^{-1}_{U |z, S'=1}(t)) = t$ and $F_{U | z, S' =
 \end{align*}
 We justify the last equality. First we use \Cref{lem:ce} to note that a.e. under $Q'$ we have 
 \begin{align*}
-    Q'(U \leq t |Z) &= \frac{P(U \leq t, S' = 1 | Z )}{P(U \leq t, S' = 1 | Z)}\\
-                    &= \frac{E[P(U \leq t, S' = 1 | U, Z ) | Z ] }{[P(U \leq t, S' = 1 | U, Z)| Z]}\\
+    Q'(U \leq t |Z) &= \frac{P(U \leq t, S' = 1 | Z )}{P( S' = 1 | Z)}\\
+                    &= \frac{E_P[I(U \leq t)P(S' = 1 | U, Z ) | Z ] }{E_P[P(S' = 1 | U, Z)| Z]}\\
                     &= \frac{\int_0^t s(x, Z) dx }{\int_0^1 s(x, Z) dx}\\
                     &= F_{U| Z, S'=1}(t)
 \end{align*}
-Thus a.e. $Q'$ it holds that
+Thus a.e. under $Q'$ it holds that
 \begin{equation*}
     Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) = F_{U| Z, S'=1}(F^{-1}_{U| Z, S'=1}(t)) = t
 \end{equation*}
-Writing the event $Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) = t$ as $Z \in A$ for some Borel $A$, \Cref{lem:switch} tells us that $Q'(A) = 1 \implies Q(A) = 1$, which establishes the claim. 
+Writing the event $Q'(U \leq F_{U |Z, S' = 1}^{-1}(t) |Z) = t$ as $Z \in A$ for some Borel set $A$, \Cref{lem:switch} tells us that $Q'(Z \in A) = 1 \implies Q(Z \in A) = 1$, which establishes the claim. 
 
 In the case that $Q(p \leq t | Z) = t$ a.e. under $Q$, then by the same computations as earlier we can directly compute that $Q(p \leq t | Z) = F_{U| Z, S'=1}(t)$ a.e. under $Q$, and we can directly compute that $Q(p \leq F^{-1}_{U | Z, S' = 1}(t) | Z) =  F_{U| Z, S'=1}(F^{-1}_{U | Z, S' = 1}(t)) = t $ a.e. under $Q$, i.e., we get exact equality a.e. under $Q$ as claimed in \eqref{eq:adjusted_error_control_equality}. 
 
@@ -2170,40 +2167,87 @@ where we have used that $p | Z=z, S=1 \succeq_{H_0} U |Z=z, S'=1$ to get the mid
 \fi 
  
 \subsection{Proof of \Cref{thm:density}}
-Let $f_z$ be the density of $p |Z=z$ under a distribution in the null $H_0$. We start by showing that, if $f_z$ is non-decreasing, then $p |Z =z, S =1$ dominates $U |Z=z, S'=1$ . Fixing a selection function $s(x, z)$, it suffices to show that for any $t \in [0, 1]$. 
-    \begin{align*}
-        &P(p \leq t | Z=z, S =1) \leq P(U \leq t |Z=z, S= 1)\\
-        &\iff 
-        \frac{\int_{0}^{t} s(x, z) f_z(x) dx }{\int_{0}^{1} s(x, z) f_z(x) dx } \leq \frac{\int_{0}^{t} s(x, z) dx}{\int_{0}^{1} s(x, z) dx } \\
-    \end{align*}
-If $P( p \leq t | Z=z, S = 1)$ is zero then this trivially holds. Otherwise $P( p \leq t | Z=z, S = 1) = \int_{0}^{t} s(x, z) f_z(x) dx  > 0$ and we see that, 
-    \begin{align*}
-        \frac{ \int_{0}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx } &= 1 + \frac{\int_{t}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx }\\
-        &\geq 1 + \frac{f_z(t)\int_{t}^{1} s(x ,z) dx }{f_z(t)\int_{0}^{t} s(x, z)  dx }\\
-        &= 1 + \frac{\int_{t}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx }\\
-        &= \frac{ \int_{0}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx },
-    \end{align*}
-which is sufficient to imply the claim. 
 
-Now assuming that $f_{z'}$ is continuous and not non-decreasing for some $z'$, we can show that $p$ is not selectively dominant. In general, it suffices for there to be two points $y_1 < y_2$ such that $f_{z'}$ is strictly larger in a neighborhood around $y_1$ than in a neighborhood around $y_2$, where these neighborhoods are disjoint. In particular for $\epsilon > 0$ let $N_{\epsilon}(y) = (y - \epsilon, y + \epsilon )$ be a ball around $y$. Then we need there to be $y_1$, $y_2$, $\epsilon > 0$, and some $\eta > 0$ such that, for all $w_1 \in N_{\epsilon}(y_1)$ and $w_2 \in N_{\epsilon}(y_2)$, $w_1  < w_2$ but $f_{z'}(w_2) + \eta < f_{z'}(w_1) $. If $f$ is continuous and not non-decreasing, then this must be true. First define $B_{high} = \inf \{f_{z'}(w_1): w_1 \in N_{\epsilon}(y_1)\}$ and  $B_{low} = \sup \{f_{z'}(w_2): w_2 \in N_{\epsilon}(y_2)\}$ so $B_{high}  > B_{low}$. Then consider the selection function 
+Fix a probability distribution $P$ in $H_0$ and let $f_z(x)$ be the conditional PDF of $p$ given $Z=z$. If $P(S=1) = 0$, then our convention is that $P(p \leq \alpha | Z, S=1) = 0$, so \eqref{eq:selective_dominance} holds automatically. Thus we can consider only selection functions $s(x, z)$ for which $P(S=1) > 0$. We argued in \Cref{sec:adjustment_proof} that when $P(S=1) > 0$ we also have $P(S' = 1)> 0$. Correspondingly, we define the conditional measures $Q(A)= P(A | S=1) = P(A, S=1)/P(S=1)$ and $Q'(A)= P(A | S=1) = P(A, S=1)/P(S=1)$. 
+
+For now, consider fixed $z$ for which $\int_0^1 s(x, z) f_z(x) dx >0$. For such $z$, we argued in \Cref{sec:adjustment_proof} that 
+ $\int_0^1 s(x, z) f_z(x) dx >0$ also. For such $z$, we argue that the inequality 
+ \begin{equation*}
+    \frac{\int_{0}^{t} s(x, z) f_z(x) dx }{\int_{0}^{1} s(x, z) f_z(x) dx } \leq \frac{\int_{0}^{t} s(x, z) dx}{\int_{0}^{1} s(x, z) dx } \\
+ \end{equation*}
+ holds for all $t\in[0, 1]$. If $\int_{0}^{t} s(x, z) f_z(x) dx =0$ then the inequality trivially holds. Otherwise, we see that 
+ \begin{align*}
+    \frac{ \int_{0}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx } &= 1 + \frac{\int_{t}^{1} s(x, z) f_z(x) dx }{\int_{0}^{t} s(x, z) f_z(x) dx }\\
+    &\geq 1 + \frac{f_z(t)\int_{t}^{1} s(x ,z) dx }{f_z(t)\int_{0}^{t} s(x, z)  dx }\\
+    &= 1 + \frac{\int_{t}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx }\\
+    &= \frac{ \int_{0}^{1} s(x, z) dx }{\int_{0}^{t} s(x, z)  dx },
+\end{align*}
+which is sufficient to imply the claim.
+
+To finish the argument, we note by \Cref{lem:pos_selection} that $E[S|Z] = \int_0^1 s(x, Z) f_Z(x) dx >0 $ a.e. under $Q$. Applying \Cref{lem:ce}, we find that a.e. under $Q$
+\begin{align*}
+    Q(p \leq t |Z) &= \frac{P(p \leq t, S = 1 | Z )}{P(S = 1 | Z)}\\
+                    &= \frac{E_P[I(p \leq t)P(S = 1 | p, Z ) | Z ] }{E_P[I(p \leq t)P( S = 1 | p, Z)| Z]}\\
+                    &= \frac{\int_0^t s(x, Z) f_Z(x) dx }{\int_0^1 s(x, Z) f_Z(x) dx}\\
+\end{align*}
+and a.e. under $Q'$ 
+\begin{align*}
+    Q'(U \leq t |Z) &= \frac{P(U \leq t, S' = 1 | Z )}{P(S' = 1 | Z)}\\
+                    &= \frac{E_P[I(U \leq t) P( S' = 1 | U, Z ) | Z ] }{E_P[P(S' = 1 | U, Z)| Z]}\\
+                    &= \frac{\int_0^t s(x, Z) dx }{\int_0^1 s(x, Z) dx}\\
+\end{align*}
+But, we can write the event that $Q'(U \leq t |Z) = \frac{\int_0^t s(x, Z) dx }{\int_0^1 s(x, Z) dx}$ as $Z \in A$ for some Borel set $A$, and \Cref{lem:switch} tells us that since $Z \in A$ is measure one under $Q'$ it is also measure one under $Q$. That is, we have a.e. under $Q$ that 
 \begin{equation*}
-s(x, z')= \begin{cases}
-1 &\text{if } x \in N_{\epsilon}(y_1) \cup N_{\epsilon}(y_2) \text{ and } z=z' \\
-0 &\text{otherwise }
+    Q'(U \leq t |Z) = \frac{\int_0^t s(x, Z) dx }{\int_0^1 s(x, Z) dx}
+\end{equation*}
+Combined, we have a.e. under $Q$ that $ Q(p \leq t |Z) \leq Q'(U \leq t |Z)$, which is the desired claim. 
+
+Now we show the converse part of the statement. Again fix a probability distribution $P$ in $H_0$, and suppose there is a set $B$ such that $P(Z \in B)> 0$ and for all $z \in B$ the conditional denstiy $f_{z}$ is everywhere continuous and not non-decreasing. More specifically, all we require is that for all $z\in E$, there are two points $y_1(z) < y_2(z)$ such that $f_{z}(x)$ is strictly larger in a neighborhood around $y_1(z)$ than in a neighborhood around $y_2(z)$, and these neighborhoods are disjoint. In particular for $\epsilon > 0$ let $N_{\epsilon}(y) = (y - \epsilon, y + \epsilon )$ be a ball around $y$. Then we need there to be $y_1(z)$, $y_2(z)$, $\epsilon(z) > 0$, and some $\eta(z) > 0$ such that, for all $w_1 \in N_{\epsilon(z)}(y_1(z))$ and $w_2 \in N_{\epsilon(z)}(y_2(z))$, $w_1  < w_2$ but $f_{z}(w_2) + \eta(z) < f_{z}(w_1) $. If $f_z$ is everywhere continuous and not non-decreasing, this will be true. Define $H(z) = \inf \{f_{z}(w_1): w_1 \in N_{\epsilon(z)}(y_1(z))\}$ and  $L(z) = \sup \{f_{z}(w_2): w_2 \in N_{\epsilon(z)}(y_2(z))\}$ so $H(z)  > L(z)$. Then consider the selection function 
+\begin{equation*}
+s(x, z)= \begin{cases}
+1 &\text{if } x \in N_{\epsilon(z)}(y_1(z)) \cup N_{\epsilon(z)}(y_2(z)) \text{ and } z \in B \\
+0 &\text{otherwise }.
 \end{cases}
 \end{equation*}
-and let $t$ be a value such that $t > w_1$ for all $w_1 \in N_{\epsilon}(y_1)$ and $t < w_2$ for all $w_2 \in  N_{\epsilon}(y_2)$. Trivially, 
-\begin{equation*}
-    P(U \leq t | Z = z', S' = 1) = \frac{1}{2}. 
-\end{equation*}
-But the fact that 
+We show that, for this selection function, selection happens with positive probability:
 \begin{align*}
-    \frac{1}{P(p \leq t | Z=z', S = 1)} &= \frac{ \int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx + \int_{y_2 - \epsilon}^{y_2 + \epsilon} f_{z'}(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx}\\
-    &= 1 + \frac{ \int_{y_2 - \epsilon}^{y_2 + \epsilon} f_{z'}(x) dx  }{\int_{y_1 - \epsilon}^{y_1 + \epsilon} f_{z'}(x) dx}\\
-    &\leq 1 + \frac{ 2\epsilon B_{low}  }{2\epsilon B_{high} }\\
-    & < 2
+    P(S = 1) &= E_P[E_P[ P(S = 1 | p, Z) | Z ]] \\
+             &= E_P[\int_0^1 s(x, Z)f_Z(x) dx]\\
+             &\geq E_P[\int_0^1 s(x, Z) f_Z(x)dx I(Z \in B)]\\
+             & \geq E_P[2\epsilon(Z)\eta(Z)I(Z \in B)] > 0
 \end{align*}
-implies that $P(p \leq t |Z=z',  S = 1) > \frac{1}{2} $, which means that $p$ is not selectively dominant. 
+Thus the conditional probability measure $Q$ and $Q'$ are well defined. Next we show that $Q(Z \in E) = 1$, so we know that $Z \in E$ a.e. under $Q$:
+\begin{align*}
+    Q(Z \in E) &= \frac{P(Z \in E, S=1)}{P(S=1)}\\
+               &= \frac{E_P[I(Z \in E) E_P[ P(S=1 | p, Z)| Z]] }{E_P[E_P[P(S=1| p, Z) | Z] ]}\\
+               &= \frac{E_P[ I(Z \in E) \int_0^1 s(x, Z) f_Z(x) dx ] }{E_P[\int_0^1 s(x, Z) f_Z(x) dx ]}\\
+               &= \frac{E_P[ I(Z \in E) \int_0^1 s(x, Z) f_Z(x) dx ] }{E_P[ I(Z \in E) \int_0^1 s(x, Z) f_Z(x) dx ]}\\
+               &= 1,
+\end{align*}
+where we have noted that $s(x, z)$ is zero everywhere if $z \not \in E$. 
+
+Finally, for $z \in E$, define $t(z)$ to be a value such that $t(z) > w_1$ for all $w_1 \in N_{\epsilon(z)}(y_1(z))$ and $t(z) < w_2$ for all $w_2 \in  N_{\epsilon(z)}(y_2(z))$. We know from earlier that a.e. under $Q$ 
+\begin{equation*}
+    Q(p \leq t(Z) |Z) = \frac{\int_0^{t(Z)} s(x, Z) f_Z(x) dx }{\int_0^1 s(x, Z) f_Z(x) dx},
+\end{equation*}
+where the numerator is at least $2\epsilon(Z)\eta(Z) >0$, so also a.e. under $Q$
+so, 
+\begin{align*}
+    \frac{1}{Q(p \leq t(Z) |Z)} &= 1 + \frac{\int_{t(Z)}^1 s(x, Z) f_Z(x) dx }{\int_0^{t(Z)} s(x, Z) f_Z(x) dx}\\
+                                &\leq 1 + \frac{2 \epsilon(Z) L(Z)}{2 \epsilon(Z)H(Z)}\\
+                                &< 2, \\
+\end{align*}
+and 
+\begin{align*}
+    Q(p \leq t(Z) |Z) > 1/2.
+\end{align*}
+On the other hand, we also have from above that a.e. under $Q$ 
+\begin{align*}
+    Q'(U \leq t(Z) |Z) &= \frac{\int_0^{t(Z)} s(x, Z) dx }{\int_0^1 s(x, Z) dx}\\
+                       &= \frac{2\epsilon(Z)}{4 \epsilon(Z)}\\
+                       &= 1/2.
+\end{align*}
+Thus we have shown that, a.e. under $Q$, there exists some $t \in [0, 1]$ such that $Q(p \leq t | Z) > Q'(U \leq t)$, which means that $p$ is not selectively dominant given $Z$.  
 
 \iffalse
 \subsection{Proof of \Cref{cor:cond_closed}}
