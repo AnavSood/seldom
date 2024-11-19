@@ -296,7 +296,7 @@ In a permutation test we observe data $X \in \mathcal{X}$ and compute a test sta
 \end{example}
 
 \begin{example}[$F$-tests for regression]
-Suppose we observe data $Y \in \R^n$ from a linear model $Y = \boldsymbol{X} \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\boldsymbol{X} \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try and reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\boldsymbol{X}$, so it is trivially selectively dominant given $\boldsymbol{X}$. We describe this test and its associated p-value more explicilty in \Cref{sec:f_test_appdx}. 
+Suppose we observe data $Y \in \R^n$ from a linear model $Y = \boldsymbol{X} \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\boldsymbol{X} \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try and reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\boldsymbol{X}$, so it is trivially selectively dominant given $Z = \boldsymbol{X}$. We describe this test and its associated p-value more explicilty in \Cref{sec:f_test_appdx}. 
 \end{example}
 
 Etablishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, and the bulk of \Cref{sec:one_sided_appdx} is spent doing so. The majoirty the article focuses on examples from these two non-trivial settings. 
@@ -548,42 +548,42 @@ This closed procedure is also best understood sequentially. We reject $H_{0, (1)
 \section{Rank verification in exponential families}
 \label{sec:rank_verification}
 
-In this section we consider the problem of verifying that that the winning parameter is actually larger than the other parameters, i.e., rather than doing inference on the winning parameter, we do inference on the gap between the winning and remaining parameters. Mainly, we give an account of the seminal work \cite{Hung2019} in our selective dominance framework. We show, however, that \cite{Hung2019} do not correctly handle cases where there can be ties for the winner. This is a subtle point, but it is a mistake that is easy to avoid when using our selective dominance framework.
+In this section we consider the problem of verifying that that the winning parameter is actually larger than the other parameters, i.e., rather than doing inference on the winning parameter, we do inference on the gap between the winning and remaining parameters. Mainly, we illustrate how the seminal work \cite{Hung2019} fits nicely in our framework. We show, however, that \cite{Hung2019} do not correctly handle cases where there can be ties for the winner. This is a subtle point, but it is a mistake that is easy to avoid when using our selective dominance framework. 
 
 Overall, the section serves to illustrate how our selective dominance machinery provides a straightforward way to correctly design intricate and counter-intuitive selective procedures. For examples of how one may apply these methods, we refer the reader to the original article \cite{Hung2019}, where there are many. 
 
 \subsection{Warm-up: rank verification and Type III error}
 
-To motivate the rank verification problem and shed some light on its relationship with selective dominance, we consider a seemingly unrelated classical statistical question about Type III errors. 
+To motivate the rank verification problem and shed some light on its relationship with selective dominance, we frist consider a seemingly unrelated classical statistical question about Type III errors. 
 
-A researcher wants to test if the unknown means of two univariate Gaussian samples, $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, are different. They end up rejecting the null hypothesis $H_0: \mu_1 = \mu_2$ because the two-sided p-value $2(1 - \Phi(|X_1 - X_2|))$ they learned from introductory statistics is at most $\alpha$. After rejecting, they note $X_1 > X_2$, and claim ``not only are the two means are different, but they must be different because $\mu_1$ is bigger than $\mu_2$''. Your friend, however, only rejected the null that the means are equal. Can they make a claim about the direction of inequality? This is a quesiton of Type III error, and we can use our selective dominance framework to show that the researcher's claim is actually statistically valid. 
+A researcher wants to test if the unknown means of two univariate Gaussian samples, $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$, are different. They end up rejecting the null hypothesis $H_0: \mu_1 = \mu_2$ because they observe that the two-sided p-value $2(1 - \Phi(|X_1 - X_2|))$ is below $\alpha$. After rejecting, they note $X_1 > X_2$, and claim ``not only are the two means are different, but they must be different because $\mu_1$ is bigger than $\mu_2$''. The researcher, however, only rejected the null that the means are equal. Can they make a claim about the direction of inequality? This is a quesiton of Type III error, and we can use our selective dominance framework to show that the researcher's claim is actually statistically valid. 
 
-Based on the claim, it seems that what the researcher really wants to do is test the one-sided null $H_{0, 12} : \mu_1 \leq \mu_2$ whenever they observe that $X_1 > X_2$, and test the complementary one-sided null $H_{0, 21} : \mu_2 \leq \mu_1$ whenever they observe that $X_2 < X_1$. To test the null $H_{0, ij} : \mu_i \leq \mu_j$ we normally use the UMP p-value $p_{ij} = 1 - \Phi(X_i - X_j)$. In the researcher's case, however, they only select this p-value to use for inference when they observe that $X_i > X_{j}$, or equivalently that $p_{ij} < 1/2$. Since the $p_{ij}$ are selectively dominant, \Cref{thm:adjustment} tells us that, when using $p_{ij}$ to test $H_{0, ij}$, the researcher should correct for this selection and reject when $2p_{ij} \leq \alpha \iff p_{ij} \leq \alpha/2$. Letting $W$ be the index of the winner and $R$ of the runner-up, the final procedure is to reject $H_{0, WR}$ when $p_{WR} \leq \alpha/2$. 
+Based on the claim, it seems that what the researcher really wants to do is test the one-sided null $H_{0, 12} : \mu_1 \leq \mu_2$ whenever they observe that $X_1 > X_2$, and test the complementary one-sided null $H_{0, 21} : \mu_2 \leq \mu_1$ whenever they observe that $X_2 < X_1$. To test the null $H_{0, ij} : \mu_i \leq \mu_j$ we normally use the UMP p-value $p_{ij} = 1 - \Phi(X_i - X_j)$. In the researcher's case, however, they only select this p-value to use for inference when they observe that $X_i > X_{j}$, or equivalently that $p_{ij} < 1/2$. Since the $p_{ij}$ are selectively dominant (because of \Cref{exm:mlr}), \Cref{thm:adjustment} tells us that the researcher should correct for this selection, and reject $H_{0, ij}$ only when $2p_{ij} \leq \alpha \iff p_{ij} \leq \alpha/2$. Letting $W$ be the index of the winner and $R$ of the runner-up, the final procedure is to reject $H_{0, WR}$ when $p_{WR} \leq \alpha/2$. 
 
-The approach described above verifies the rank of the winning mean with Type I error control, i.e., it affirms not just that the means are different, but that the mean of the winning observation is the larger of the two. The procedure, which rejects when the smaller of the two one-sided p-values is at most $\alpha/2$, is identical to the procedure that rejects when the above two-sided p-value is at most $\alpha$. Hence, for reasons likely unbeknowst to them, the researcher's original claim is indeed statistically valid. We walk through deriving this procedure much more carefully (with as much detail as we did in \Cref{exm:winner}) in \Cref{sec:rank_verification_warm_up_appdx}.
+The procedure described above is a rank verification procedure. It affirms not just that the means are different, but that the mean of the winning observation is the larger of the two (i.e., of higher rank). This procedure, which rejects when the smaller of the two one-sided p-values is at most $\alpha/2$, is identical to the procedure that rejects when the above two-sided p-value is at most $\alpha$. Hence, for reasons likely unbeknowst to them, the researcher's original claim is indeed statistically valid. We walk through deriving more carefully (with as much detail as we did in \Cref{exm:winner}) in \Cref{sec:rank_verification_warm_up_appdx}.
 
-It turns out that, for the $n$-dimensional Gaussian problem (we considered the 2-dimensional problem up to this point), it has long been known that verifying the winner's rank by running a one-sided test comparing the winner and runner-up at level $\alpha/2$ controls Type I error \citep{Gutmann}. \cite{Hung2019} claim further that the test can be run at level $n/(n-1) \cdot \alpha/2$, however this claim is false. By taking $\mu_1 = \mu_2$ and $\mu_3 = \dots = \mu_n = -\infty$, it is not hard to verify that the Type I error one gets by running the test at level $\alpha/2$ is exactly $\alpha$. Hence, the error cannot be inflated any further.  
+It turns out that, for the $n$-dimensional Gaussian problem (we have considered the 2-dimensional problem up to this point), it has long been known that we can verify that the winning mean is the largest by running a one-sided test comparing the winner and runner-up at level $\alpha/2$ \citep{Gutmann}. \cite{Hung2019} claim further that the test can be run at level $n/(n-1) \cdot \alpha/2$. This claim, however, is false. By taking $\mu_1 = \mu_2$ and $\mu_3 = \dots = \mu_n = -\infty$, it is not hard to verify that the Type I error one gets by running the test at level $\alpha/2$ is exactly $\alpha$. Hence, the error cannot be inflated any further.  
 
-Interestingly, \cite{Hung2019}'s claim becomes true if, rather than wanting to verify that the winning mean is strictly bigger than the other mean, we want to verify that it is at \underline{least as} big. Again let us focus on the 2-dimensional case. If, instead of testing the null $H_{0, WR}: \mu_W \leq \mu_R$, we test the null $H_{0, WR} :\mu_W < \mu_R$, then we can indeed run the one-sided test comparing the winner and runner-up at level $\alpha$ instead of level $\alpha/2$. Assuming without loss of generality that $\mu_1 \geq \mu_2$, the proof is straightforward:
+Interestingly, \cite{Hung2019}'s claim becomes true if, rather than wanting to verify that the winning mean is strictly bigger than the other means, we want to verify that it is just at \underline{least as} big. Again let us focus on the 2-dimensional case. If, instead of testing the null $H_{0, WR}: \mu_W \leq \mu_R$, we test the null $H_{0, WR} :\mu_W < \mu_R$, then we can indeed run the one-sided test comparing the winner and runner-up at level $\alpha$ instead of level $\alpha/2$. Assuming without loss of generality that $\mu_1 \geq \mu_2$, the proof is straightforward:
 \begin{align*}
     &P_{\mu_1, \mu_2}(\text{falsely reject } H_{0, WR}) &\\
-    & =P_{\mu_1, \mu_2}(p_{21} < \alpha | W = 2)P(W=2I()\mu_2 < \mu_1) & \text{(no false rejection when $W=1$ or $\mu_2 =\mu_1$)}\\
+    & =P_{\mu_1, \mu_2}(p_{21} < \alpha | W = 2)P(W=2)I(\mu_2 < \mu_1) & \text{(no false rejection when $W=1$ or $\mu_2 =\mu_1$)}\\
     &\leq P_{\mu_1, \mu_2}(2p_{21} < 2\alpha | p_{21} \leq 1/2)\cdot \frac{1}{2} \cdot I(\mu_2 < \mu_1) & \text{($X_1$ wins w.p. at least $1/2$ )}\\
     &\leq 2 \alpha \cdot \frac{1}{2} \cdot I(\mu_2 < \mu_1) \leq \alpha. & \text{(selective dominantce)}
 \end{align*}
 
-As rejection probabilities are typically continuous in the parameter space, it is counter-intuitive that excluding the boundary of the null makes a tangible difference. But, since the null hypothesis is data-dependent, the false rejection region is a highly discontinuous function of the parameters, which elicits this behavior. For example, under the data-dependent null $H_{0, WR} :\mu_W < \mu_R$, the false rejection region is empty when $\mu_1 = \mu_2$, but whenever $\mu_1$ is even $\epsilon$ larger than $\mu_2$,  the false rejection region $X_2 - X_1 > z_{1-\alpha}$ becomes highly non-trivial. Under the null $H_{0, WR} :\mu_W \leq \mu_R$ the false rejection $|X_1 - X_2| > z_{1-\alpha}$ is as large as possible when $\mu_1 = \mu_2$, which prevents us from inflating the level of the test. Fixing $\mu_2 = 0$, \Cref{fig:warm_up_error_control} considers both nulls $H_{0, WR} :\mu_W < \mu_R$ and $H_{0, WR} :\mu_W \leq \mu_R$ and plots the Type I error of the level $\alpha$ one-sided test comparing the winner and runner up for different values of $\mu_1$. The behavior at the discontinuity $\mu_1=0$ illustrates why we have Type I error control for $H_{0, WR} :\mu_W < \mu_R$  but not for $H_{0, WR} :\mu_W \leq \mu_R$. 
+As rejection probabilities are typically continuous functions of the parameters, it is counter-intuitive that excluding the boundary of the null makes a tangible difference. For data dependent hypotheses, however, the false rejection region can be a highly discontinuous function of the parameters, which elicits this counter-intuitive behavior. For example, under the data-dependent null $H_{0, WR} :\mu_W < \mu_R$, the false rejection region $\emptyset$ is empty when $\mu_1 = \mu_2$, but equal to $\{X_2 - X_1 > z_{1-\alpha}\}$ whenever $\mu_1$ is even just $\epsilon > 0$ larger than $\mu_2$. Under the null, $H_{0, WR} :\mu_W \leq \mu_R$ the false rejection region $\{|X_1 - X_2| > z_{1-\alpha}\}$ is as large as possible when $\mu_1 = \mu_2$, which is exactly what prevents us from inflating the level of the test. For both the nulls $H_{0, WR} :\mu_W < \mu_R$ and $H_{0, WR} :\mu_W \leq \mu_R$, \Cref{fig:warm_up_error_control} fixes $\mu_2=0$ and plots the Type I error of the level $\alpha$ one-sided test comparing the winner and runner up for different values of $\mu_1$. The discontinuity at $\mu_1=0$ illustrates why we have Type I error control for $H_{0, WR} :\mu_W < \mu_R$ but not for $H_{0, WR} :\mu_W \leq \mu_R$. 
 
-A nice implication of our above discussion is the following surprising fact: if we want to to verify that the winning mean amongst $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$ is \underline{at least} as large as the other mean, we can run a one-sided test comparing the winner to the runner up at level $\alpha$, i.e., with \underline{no correction}, and still mantain Type I error control. 
+A nice implication of our discussion is the following surprising fact: if we want to to verify that the winning mean amongst $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$ is \underline{at least} as large as the other mean, we can run a one-sided test comparing the winner to the runner up at level $\alpha$, i.e., with \underline{no correction}, and still mantain Type I error control. 
 
 \begin{figure}[]
     \centering
     \scalebox{1}{
-    \begin{minipage}{0.49\textwidth}
+    \begin{minipage}{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{inequality_error.pdf}
     \end{minipage}\hfill
-    \begin{minipage}{0.49\textwidth}
+    \begin{minipage}{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{equality_error.pdf}
     \end{minipage}\hfill
@@ -600,9 +600,9 @@ In this sub-section we illustrate how to do rank verification when we observe da
     \label{eq:exp_fam}
     g_{\theta}(x) = \exp(\theta_1 x_1 + \dots + \theta_n x_n - \psi(\theta))g(x),
 \end{equation}
-with repsect to some base measure. \footnote{We assume that $g(x)$ is symmetric and $T_i(x) = x_i$ so that our discussion more closely mirrors \cite{Hung2019}, although we do not need to. \cite{Hung2019} also assume that $g(x)$ is Schur concave for other purposes, but we leave this assumption out.}. Like \cite{Hung2019}, we want to verify that $\theta_W$ is larger than the remaining $\theta_j$, where $W$ is the index of the largest $X_i$. In case of ties, we follow \cite{Hung2019}'s lead, and set $W$ to randomly be one of the winning indices. Since $E_{\theta}[X_i] = \theta_i$, the winning parameter $\theta_W$ may reasonably be the largest of the $\theta_i$. 
+with repsect to some base measure \footnote{We assume that $T_i(x) = x_i$ so that our discussion more closely mirrors \cite{Hung2019}, although we do not need to. \cite{Hung2019} also assume that $g(x)$ is Schur concave for other purposes, but we leave this assumption out.}. Like \cite{Hung2019}, we want to verify that $\theta_W$ is larger than the remaining $\theta_j$, where $W$ is the index of the largest $X_i$. In case of ties, we follow \cite{Hung2019} and set $W$ to randomly be one of the winning indices. Since $E_{\theta}[X_i] = \theta_i$, the winning parameter $\theta_W$ may reasonably be the largest of the $\theta_i$. 
 
-Considering the nulls $H_{0, ij} : \theta_i \leq \theta_j$, we want to reject the data-dependent null $\cup_{j \neq W} H_{0, Wj} $ and affirm that $\theta_W$ larger than any other parameter \footnote{If we performed the same analysis for the nulls $H^{\delta}_{0, ij} : \theta_i  - \theta_j \leq \delta$ then we could verify that $\theta_W$ is more than $\delta$ larger than any other $\theta_j$. Inverting these tests would result in a LCB for the difference $\theta_W - \max_{j \neq W } \theta_j$ between the winning and next largest parameter.}. Our strategy will be to come up with a valid test for $H_{0, Wj}$ for all $j \neq W$, and then reject $\cup_{j \neq W} H_{0, Wj}$ whenever we reject the tests $H_{0, Wj}$ for all $j \neq W$. Fixing $i \neq j$, we start by constructing the UMPU p-value $p_{ij}$ for testing $H_{0, ij}: \theta_i - \theta_j \leq \delta$. Ultimately, we will only use this p-value to test $H_{0, ij}$ when $i$ is selected as our winning index, and we will correspondingly adjust the p-value to account for this selection. 
+Considering the nulls $H_{0, ij} : \theta_i \leq \theta_j$, we want to reject the data-dependent null $\cup_{j \neq W} H_{0, Wj} $ and affirm that $\theta_W$ larger than every other parameter \footnote{If we performed the same analysis for the nulls $H^{\delta}_{0, ij} : \theta_i  - \theta_j \leq \delta$ then we could verify that $\theta_W$ is more than $\delta$ larger than any other $\theta_j$. Inverting these tests would result in a LCB for the difference $\theta_W - \max_{j \neq W } \theta_j$ between the winning and next largest parameter.}. Our strategy will be to come up with a valid test for $H_{0, Wj}$ for $j \neq W$, and then reject $\cup_{j \neq W} H_{0, Wj}$ whenever we reject $H_{0, Wj}$ for every $j \neq W$. Fixing $i \neq j$, we start by constructing the UMPU p-value $p_{ij}$ for testing $H_{0, ij}: \theta_i \leq \theta_j$. Ultimately, we will only use this p-value to test $H_{0, ij}$ when $i$ is selected as our winning index, and we will correspondingly adjust the p-value to account for this selection. 
 
 Defining the transformed sufficient statistics $Y \in \R^n$ by
 \begin{equation}
@@ -641,7 +641,7 @@ Moreover, in the case that there are multiple winners, the number of winners is 
 \end{equation}
 Note that $N_{i}(Y_{-i})$, which is always at least two, is \underline{not} the same as the number of winners, which can be one. Rather, it is the number of winners there will be if $X_i$ is a winner and at least one other $X_k$ is as well (see \Cref{sec:ties_appdx} for details).  
 
-Leveraging these facts, we use selective dominance framework to come up with a valid test for $H_{0, Wj}$. Essentially, we use $p_{ij}$ to test $H_{0, ij}$ with probability one when it is less than $q^+_{ij}$, and with probability $1/N_i$ (we randomly select one of the $N_i$ winners) when it is between $q^+_{ij}$ and $q_{ij}$. Explicitly, letting $p = p_{ij}$ and $Z = Y_{-j}$, we can apply our framework with the selection function
+Leveraging these facts, we can apply our framework to come up with a valid test for $H_{0, Wj}$. Essentially, we use $p_{ij}$ to test $H_{0, ij}$ with probability one when it is less than $q^+_{ij}$, and with probability $1/N_i$ (we randomly select one of the $N_i$ winners) when it is between $q^+_{ij}$ and $q_{ij}$. Explicitly, letting $p = p_{ij}$ and $Z = Y_{-j}$, we can apply our framework with the selection function
 \begin{equation*}
     s(x, z) = 
     \begin{cases} 
@@ -650,11 +650,12 @@ Leveraging these facts, we use selective dominance framework to come up with a v
     0 & \text{otherwise}
     \end{cases}.
 \end{equation*}
-This is a piece-wise linear function that is easy to integrate, and computations detailed in \Cref{sec:rank_verficiation_adj_appdx} show that the corresponding selective p-value from \Cref{thm:adjustment} is given by 
+This is a piece-wise linear function that is easy to integrate, and, after some computations detailed in \Cref{sec:rank_verficiation_adj_appdx}, \Cref{thm:adjustment} tells us to reject when the selective p-value
 \begin{equation}
     \label{eq:rank_verification_selective_p_val}
-     \frac{p_{ij} - \left(1 - \frac{1}{N_i} \right)(p_{ij} - q^+_{ij})_+ }{q^+_{ij} + \frac{1}{N_i}(q_{ij} - q^+_{ij}) }.
+     \frac{p_{ij} - \left(1 - \frac{1}{N_i} \right)(p_{ij} - q^+_{ij})_+ }{q^+_{ij} + \frac{1}{N_i}(q_{ij} - q^+_{ij}) }
 \end{equation}
+is at most $\alpha$. 
 
 The crucial difference between our derivation and \cite{Hung2019}'s is that \cite{Hung2019} use the same selective p-value when there can and cannot be ties amongst the $X_k$. If there cannot be ties amongst the $X_k$, then $q_{ij} = q^{+}_{ij}$ always, and the selective p-value \eqref{eq:rank_verification_selective_p_val} simplifies to $p_{ij}/q_{ij}$. If we use $p_{ij}/q_{ij}$ when ties are possible, however, we will not achieve conditional error control (as is claimed in \cite{Hung2019}). We give an example in \Cref{fig:error_control}, where $X \in \R^3$ is composed of three independent binomials. The left panel of \Cref{fig:error_control} depicts the conditional distribution of $p_{12}$ given $W=1$ for a specific setting of the nusiances statistics $Y_{-j}$. It makes it clear that rejecting when $p_{ij}/q_{ij} \leq \alpha $ does not maintain conditional error control, as is affirmed in \Cref{fig:error_control}'s right panel.
 
@@ -662,12 +663,12 @@ The crucial difference between our derivation and \cite{Hung2019}'s is that \cit
 \begin{figure}[]
     \centering
     \scalebox{1}{
-    \begin{minipage}{0.49\textwidth}
+    \begin{minipage}{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{p_val_density.pdf}
     \end{minipage}\hfill
     \raisebox{0.18cm}{
-    \begin{minipage}{0.49\textwidth}
+    \begin{minipage}{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{type_one_error.pdf}
     \end{minipage}\hfill
@@ -1579,7 +1580,7 @@ With these lemmas under our belt, we can show \Cref{prop:mlr_sel_dom}, the main 
 
 \begin{proposition}
     \label{prop:mlr_sel_dom}
-    For any selection function $s(x)$ for which $p$ has positive probability of selection under both $\theta$ and $\theta_0$,  
+    For any selection function $s(x)$ for which $p$ has positive probability of selection under $P_{\theta}$,  
     \begin{equation*}
         P_{\theta}(p \leq z | S = 1)  \leq P_{\theta_0}(p \leq z | S = 1).
     \end{equation*}
@@ -1587,7 +1588,18 @@ With these lemmas under our belt, we can show \Cref{prop:mlr_sel_dom}, the main 
 
 \begin{proof}
 
-Fix $z \in (0, 1)$. If $z$ is such that $P_{\theta}(p \leq z | S = 1)  = 0$ then the desired inequality is trivial. To handle the non-trival case, we note three facts from the proof of \Cref{lem:fuzzy}:
+First we show that $P_{\theta}(S= 1) > 0 \implies P_{\theta_0}(S=1) > 0$. We show the contrapositive. If 
+\begin{align*}
+    0 = P_{\theta_0}(S=1) &= E_{\theta_0}[E_{\theta_0}[S | p]] \\
+                          &= E_{\theta_0}[s(p)]\\
+                          &= E_{\theta_0}[s(T(X), U_{aux})],
+\end{align*} 
+then $s(T(X), U_{aux}) = 0$ a.e. under $P_{\theta_0}$. Therefore,
+\begin{align*}
+    P_{\theta}(S=1) = E_{\theta}[s(T(X), U_{aux})] = E_{\theta_0}[g_{\theta}(T(X))s(T(X), U_{aux})] = 0.
+\end{align*}
+
+Now, fix $z \in (0, 1)$. If $z$ is such that $P_{\theta}(p \leq z | S = 1)  = 0$ then the desired inequality is trivial. To handle the non-trival case, we recall \Cref{lem:fuzzy} and note three facts:
 \begin{itemize}
     \item If $(t, u) \in m^{-1}([0, z])$ then $t \geq G^{-1}(z)$,
     \item If $(t, u) \in m^{-1}((z, 1])$ then $t \leq G^{-1}(z)$,
@@ -1626,14 +1638,13 @@ The UMPU test for $H_0: \theta_i \leq \theta_{0, i}$ is valid conditional on $T_
 \end{equation*}
 where the functions $\gamma(\cdot)$ and $C_0(\cdot)$ satisfy 
 \begin{equation*}
-    E_{\theta_{0, i}}[\phi(T_i(X), t_{-i}) | T_{-i}(X) = t_{-i}] = \alpha
+    E_{\theta_i = \theta_{0, i}}[\phi(T_i(X), t_{-i}) | T_{-i}(X)] = \alpha \text{ a.e. under } P_{\theta_i = \theta_{0, i}}
 \end{equation*}
 is UMPU for testing $H_0: \theta_i \leq \theta_{0, i}$. Lemma 2.7.2 of \cite{Lehmann} tells us that the conditional distribuition of $T_{i}(X)$ given $T_{-i}(X) = t_{-i}$ admits a density 
-
 \begin{equation*}
     g_{\theta_i, t_{-i}}(t_i) = \exp(\theta_i t_i - \tilde{\psi}(\theta_i))  
 \end{equation*}
-with respect to some base measure $\mu_{t_{-i}}$. This density has an MLR in $t_i$ (to be specific, we are imagining observing $T_i(X)$ from its conditional distribution $T_{-i}(X)$, and the map $T(\cdot)$ from the previous sub-section is actually the identity). Hence, a concrete UMPU test is to just run our UMP test from the previous section using the conditional distribution given $T_{-i}(X) = t_{-i}$. In particular, our work from the previous section implies that it is UMPU to reject when the p-value
+with respect to some base measure $\mu_{t_{-i}}$. This density has an MLR in $t_i$ (to be specific, we are imagining observing $T_i(X)$ from its conditional distribution $T_{-i}(X)$, and the map $T(\cdot)$ from the previous sub-section is actually the identity). Hence, a concrete UMPU test is to just run our UMP test from the previous section using the conditional distribution given $T_{-i}(X) = t_{-i}$. In particular, our work from the previous section implies that it is UMPU to reject using the p-value
 
 \begin{equation}
     \label{eq:ump_exp_fam}
@@ -1641,15 +1652,20 @@ with respect to some base measure $\mu_{t_{-i}}$. This density has an MLR in $t_
 \end{equation}
 where $U_{aux}$ is an uniform random variable independent of the data and 
 \begin{equation*}
-    G(t_i | t_{-i}) = P_{\theta_0}(T_i(X) \geq t | T_{-i}(X) = t_{-i}) \qquad G^{+}(t_i | t_{-i}) = \lim_{u \downarrow t_i} G(u| t_{-i}),
+    G(t_i | t_{-i}) = P_{\theta_0}(T_i(X) \geq t | T_{-i}(X) = t_{-i}) \qquad G^{+}(t_i | t_{-i}) = \lim_{u \downarrow t_i} G(u| t_{-i}).
 \end{equation*}
 
-is at most $\alpha$. Our work from the previous section also implies that this p-value is selectively dominant given $T_{-i}(X)$. 
+We argue that this p-value is selectively dominant given $Z$. Fix a distribution $P$ in the null. If we consider some selection function $s(x, z)$ such that $P(S= 1) = 0$, then \eqref{eq:selective_dominance} holds trivially. Instead consider the case that $P(S= 1) > 0$ and let $f_{z}(x)$ denote the conditional PDF of $p$ given $Z=z$. \Cref{prop:mlr_sel_dom} along with \Cref{lem:uniform} tells us exactly that for $z$ such that $\int_0^1 s(x, z) f_z(x) dx > 0$,
+\begin{equation*}
+    \frac{\int_0^t s(x, z) f_z(x)}{\int_0^1 s(x, z) f_z(x)} \leq \frac{\int_0^t s(x, z) }{\int_0^1 s(x, z)}  \text{ for all } t \in [0, 1].
+\end{equation*}
+Arguments in \Cref{sec:adjustment_proof} and \Cref{sec:density_proof} then tell us that the following three facts are true a.e. under $P(\cdot | S=1)$: (1) $\int_0^1 s(x, Z) f_Z(x) dx > 0$ , (2) the left-hand side of the above equals the left-hand side of \eqref{eq:selective_dominance}, and (3) the right-hand side of the above equals the right-hand side of \eqref{eq:selective_dominance}. Combined these facts imply that $p$ is selectively dominant given $Z$. 
+
 
 \subsection{Montonicty of Selective MLR p-Values}
 \label{sec:one_sided_monotone_appdx}
 
-In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Because we do everything conditional on $Z=z$, we can imagine without loss of generality there is no $Z$ and just work with $X$. Letting
+In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Because we do everything conditional on $Z=z$, without loss of generality we can just work with $X$ and understand that the results will hold a.e. over $Z$. Letting
 \begin{equation*}
     G^{\theta_0}(t) = P_{\theta_0}(T(X) \geq t) \qquad G^{\theta_0, +}(t) = \lim_{u \downarrow t} G^{\theta_0}(u)
 \end{equation*}
@@ -1663,7 +1679,7 @@ be the UMP p-value for testing $H_{0}: \theta \leq \theta_0$. Again, $U_{aux}$ i
 \end{equation*}
 be the map such that $m^{\theta_0}(T(X), U) = p^{\theta_0}$. 
 
-Considering a class of selection functions $s^{\theta_0}(x)$ under which $p^{\theta_0}$ and $U$ both have a positive probability of selection given, we want to show that the selective p-values from \Cref{thm:adjustment}, 
+Considering a class of selection functions $s^{\theta_0}(x)$ such that $\int_0^1 s^{\theta_0}(x) > 0$ (when $Z$ is present we need $\int_0^1 s^{\theta_0}(x, Z) > 0$ almost surely), we want to show that the selective p-values from \Cref{thm:adjustment}, 
 \begin{equation*}
     p^{\theta_0}_{sel} = \frac{\int_{0}^{p^{\theta_0}} s^{\theta_0}(x) dx}{\int_{0}^{1} s^{\theta_0}(x) dx},
 \end{equation*}
@@ -1894,6 +1910,7 @@ In the case that $Q(p \leq t | Z) = t$ a.e. under $Q$, then by the same computat
 
  
 \subsection{Proof of \Cref{thm:density}}
+\label{sec:density_proof}
 
 Fix a probability distribution $P$ in $H_0$ and let $f_z(x)$ be the conditional PDF of $p$ given $Z=z$. If $P(S=1) = 0$, then our convention is that $P(p \leq \alpha | Z, S=1) = 0$, so \eqref{eq:selective_dominance} holds automatically. Thus we can consider only selection functions $s(x, z)$ for which $P(S=1) > 0$. We argued in \Cref{sec:adjustment_proof} that when $P(S=1) > 0$ we also have $P(S' = 1)> 0$. Correspondingly, we define the conditional measures $Q(A)= P(A | S=1) = P(A, S=1)/P(S=1)$ and $Q'(A)= P(A | S=1) = P(A, S=1)/P(S=1)$. 
 
