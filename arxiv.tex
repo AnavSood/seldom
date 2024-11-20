@@ -12,6 +12,7 @@
 \usepackage[english]{babel}
 \usepackage{xcolor}
 \usepackage[colorlinks = true, citecolor = blue, urlcolor = blue]{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{indentfirst}
 \usepackage{apptools}
 \usepackage{cleveref}
@@ -60,15 +61,15 @@
 \maketitle
 
 \begin{abstract}
-Selective inference is a subfield of statistics that enables valid inference after selection of a data-dependent question. In this paper, we introduce selectively dominant p-values, a class of p-values that allows practitioners to easily perform inference after arbitrary selection procedures. Unlike a traditional p-value, whose distribution must stochastically dominate the uniform distribution under the null, a selectively dominant p-value must have a  post-selection distribution that stochastically dominates that of a uniform having undergone the same selection process; moreover, this property must hold simultaneously for all possible selection processes. Despite the strength of this condition, we show that all commonly used p-values (e.g., p-values from two-sided testing in parametric families, one-sided testing in monotone likelihood ratio and exponential families, $F$-tests in linear regression, and permutation tests) are selectively dominant. By recasting two canonical selective inference problems—inference on winners and rank verification—in our selective dominance framework, we provide simpler derivations, a deeper conceptual understanding, and new generalizations and variations of these methods. Additionally, we use our insights to introduce selective variants of methods that combine p-values, such as Fisher's combination test. 
+Selective inference is a subfield of statistics that enables valid inference after selection of a data-dependent question. In this paper, we introduce selectively dominant p-values, a class of p-values that allow practitioners to easily perform inference after arbitrary selection procedures. Unlike a traditional p-value, whose distribution must stochastically dominate the uniform distribution under the null, a selectively dominant p-value must have a  post-selection distribution that stochastically dominates that of a uniform having undergone the same selection process; moreover, this property must hold simultaneously for all possible selection processes. Despite the strength of this condition, we show that all commonly used p-values (e.g., p-values from two-sided testing in parametric families, one-sided testing in monotone likelihood ratio and exponential families, $F$-tests in linear regression, and permutation tests) are selectively dominant. By recasting two canonical selective inference problems—inference on winners and rank verification—in our selective dominance framework, we provide simpler derivations, a deeper conceptual understanding, and new generalizations and variations of these methods. Additionally, we use our insights to introduce selective variants of methods that combine p-values, such as Fisher's combination test. 
 \end{abstract}
 
 
 \section{Introduction}
 
-Selective inference is a sub-field of statistics that allows practitioners to make valid inferences even when the underlying statistical question is chosen by a data-driven selection process. Many selective methods however, which operate by conditioning on the selection event, can be difficult to derive, hard to implement, and exhibit counter-intuitive behavior. To statisticians outside of the sub-field, each selective procedure may seem to come from a different argument or approach.
+Selective inference is a sub-field of statistics that allows practitioners to make valid inferences even when the underlying statistical question is chosen by a data-driven selection process. However, many selective methods, which operate by conditioning on the selection event, can be difficult to derive, hard to implement, and exhibit counter-intuitive behavior. To statisticians outside of the sub-field, each selective procedure may seem to come from a different argument or approach.
 
-In this paper, we provide a unifying framework for selective inference centered around p-values. So long as a statistician knows how to construct a p-value for an inferential question, our framework provides an algorithmic approach for delivering valid hypothesis testing procedures and confidence intervals, even when said inferential question is chosen via an arbitrary, albeit known, data-driven selection process. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior as well as new variations and extensions. 
+In this paper, we provide a unifying framework for selective inference centered around p-values. As long as a statistician knows how to construct a p-value for an inferential question, our framework offers them an algorithmic approach for delivering valid hypothesis tests and confidence intervals, even when said inferential question arises from an arbitrary, albeit known, selection process. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior as well as new variations and extensions.
 
 
 \subsection{Motivation}
@@ -95,36 +96,39 @@ As motivation, we recall the age-old task of providing inferences regarding the 
 
 Traditionally, we provide such an LCB via Sidak's simultaneous approach. Letting $\alpha_n = 1 - (1-\alpha)^\frac{1}{n}$ and $z_{1-\alpha}$ denote the $1-\alpha$ quantile of the standard normal distribution, the lower bounds $ \mu_i > X_i - z_{1 - \alpha_n}$ hold simultaneously with probability $1-\alpha$. Therefore, $\hat{\mu}_{simul} = X_W - z_{1 - \alpha_n}$ is a valid lower bound for $\mu_W$ that holds with probability at least $1-\alpha$. Performing simultaneous inference on $n$ means, however, comes at a cost. As $n$ grows, the quantile $z_{1 - \alpha_n}$ grows as well (depicted in the left panel of \Cref{fig:winner}), and the distance from the winning observation to the LCB correspondingly increases. 
 
-The more modern selective inference approach suggests providing an LCB that is valid conditionally on $W$. This approach provides inferences for only the winning mean $\mu_W$ and no other means, so we may hope that it avoids the simultaneous inference's curse of dimensionality. Following the recipe of \cite{Fithian2017} (see \Cref{sec:cond_appdx} for details), one finds the conditional LCB to be 
+The more modern selective inference approach suggests providing an LCB that is valid conditionally on $W$. This approach provides inferences for only the winning mean $\mu_W$ and no other means, so we may hope that it avoids the simultaneous inference's curse of dimensionality. Following the recipe of \cite{Fithian2017} (see \Cref{sec:cond_appdx} for details), one finds the conditional LCB $\hat{\mu}_{cond}$ to be the infimum of the confidence region
 \begin{equation}
     \label{eq:motivating_lcb}
-    \hat{\mu}_{cond} = \inf \{\mu_0 : \mu_0 > X_W - \text{Quantile}(1-\alpha, TN(0, 1, X_R - \mu_0, \infty))  \},
+    \{\mu_0 : \mu_0 > X_W - \text{Quantile}(1-\alpha, TN(0, 1, X_R - \mu_0, \infty))  \},
 \end{equation}
 where $X_R$ is the runner-up (second largest) observation and $TN(\mu, \sigma^2, a, b)$ is a $N(\mu, \sigma^2)$ distribution truncated to lie in the interval $[a, b]$. 
 
-The conditional LCB \eqref{eq:motivating_lcb} is near impossible to parse at first glance, but it turns out to have some very interesting properties. As plotted in right panel of \Cref{fig:winner}, the distance $X_W - \hat{\mu}_{cond}$ between the winner and the conditional LCB is purely a function of the gap $X_W - X_R$ between the winner and runner-up. If the gap between $X_W$ and $X_R$ is large, then the conditional LCB for $\mu_W$ will be roughly $X_{W} - z_{1-\alpha}$, i.e, what we expect in a one-dimensional inference problem. But as the runner-up gets close to the winner, the conditional LCB explodes quickly to $-\infty$ and gives much worse inferences than the classical approach. In summary, the conditional method appears to avoid the curse of dimensionality when the winner is well separated, but when it is not, the consequences can be tremendous. 
+The conditional LCB \eqref{eq:motivating_lcb} is near impossible to parse at first glance, but it turns out to have some very interesting properties. As plotted in right panel of \Cref{fig:winner}, the distance $X_W - \hat{\mu}_{cond}$ between the winner and the conditional LCB is purely a function of the gap $X_W - X_R$ between the winner and runner-up. If the gap between $X_W$ and $X_R$ is large, then the conditional LCB for $\mu_W$ will be roughly $X_{W} - z_{1-\alpha}$, i.e., what we expect in a one-dimensional inference problem. But as the runner-up gets close to the winner, the conditional LCB explodes quickly to $-\infty$ and gives much worse inferences than the classical approach. In summary, the conditional method appears to avoid the curse of dimensionality when the winner is well separated, but when it is not, the consequences can be tremendous. 
 
 The motivation for this article comes from the following fact: the conditional LCB becomes shockingly simple to parse once written in terms of p-values. Suppose we wanted just to check whether each LCB was non-negative, i.e., we use the LCBs solely to verify the existence of a positive mean. Typically, we verify the existence of a positive mean by using the p-value $p_i = 1 - \Phi(X_i)$ to test the null $H_{0, i} : \mu_i \leq 0$. It turns out that the simultaneous LCB verifies the existence of a positive mean when smallest p-value $p_{(1)}$ is at most $\alpha_n$. In contrast, the conditional LCB does so when the ratio of the top two smallest p-values $p_{(1)}/p_{(2)}$ is at most $\alpha$. 
 
 At least when the p-values $p_i$ are uniform under the null, there appears to be a simple and intuitive proof for the validity of the conditional procedure (much simpler than our derivations in \Cref{sec:cond_appdx}): under the null, the smallest p-value $p_{(1)}$ should be uniform on $[0, p_{(2)}]$, so we should control error when we reject when $p_{(1)} \leq \alpha p_{(2)}$. But the question remains, does this argument go through when p-values are not exactly uniform? If not, why does it work in the Gaussian case?
 
-The framework we develop in this article gives a complete answer to these questions. It identifies a broad class of p-values for which the sort of argument we have outlined above goes through. Beyond inference on winners, it turns out to encompass a comprehensive set of selective inference problems, and it provides a clearer view on how selective methods behave and are derived. As we illustrate throughout the article, the framework serves to both deepen our understanding of existing methods in the selective inference literature, as well as enable to us to easily design new selective methods for a wide range of inferential problems. 
+The framework we develop in this article gives a complete answer to these questions. It identifies a broad class of p-values for which the sort of argument we have outlined above goes through. Beyond inference on winners, it encompasses a comprehensive set of selective inference problems, and it provides a clearer view on how selective methods behave and are derived. As we illustrate throughout the article, the framework serves to both deepen our understanding of existing methods in the selective inference literature, as well as enable to us to easily design new selective methods for a wide range of inferential problems. 
 
 \subsection{Our contributions}
 
-In this paper, we introduce the selective dominance framework, which we briefly summarize here. In the framework, we imagine using a valid p-value $p$ to test the null hypothesis $H_0$, but we only decide whether or not to test $H_0$ \underline{after} we have observed $p$. Our decision regarding whether or not to test $H_0$ is determined by a \textbf{selection function} $s(x)$. After observing that $p=x$, we use $p$ to test $H_0$ with probability $s(x)$. Due to bias from this selection, rejecting when $p \leq \alpha$ is no longer guaranteed to maintain Type I error control. If, however, $p$ is a \textbf{selectively dominant} p-value, then we can still maintain Type I error control if we reject when the adjusted p-value $\int_0^p s(x) dx/\int_0^1 s(x) dx$ is at most $\alpha$. We give a precise definition of selective dominance in \Cref{sec:dominance}. For now, it suffices to know that all the p-values that we commonly use are selectively dominant. For many selective inference problems, $s(x)$ turns out to be simple enough that this adjustment is computable is closed form, and the resulting procedure is correspondingly easy to implement and interpret. 
+In this paper, we introduce the selective dominance framework, which we briefly summarize here. In the framework, we imagine using a valid p-value $p$ to test the null hypothesis $H_0$, but we only decide whether or not to test $H_0$ \underline{after} we have observed $p$. Our decision regarding whether or not to test $H_0$ is determined by a \textbf{selection function} $s(x)$. After observing that $p=x$, we use $p$ to test $H_0$ with probability $s(x)$. Due to bias from this selection, rejecting when $p \leq \alpha$ is no longer guaranteed to maintain Type I error control. If, however, $p$ is a \textbf{selectively dominant} p-value, then we can still maintain Type I error control if we reject when the adjusted p-value $\int_0^p s(x) dx/\int_0^1 s(x) dx$ is at most $\alpha$. We give a precise definition of selective dominance in \Cref{sec:dominance}, where we also show that all the p-values we commonly use are selectively dominant. For many selective inference problems, $s(x)$ turns out to be simple enough that this adjustment is computable is closed form, and the resulting procedure is correspondingly easy to implement and interpret. 
 
 After presenting a few simple examples of how to apply our framework, the remainder of the article focuses on three specific applications, which we describe below. \newline 
 
-\noindent \textbf{Inference on winners: } We characterize both the earlier conditional inference procedure \eqref{eq:motivating_lcb} and also hybrid inference \cite{Andrews2023}, an inference on winners procedure that attempts to balance the benefits of the conditional and simultaneous approaches, in terms of selectively dominant p-values. Once written in terms of p-values, both methods become significantly easier to derive, interpret, and implement. As p-values are a distribution agnostic, doing also provides a more general and fundamental view these methods that enables their application beyond Gaussianity. Via our p-value viewpoint, we are able gain insight on (1) when the conditional LCB may be useful and (2) the extent to which the conditional LCB explodes to $-\infty$. Also, we are able to clearly illustrate that hybrid inference strictly dominates its naive union bound competitor, which splits the type I error budget between the conditional and simultaneous approaches and then takes the best of the two. Unfortunately, our viewpoint also suggests that, while it is strictly better, hybrid inference cannot do too much better than this naive approach.\newline 
+\noindent \textbf{Inference on winners} (\Cref{sec:winner})\textbf{:} We characterize both the earlier conditional inference procedure \eqref{eq:motivating_lcb} and also hybrid inference \citep{Andrews2023}, an inference on winners procedure that attempts to balance the benefits of the conditional and simultaneous approaches, in terms of selectively dominant p-values. Once written in terms of p-values, both methods become significantly easier to derive, interpret, and implement. Doing so also provides a more general and fundamental view of these methods that naturally enables their application beyond the Gaussian data setting. Via our p-value viewpoint, we are able gain insight on (1) when the conditional LCB may be useful and (2) the extent to which the conditional LCB explodes to $-\infty$. Also, we are able to clearly illustrate that hybrid inference strictly dominates its naive union bound competitor, which splits the Type I error budget between the conditional and simultaneous approaches and takes the best of the two. Unfortunately, our viewpoint also suggests that, while it is strictly better, hybrid inference cannot do too much better than this naive approach.\newline 
 
-\noindent \textbf{Rank verification: } Our selective dominance framework allows us to very easily establish the following claim: if a researcher observes two Gaussian samples $X_i \sim N(\mu_i, 1)$  and rejects the null $H_0: \mu_1 = \mu_2$ via the standard two-sided test, then they can further infer that the winning sample has the strictly larger of the two means. While this result was previously known, we show, perhaps more surprisingly, that if a researcher wants just to verify that the mean of the winning sample is \underline{at least} as large as the other mean, they can run a one-sided test comparing the winner to the loser with \underline{no correction} for selection. Finally, we illustrate how \cite{Hung2019}'s rank verification for exponential families procedure fits nicely in our framework. In doing so, we show that the original method does not appropriately handle settings with ties, but that our framework naturally handles these settings properly. \newline 
+\noindent \textbf{Rank verification} (\Cref{sec:rank_verification})\textbf{:}  Our selective dominance framework allows us to very easily establish the following claim: if a researcher observes two Gaussian samples $X_i \sim N(\mu_i, 1)$  and rejects the null $H_0: \mu_1 = \mu_2$ via the standard two-sided test, then they can further infer that the winning sample has the strictly larger of the two means. While this result was previously known, we show, perhaps more surprisingly, that if a researcher wants to just verify that the mean of the winning sample is \underline{at least} as large as the other mean, they can run a one-sided test comparing the winner to the loser with \underline{no correction} for selection. Finally, we illustrate how \cite{Hung2019}'s rank verification for exponential families procedure fits nicely in our framework. In doing so, we show that the original method does not appropriately handle settings with ties, but that our framework naturally handles these settings properly. \newline 
 
-\noindent \textbf{Combining selective p-values: } Considering a meta-analysis problem where we have p-values from an original and replication study, we propose a new data-carving method that combines inferences from the original and replication study while still accounting for possible publication bias in the original study. On the open science collaboration dataset, which contains 92 pairs of original replication psychology studies \cite{OSF}, our method finds that 47 pairs of studies are significant, while using solely the replication p-value results in only 34 significant findings. In the same vein, we provide variants of Fisher's combination test that are more powerful when some null p-values are conservative (i.e., super-uniform). In particular, we provide a version of Fisher's truncated combination test \citep{Zaykin} that accommodates super-uniform p-values. Previous versions of this test required p-values to be exactly uniform under the null, preventing the test's application in settings where it is most powerful. 
+\noindent \textbf{Combining selective p-values } (\Cref{sec:multiple}) \textbf{:} Considering a meta-analysis problem where we have p-values from an original and replication study, we propose a new data-carving method that combines inferences from the original and replication study while still accounting for possible publication bias in the original study. On the open science collaboration dataset, which contains 92 pairs of original replication psychology studies \cite{OSF}, our method finds that 47 pairs of studies are significant, while using solely the replication p-value results in only 34 significant findings. In the same vein, we provide variants of Fisher's combination test that are more powerful when some null p-values are conservative (i.e., super-uniform). In particular, we provide a version of Fisher's truncated combination test \citep{Zaykin} that accommodates super-uniform p-values. Previous versions of this test required p-values to be exactly uniform under the null, preventing the test's application in settings where it is most powerful. \newline 
+
+The code used to run the experiments and generate the figures in this article can be found at \url{github.com/AnavSood/seldom}. 
+
 
 \subsection{Related work}
 
-We aim to provide a unifying view of modern selective inference, a field started by the seminal work \cite{Lee2016}, that has been the subject of much academic research over the last decade \citep{Panigrahi, Benjamini, Tian2018Apr, Tian2018Dec,Taylor2014, Taylor2016, Taylor2018, Tibshirani, Fithian2015, Loftus, Chen2023Apr, Chen2023May, Gao, Lee2014, Hyun}. Along with this contemporary treatment of selective inference, there is an earlier line of work that studies drawing inferences from data-dependent questions, particularly as it pertains to rank verification \cite{Bofinger, Fabian, Gutmann, Maymin, Hsu}. Outside of conditional selective inference, there is a class of methods that avoid conditioning on the selection event (e.g, \citep{Romano, Zrnic}), but \cite{Perry} suggest empirically that such approaches may be less powerful than their conditional counterparts. We point out a few articles that are most relevant to our work. \cite{Hung2020} mention that p-values coming from $t$- and $z$-tests satisfy our selective dominance condition, but only for thresholding selection functions (i.e, $s(x) = I(x \leq \alpha)$). Both \cite{Markovic, Andrews2019} consider settings where the selection probabilities are unknown, and provide either methods for learning them or theoretical results regarding to what extent they are identified. When we treat our procedures as global null testing procedures and close them, we get sequential selective hypothesis that are similar to those in \cite{Fithian2015}, although the procedures in \cite{Fithian2015} test two-sided nulls while we test one-sided nulls. 
+We aim to provide a unifying view of modern selective inference, a field started by the seminal work \cite{Lee2016}, that has been the subject of much academic research over the last decade \citep{Panigrahi, Benjamini, Tian2018Apr, Tian2018Dec,Taylor2014, Taylor2016, Taylor2018, Tibshirani, Fithian2015, Loftus, Chen2023Apr, Chen2023May, Gao, Lee2014, Hyun}. Along with this contemporary treatment of selective inference, there is an earlier line of work that studies drawing inferences from data-dependent questions, particularly as it pertains to rank verification \cite{Bofinger, Fabian, Gutmann, Maymin, Hsu}. Outside of conditional selective inference, there is a class of methods that avoids conditioning on the selection event (e.g, \citep{Romano, Zrnic}), but \cite{Perry} suggest empirically that such approaches may be less powerful than their conditional counterparts. We point out a few articles that are most relevant to our work. \cite{Hung2020} mention that p-values coming from $t$- and $z$-tests satisfy our selective dominance condition, but only for thresholding selection functions (i.e., $s(x) = I(x \leq \alpha)$). Both \cite{Markovic, Andrews2019} consider settings where the selection probabilities are unknown, and provide either methods for learning them or theoretical results regarding to what extent they are identified. When we treat our procedures as global null testing procedures and close them, we get sequential selective hypothesis that are similar to those in \cite{Fithian2015}, although the procedures in \cite{Fithian2015} test two-sided nulls while we test one-sided nulls. 
 
 
 \section{Selectively dominant p-values}
@@ -175,7 +179,7 @@ In the problems we consider, we use $p$ to test the null $H_0$ only after it has
     \label{eq:valid_given_z}
     P_{H_0}(p \leq t | Z) \leq P(U \leq t)  = t \text{ for all } t \in [0, 1],  \text{ a.e. under } P_{H_0}.
 \end{equation}
-Additionally, we consider a binary selection random variable $S \in \{0, 1\}$ that takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function} \footnote{Formally, the selection function $s(\cdot, \cdot)$ such is an instantiation of the conditional expectation $s(p, Z) = E[S|p , Z ]$. },
+The random vector $Z$ plays an integral role in establishing the relationship between $p$ and a binary selection random variable $S \in \{0, 1\}$, which takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function} \footnote{Formally, the selection function $s(\cdot, \cdot)$ such is an instantiation of the conditional expectation $s(p, Z) = E[S|p , Z ]$. },
 \begin{equation*}
     s(x, z) = P(S = 1 \mid p = x, Z = z).
 \end{equation*}
@@ -202,7 +206,7 @@ Essentially, after selection, the uniform distribution no longer suffices as a r
 \begin{equation*}
      P(S' = 1 \mid U = x, Z=z ) = s(x, z).
 \end{equation*}
-Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below. 
+Instead of the uniform distribution, we can use the the conditional distribution $U \mid Z,  S' = 1$ of $U$ given selection as our reference distribution. This approach is valid exactly when our p-value is selectively dominant, as we define below. 
 
 \begin{definition}[Selective dominance]
     \label{def:selective_dominance}
@@ -214,7 +218,7 @@ Then, we could use the conditional distribution $U \mid Z,  S' = 1$ of $U$ given
     for any selection function $s(x, z)$.  
 \end{definition}
 
-Essentially selective dominance requires that, under the null, the conditional distribution of $p$ given $Z$ and selection should stochastically dominate the conditional distribution of $U$ given $Z$ and the same selection. Moreover, this should be true for \underline{any} selection process. Again, we mention that if $P(S=1) = 0$ (resp. $P(S'=1) = 0$) for some selection function, then we define the left-hand side (resp. right-hand side) of \eqref{eq:selective_dominance} to be zero. We show in \Cref{sec:adjustment_proof} that $P(S' = 1) \implies P(S=1)$, so this convention does not cause any issues.  
+Essentially selective dominance requires that, under the null, the conditional distribution of $p$ given $Z$ and selection should stochastically dominate the conditional distribution of $U$ given $Z$ and the same selection. Moreover, this should be true for \underline{any} selection process. Again, we mention that if $P(S=1) = 0$ (resp. $P(S'=1) = 0$) for some selection function, then we define the left-hand side (resp. right-hand side) of \eqref{eq:selective_dominance} to be zero. We show in \Cref{sec:adjustment_proof} that $P(S' = 1) = 0 \implies P(S=1) = 0$, so this convention does not cause any issues.  
 
 As we will soon see, the majority of p-values that practitioners use are selectively dominant as described in \eqref{eq:selective_dominance}. In \Cref{def:selective_dominance}, we restrict to p-values with conditional PDFs under the null because it makes our theory and methods simpler to state. Because we can always make a p-value both have a conditional PDF and be more powerful via randomization, this restriction is never a practical issue. Also, after applying our machinery with randomized p-values, the user can always de-randomize the resulting method if they would like.
 
@@ -232,7 +236,7 @@ To perform valid post-selection inference using a selectively dominant p-value, 
         &P_{H_0}(p_{sel} \leq t \mid Z, S= 1) \leq t  \text{ for all } t \in [0, 1], \text{ a.e. under } P_{H_0}(\cdot |S=1), \label{eq:adjusted_error_control_cond} \\
         &P_{H_0}(p_{sel} \leq t\mid S= 1) \leq t \text{ for all } t \in [0, 1]. \label{eq:adjusted_error_control_marg}
     \end{align}
-    Further, if $P$ is a distribution in the null under which $P(S=1) > 0$ and $p$ has an exact uniform distribution given $Z$, 
+    Further, if $P$ is a distribution in $H_0$ under which $P(S=1) > 0$ and $p$ has an exact uniform distribution given $Z$, i.e.,  
     \begin{equation}
         \label{eq:adjusted_error_control_equality}
         P(p \leq t | Z) = t \text{ for all } t \in [0, 1],  \text{ a.e. under } P(\cdot |S=1), 
@@ -240,7 +244,7 @@ To perform valid post-selection inference using a selectively dominant p-value, 
     then \eqref{eq:adjusted_error_control_cond} and \eqref{eq:adjusted_error_control_marg} hold with equality. 
 \end{theorem}
 
-Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z, S' = 1$ rather than the $\alpha$ quantile of $U$. We show in \Cref{sec:adjustment_proof} that the denominator of \eqref{eq:adjustment} is positive a.e. under $P_{H_0}(\cdot | S=1)$, so $p_{sel}$ is well defined whenever we actually use it to make an inferential statement. When we compute $p_{sel} = \dots$ in examples, that equality will always hold a.e. under $P_{H_0}(\cdot | S=1)$, meaning we will be able to use said $p_{sel}$ to make inferences via \Cref{thm:adjustment}. 
+Essentially, \Cref{thm:adjustment} tells us that if we want selective Type I error control as in \eqref{eq:selective_error_control}, then we should reject $H_0$ when $p$ is less than the $\alpha$ quantile of $U \mid Z, S' = 1$ rather than the $\alpha$ quantile of $U$. We show in \Cref{sec:adjustment_proof} that the denominator of \eqref{eq:adjustment} is positive a.e. under $P_{H_0}(\cdot | S=1)$, so $p_{sel}$ is well defined whenever we actually use it to make an inferential statement. 
 
 The right-most panel of \Cref{fig:distributions} depicts what happens when we apply \Cref{thm:adjustment}'s correction to the left panel's p-value (we will derive this correction later). Unlike the null distribution of $p$ given selection (middle panel), the null distribution of $p_{sel}$ given selection again stochastically dominates the uniform distribution. 
 
@@ -279,7 +283,7 @@ In a permutation test we observe data $X \in \mathcal{X}$ and compute a test sta
 \end{example}
 
 \begin{example}[$F$-tests for regression]
-Suppose we observe data $Y \in \R^n$ from a linear model $Y = \X \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\X \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try and reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\X$, so it is trivially selectively dominant given $Z = \X$. We describe this test and its associated p-value more explicitly in \Cref{sec:f_test_appdx}. 
+Suppose we observe data $Y \in \R^n$ from a linear model $Y = \X \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\X \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try to reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\X$, so it is trivially selectively dominant given $Z = \X$. We describe this test and its associated p-value more explicitly in \Cref{sec:f_test_appdx}. 
 \end{example}
 
 Establishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, and the bulk of \Cref{sec:one_sided_appdx} is spent doing so. The majority the article focuses on examples from these two non-trivial settings. 
@@ -292,15 +296,17 @@ As an introductory example, we show how to correct for \Cref{exm:publication_bia
 
 \begin{example}[Correcting for publication bias]
 \label{exm:correction}
-Suppose we have a selectively dominant p-value $p$ for the null hypothesis $H_0$, and we choose to test $H_0$ only after observing that $p \leq \alpha$. We can apply our framework with $p=p$ and $s(x) = I(x \leq \alpha)$. The selective p-value from \eqref{eq:adjustment} is $p/\alpha$, so \Cref{thm:adjustment} tells us that rejecting when $p \leq \alpha^2$ controls selective Type I error:
+Suppose we have a selectively dominant p-value $p$ for the null hypothesis $H_0$, and we choose to test $H_0$ only after observing that $p \leq \alpha$. We can apply our framework with $s(x) = I(x \leq \alpha)$. The selective p-value from \eqref{eq:adjustment} is $p/\alpha$, so \Cref{thm:adjustment} tells us that rejecting when $p \leq \alpha^2$ controls selective Type I error:
 \begin{equation*}
     P_{H_0}(p \leq \alpha^2 | S= 1) =  P_{H_0}(p/\alpha \leq \alpha | S= 1) \leq \alpha  
 \end{equation*}
 \end{example}
 
+In \Cref{exm:publication_bias}, if one computes the selective p-value $p_{sel}$ from \eqref{eq:adjustment} carefully, they will find it equals $\min(p/\alpha, 1)$, rather than $p/\alpha$ as we originally claimed. However,these two expressions are almost surely equal under the conditional probability measure $P(\cdot|S=1)$ given selection. \Cref{thm:adjustment}'s result therefore applies regardless of which one we choose to use. Throughout the remainder of our examples, we will continue to give expressions for $p_{sel}$ that, at the very least, are equal to \eqref{eq:adjustment} a.e. under $P(\cdot|S=1)$.
+
 Since essentially all the p-values researchers use are selectively dominant, \Cref{exm:correction} gives a simple way for readers to make valid inferences in the presence of publication bias: declare a studies' result significant when the associated p-value is at most $\alpha^2$.
 
-Our rule of thumb of rejecting when $p \leq \alpha^2$ should also deliver valid inferences in the presence of p-hacking. Rather discarding an experiment after observing a p-value larger than $\alpha$, researches more typically tweak their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, is difficult to study theoretically (hence \cite{Hung2020} do not study it). But it has been empirically well established that, under the null, p-values resulting from p-hacking have left-skewed distributions, i.e., null p-hacked p-values can be reasonably modeled as having an increasing density on $[0,\alpha]$ \citep{Simonsohn}. The transformed quantity $p/\alpha$ then has a null density that is increasing on $[0, 1]$, so \Cref{thm:density} guarantees that it is a valid p-value. Thus,  we find it again safe to reject when $p/\alpha \leq \alpha \iff p \leq \alpha^2$. 
+Our rule of thumb of rejecting when $p \leq \alpha^2$ should also deliver valid inferences in the presence of p-hacking. Rather than discarding an experiment after observing a p-value larger than $\alpha$, researches more typically tweak their analysis until the p-value crosses the significance threshold. This process, known as p-hacking, is difficult to study theoretically (hence \cite{Hung2020} do not study it). But it has been empirically well-established that, under the null, p-values resulting from p-hacking have left-skewed distributions, i.e., null p-hacked p-values can be reasonably modeled as having an increasing density on $[0,\alpha]$ \citep{Simonsohn}. The transformed quantity $p/\alpha$ then has a null density that is increasing on $[0, 1]$, so \Cref{thm:density} guarantees that it is a valid p-value. Thus,  we find it again safe to reject when $p/\alpha \leq \alpha \iff p \leq \alpha^2$. 
 
 Our second example shows how to use \Cref{thm:adjustment} to perform inference using the ``winning'' p-value. It illustrates how our selective dominance machinery enables us to test data dependent hypotheses, the core problem of selective inference. \Cref{exm:winner} uses the fact that, if $p$ is selectively dominant and $Z$ is independent of $p$, then $p$ is selectively dominant given $Z$. Although this is intuitively obvious, we show it carefully in \Cref{sec:sel_dom_independence}. 
 
@@ -311,7 +317,7 @@ Our second example shows how to use \Cref{thm:adjustment} to perform inference u
         P_{H_{0, j}}(p_j \leq \alpha \min_{i \neq j} p_i \mid S = 1) = P_{H_{0, j}}(p_j/\min_{i \neq j} p_i \leq \alpha  \mid S = 1) \leq \alpha.
     \end{equation} 
 
-    If we let $W$ be the index of the smallest p-value (with ties broken randomly), it is now easy to see that rejecting the data-dependent ``winning'' null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ is controls Type I error both conditionally on $W$ and marginally. Conditional error control is immediate: If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is the same event as selecting $p_j$ for inference in \eqref{eq:winner_error_control}, so 
+    If we let $W$ be the index of the smallest p-value (with ties broken randomly), it is now easy to see that rejecting the data-dependent ``winning'' null $H_{0, W}$ when $p_{(1)} \leq \alpha p_{(2)}$ controls Type I error both conditionally on $W$ and marginally. Conditional error control is immediate: If $H_{0, j}$ is not true, then trivially $P(\text{falsely reject } H_{0, W} \mid W = j) = 0 \leq \alpha$. For the case that $H_{0, j}$ is true, the event $W=j$ is the same event as selecting $p_j$ for inference in \eqref{eq:winner_error_control}, so 
     \begin{align*}
         P(\text{falsely reject } H_{0, W} \mid W = j) &= P(p_{(1)} \leq \alpha p_{(2)} \mid W = j)\\
         &= P(p_j \leq \alpha \min_{i \neq j} p_i \mid W = j)\\
@@ -353,7 +359,7 @@ In the most basic version of data fission, we add and subtract independent norma
 
 Our framework also applies to regression problems, including \cite{Lee2016}'s foundational problem of doing inference on LASSO selected regression coefficients. This example is a bit long, so we have deferred it to \Cref{sec:lasso_appdx}.  
 
-\Cref{exm:correction}, \Cref{exm:winner}, \Cref{exm:carve} all share a common theme. In all three examples, the practitioner cheats. They peak at the p-value and, to varying degrees, they only test the null when the p-value looks promising. The purpose of selective procedures is to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the original p-value. 
+\Cref{exm:correction,exm:winner,exm:carve} all share a common theme. In all three examples, the practitioner cheats. They peak at the p-value and, to varying degrees, they only test the null when the p-value looks promising. The purpose of selective procedures is to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the original p-value. 
 
 
 \section{Inference on winners}
@@ -416,7 +422,7 @@ for the winning parameter $\theta_W$ that holds conditionally on $W$ with probab
 \begin{equation*}
     P( \theta_W \in\{\theta_0 : p^{\theta_0}_{(1)}/p^{\theta_0}_{(2)} > \alpha  \} |W ) = 1-\alpha.
 \end{equation*}
-The fact that the confidence region \eqref{eq:winning_lcb} is actually an LCB is a consequence of the selective p-value $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ being monotone non-decreasing in null parameter $\theta_0$. \Cref{sec:one_sided_monotone_appdx} provides general conditions (which will hold for almost all selective problems) under which selective p-values like $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ are monotone in the null parameter. We show these conditions apply here, and also argue that \eqref{eq:winning_lcb} has exact $1-\alpha$ coverage in \Cref{sec:cond_appdx}. We also show in \Cref{sec:cond_appdx} how to invert \Cref{cor:cond}'s test to get a CI (rather than LCB), and that both our CI and LCB match \cite{Fithian2017}'s approach in the Gaussian case. 
+The fact that the confidence region \eqref{eq:winning_lcb} is actually an LCB is a consequence of the selective p-value $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ being monotone non-decreasing in null parameter $\theta_0$. \Cref{sec:one_sided_monotone_appdx} provides general conditions (which will hold for almost all selective problems) under which selective p-values like $p_{(1)}^{\theta_0}/p^{\theta^0}_{(2)}$ are monotone in the null parameter. We show these conditions apply here, and also argue that \eqref{eq:winning_lcb} has exact $1-\alpha$ coverage in \Cref{sec:cond_appdx}. We also show in \Cref{sec:cond_appdx} how to invert \Cref{cor:cond}'s test to get a confidence interval (CI) instead of LCB, and that both our CI and LCB match \cite{Fithian2017}'s approach in the Gaussian case. 
 
 Writing the conditional LCB terms of p-values helps us better understand its behavior. In particular, recalling our motivating Gaussian example \eqref{eq:motivating_lcb}, we learn that \Cref{fig:winner}'s LCB stretches back exactly to the $\hat{\mu}$ under which it is $1/\alpha = 10$ times less likely to see something as extreme as the winner than something as extreme as the runner-up. Noting this fact, \Cref{fig:tail_prob} illustrates why the LCB \eqref{eq:motivating_lcb} diverges to $-\infty$ as the winner and runner-up get closer. If the winner and runner-up are very close, we will need the LCB $\hat{\mu}$ to be very far back for the winner to be ten times more extreme than the runner-up. Thanks to the decay of the Gaussian tail, however, we can always find such a mean if we go far back enough. 
 
@@ -508,13 +514,13 @@ The union bound harshly switches between the simultaneous and conditional approa
 
 Written in terms of p-values, we easily see that the hybrid approach dominates the union bound approach, which is affirmed by \Cref{fig:hybrid}. Both methods reject when $p_{(1)} \leq \beta_n$. When $p_{(1)} > \beta_n$, it is easy to verify that the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} will be strictly larger than the union bound cutoff \eqref{eq:union_bound_cutoff}, meaning hybrid will reject whenever the union bound does and more \footnote{the authors \cite{Andrews2023} only point out that hybrid dominates the level $\beta$ classical approach, which is weaker than our statement}. 
 
-Practically speaking, however, hybrid inference does not result in much improvement over the union bound, especially as it pertains to making discoveries. This is already somewhat evident in \Cref{fig:hybrid}, where we see that the hybrid LCB, although always larger than the union bound LCB, is still always very close to it. As the variance $\sigma^2$ gets large, the absolute difference $\hat{\mu}_{hyb} - \hat{\mu}_{union} $ between the hybrid and union bound LCBs grows $\sigma$, but the relative difference $({\mu}_{hyb} - \hat{\mu}_{union})/\sigma$   (in units of standard deviation) remains the same (see \Cref{sec:hybrid_gap_appdx}). Accordingly, even when the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} is larger than that of the union bound \eqref{eq:union_bound_cutoff}, it is provably not much larger. We detail why in \Cref{sec:hybrid_sim_appdx}, where we also run a number of simulations comparing the power of the hybrid and union bound approaches. In our simulations, we are unable to find a setting where the hybrid approach results in a appreciable power gain.  
+Practically speaking, however, hybrid inference does not result in much improvement over the union bound, especially as it pertains to making discoveries. This is already somewhat evident in \Cref{fig:hybrid}, where we see that the hybrid LCB, although always larger than the union bound LCB, is still always very close to it. As the variance $\sigma^2$ gets large, the absolute difference $\hat{\mu}_{hyb} - \hat{\mu}_{union} $ between the hybrid and union bound LCBs grows with $\sigma$, but the relative difference $({\mu}_{hyb} - \hat{\mu}_{union})/\sigma$   (in units of standard deviation) remains the same (see \Cref{sec:hybrid_gap_appdx}). Accordingly, even when the hybrid cutoff \eqref{eq:hybrid_cutoff_thm} is larger than that of the union bound \eqref{eq:union_bound_cutoff}, it is provably not much larger. We detail why in \Cref{sec:hybrid_sim_appdx}, where we also run a number of simulations comparing the power of the hybrid and union bound approaches. In our simulations, we are unable to find a setting where the hybrid approach results in a appreciable power gain.  
 
 Overall, we suggest viewing hybrid inference as a procedure that squeezes the remaining power out of the union bound approach. As it is not computationally more expensive and our p-value viewpoint makes it equally easy to implement, it is always worth using in place of the union bound. 
 
 \subsubsection{Applying the closure principal}
 
-Like was true in the conditional case, treating \Cref{cor:hyb}'s test as a global null test and closing it allows us to make more discoveries. As we allow $\beta$ to range from $0$ to $\alpha$, this closed procedure interpolates between \Cref{cor:cond_closed}'s closed procedure and the Holm-Sidak procedure, which is the closure of Sidak's global null test. 
+As was true in the conditional case, treating \Cref{cor:hyb}'s test as a global null test and closing it allows us to make more discoveries. As we allow $\beta$ to range from $0$ to $\alpha$, this closed procedure interpolates between \Cref{cor:cond_closed}'s closed procedure and the Holm-Sidak procedure, which is the closure of Sidak's global null test. 
 
 \begin{corollary}[Closed hybrid testing for winners]
     \label{cor:hyb_closed}
@@ -578,6 +584,23 @@ A nice implication of our discussion is the following surprising fact: if we wan
 
 \subsection{Rank verification in exponential families}
 
+\begin{figure}[]
+    \centering
+    \scalebox{1}{
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{p_val_density.pdf}
+    \end{minipage}\hfill
+    \raisebox{0.18cm}{
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{type_one_error.pdf}
+    \end{minipage}\hfill
+    }}
+    \caption{Considering three independent binomials $X_i \sim \text{Bin}(b, s_i)$ with $b=4$ and $s_i = 1/2$, the first panel (left) depicts $N=10^6$ draws from the conditional distribution of the p-value $p_{12}$ (used for testing $H_{0, 12}: s_1 \leq s_2$) given $W = 1$ and the nuisance statistics $(X_1 + X_2)/2 = 2$, $X_3=2$. When $p_{12}  < q^+_{12}$, then $X_1$ is the sole winner and the p-value is selected for inference with probability one, but when $p_{12}^0 \in [q^+_{12}, q_{12}]$ there is a three-way tie and it is selected for inference with probability $1/3$. Hence, the p-value's conditional distribution is not uniform on $[0, q_{12}]$ as \cite{Hung2019} implicitly assume. The next panel (right) displays the consequence. Conditional on $W=1$, \cite{Hung2019} do not maintain Type I error control when testing $H^{0}_{W2}$ at level $\alpha=0.1$ (denoted by horizontal dashed line), whereas our method does. Error bars denote a 99\% confidence interval.}
+    \label{fig:error_control}
+\end{figure}
+
 In this sub-section we illustrate how to do rank verification when we observe data $X \in \R^n$ from a natural multi-parameter exponential family $P_{\theta}$ with density
 \begin{equation}
     \label{eq:exp_fam}
@@ -596,7 +619,7 @@ the random vector $Y$ has an exponential family density given by
 \begin{equation}
     \tilde{g}_{\theta}(y) = \exp\left( (\theta_i - \theta_j) y_i + (\theta_i + \theta_j) y_j + \sum_{\ell \neq i, j} \theta_{\ell} y_{\ell} - \psi(\theta)  \right)\tilde{g}(y)
 \end{equation}
-with respect to some other base measure. It is then well established (see \Cref{sec:one_sided_mlr_appdx}) that if we denote the conditional left-continuous survival function of $Y_i$ and its right-hand limit as
+with respect to some other base measure. It is then well-established (see \Cref{sec:one_sided_mlr_appdx}) that if we denote the conditional left-continuous survival function of $Y_i$ and its right-hand limit as
 \begin{equation}
     G_{ij}(y_i | y_{-i}) = P_{\theta_i = \theta_j}(Y_i \geq y_i | Y_{-i} = y_{-i}) \qquad G_{ij}^+(y_i |y_{-i}) = \lim_{u \downarrow y_i } G_{ij}(u | y_{-i}),
 \end{equation}
@@ -641,24 +664,6 @@ This is a piece-wise linear function that is easy to integrate, and, after some 
 is at most $\alpha$. 
 
 The crucial difference between our derivation and \cite{Hung2019}'s is that \cite{Hung2019} use the same selective p-value when there can and cannot be ties amongst the $X_k$. If there cannot be ties amongst the $X_k$, then $q_{ij} = q^{+}_{ij}$ always, and the selective p-value \eqref{eq:rank_verification_selective_p_val} simplifies to $p_{ij}/q_{ij}$. If we use $p_{ij}/q_{ij}$ when ties are possible, however, we will not achieve conditional error control (as is claimed in \cite{Hung2019}). We give an example in \Cref{fig:error_control}, where $X \in \R^3$ is composed of three independent binomials. The left panel of \Cref{fig:error_control} depicts the conditional distribution of $p_{12}$ given $W=1$ for a specific setting of the nuisances statistics $Y_{-j}$. It makes it clear that rejecting when $p_{ij}/q_{ij} \leq \alpha $ does not maintain conditional error control, as is affirmed in \Cref{fig:error_control}'s right panel.
-
-
-\begin{figure}[]
-    \centering
-    \scalebox{1}{
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{p_val_density.pdf}
-    \end{minipage}\hfill
-    \raisebox{0.18cm}{
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{type_one_error.pdf}
-    \end{minipage}\hfill
-    }}
-    \caption{Considering three independent binomials $X_i \sim \text{Bin}(b, s_i)$ with $b=4$ and $s_i = 1/2$, the first panel (left) depicts $N=10^6$ draws from the conditional distribution of the p-value $p_{12}$ (used for testing $H_{0, 12}: s_1 \leq s_2$) given $W = 1$ and the nuisance statistics $(X_1 + X_2)/2 = 2$, $X_3=2$. When $p_{12}  < q^+_{12}$, then $X_1$ is the sole winner and the p-value is selected for inference with probability one, but when $p_{12}^0 \in [q^+_{12}, q_{12}]$ there is a three-way tie and it is selected for inference with probability $1/3$. Hence, the p-value's conditional distribution is not uniform on $[0, q_{12}]$ as \cite{Hung2019} implicitly assume. The next panel (right) displays the consequence. Conditional on $W=1$, \cite{Hung2019} do not maintain Type I error control when testing $H^{0}_{W2}$ at level $\alpha=0.1$ (denoted by horizontal dashed line), whereas our method does. Error bars denote a 99\% confidence interval.}
-    \label{fig:error_control}
-\end{figure}
 
 \section{Combining selective p-values}
 \label{sec:multiple}
@@ -1134,7 +1139,7 @@ Similarly, fixing some $\gamma_1, \gamma_2 > 0$ such that $\gamma_1 + \gamma_2 =
 \end{equation}
 will contain $\mu_W$ with probability at least $1-\alpha$. Again, we will show via our p-value viewpoint that \eqref{eq:hyb_ci_} is a CI. 
 
-\subsubsection{The p-Value viewpoint} 
+\subsubsection{The p-value viewpoint} 
 
 For the same setting as above, we want to use the  p-values $p^{\mu_0}_i = 1 - \Phi(X_i - \mu_0)$ to characterize when the hybrid LCB \eqref{eq:hyb_lcb_} does not contain $\mu_0 \in \R$. Examining \eqref{eq:hyb_dist}, \eqref{eq:hyb_quantile}, and \eqref{eq:hyb_lcb_}, we can consider two cases to figure out when this happens. \newline 
 
@@ -1447,7 +1452,7 @@ In this appendix, we establish the selective dominance property for UMP p-values
 \subsection{MLR Families}
 \label{sec:one_sided_mlr_appdx}
 
-We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta \leq \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e, for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
+We consider a parametric family $P_{\theta}$ parameterized by a real parameter $\theta \in R$ such that each $P_{\theta}$ has density $p_{\theta}(x)$ with respect to some carrier measure $\mu$. We will suppose that these densities share support (i.e., for any two $\theta$ and $\theta'$ we have $p_{\theta}(x) > 0 \iff p_{\theta'}(x)> 0$). Further, we suppose that for any $\theta \leq \theta'$, the likelihood ratio $p_{\theta'}(x)/p_{\theta}(x)$ is a monotone non-decreasing function of some real-valued function $T(x)$ on this support (i.e., for any $x_1 \leq x_2$ with $p_{\theta}(x_1), p_{\theta}(x_2) > 0$, we have $p_{\theta'}(x_1)/p_{\theta}(x_1) \leq p_{\theta'}(x_2)/p_{\theta}(x_2)$). 
 
 Recall that for a testing problem, the critical function $\phi(x)$ (see \cite[Section 3.1]{Lehmann}) tells us the probability of rejecting the null having observed data $x$, so $\phi(X) = P(\text{reject } H_0 | X)$. From Theorem 3.4.1 of \cite{Lehmann} we know the test governed by the critical function 
 \begin{equation}
@@ -1669,7 +1674,7 @@ Thus,
 where to finish we have noted that $g_{\theta_0}(t) = 1$ almost everywhere in the measure $\omega$. 
 \end{proof}
 
-\subsection{Exponential Families}
+\subsection{Exponential families}
 \label{sec:one_sided_exp_fam_appdx}
 
 Suppose we observe data $X \in \R^m$ from an exponential family $P_{\theta}$ parameterized by $\theta \in \R^n$ i.e., under $P_{\theta}$ the data $X$ has density  
@@ -1714,7 +1719,7 @@ We argue that this p-value is selectively dominant given $Z$. Fix a distribution
 Arguments in \Cref{sec:adjustment_proof} and \Cref{sec:density_proof} then tell us that the following three facts are true a.e. under $P(\cdot | S=1)$: (1) $\int_0^1 s(x, Z) f_Z(x) dx > 0$ , (2) the left-hand side of the above equals the left-hand side of \eqref{eq:selective_dominance}, and (3) the right-hand side of the above equals the right-hand side of \eqref{eq:selective_dominance}. Combined these facts imply that $p$ is selectively dominant given $Z$. 
 
 
-\subsection{Monotonicity of Selective MLR p-Values}
+\subsection{Monotonicity of selective MLR p-values}
 \label{sec:one_sided_monotone_appdx}
 
 In this sub-section, we consider data $(X, Z)$ where the conditional distribution $X | Z= z \sim P_{\theta, z}$ is parameterized by $\theta \in \R$ and has an MLR in $T(x)$. Because we do everything conditional on $Z=z$, without loss of generality we can just work with $X$ and understand that the results will hold a.e. over $Z$. Letting
