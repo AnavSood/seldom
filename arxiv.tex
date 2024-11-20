@@ -69,7 +69,7 @@ Selective inference is a subfield of statistics that enables valid inference aft
 
 Selective inference is a sub-field of statistics that allows practitioners to make valid inferences even when the underlying statistical question is chosen by a data-driven selection process. However, many selective methods, which operate by conditioning on the selection event, can be difficult to derive, hard to implement, and exhibit counter-intuitive behavior. To statisticians outside of the sub-field, each selective procedure may seem to come from a different argument or approach.
 
-In this paper, we provide a unifying framework for selective inference centered around p-values. As long as a statistician knows how to construct a p-value for an inferential question, our framework offers them an algorithmic approach for delivering valid hypothesis tests and confidence intervals, even when said inferential question arises from an arbitrary, albeit known, selection process. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior as well as new variations and extensions.
+In this paper, we provide a unifying framework for selective inference centered around p-values. So long as a statistician knows how to compute traditional  p-values, our framework enables them to easily deliver  valid hypothesis tests and confidence intervals, even when the inferential question at hand arose from an arbitrary, albeit known, selection procedure. Our framework (1) can greatly simplify the process of designing new selective methods and (2) results in more natural and general derivations of some existing selective methods, allowing for a deeper understanding of their behavior as well as new variations and extensions.
 
 
 \subsection{Motivation}
@@ -94,7 +94,7 @@ In this paper, we provide a unifying framework for selective inference centered 
 
 As motivation, we recall the age-old task of providing inferences regarding the largest observation. Considering Gaussian data $X \sim N(\mu, I_n)$ with unknown mean $\mu$, the largest observation $W = \argmax_{i \in [n]} X_i$ may well correspond to the largest mean. Therefore, a natural way to verify the existence of a large $\mu_i$ is to give a lower confidence bound (LCB) for $\mu_W$, the mean of the winning value. 
 
-Traditionally, we provide such an LCB via Sidak's simultaneous approach. Letting $\alpha_n = 1 - (1-\alpha)^\frac{1}{n}$ and $z_{1-\alpha}$ denote the $1-\alpha$ quantile of the standard normal distribution, the lower bounds $ \mu_i > X_i - z_{1 - \alpha_n}$ hold simultaneously with probability $1-\alpha$. Therefore, $\hat{\mu}_{simul} = X_W - z_{1 - \alpha_n}$ is a valid lower bound for $\mu_W$ that holds with probability at least $1-\alpha$. Performing simultaneous inference on $n$ means, however, comes at a cost. As $n$ grows, the quantile $z_{1 - \alpha_n}$ grows as well (depicted in the left panel of \Cref{fig:winner}), and the distance from the winning observation to the LCB correspondingly increases. 
+Traditionally, we provide such an LCB via Sidak's simultaneous approach. Let $z_{1-\alpha}$ denote the $1-\alpha$ quantile of a standard normal distribution and define $\alpha_n = 1 - (1-\alpha)^{1/n}$. Sidak's approach tells us that the lower bounds $ \mu_i > X_i - z_{1 - \alpha_n}$ all hold simultaneously with probability $1-\alpha$. Therefore, $\hat{\mu}_{simul} = X_W - z_{1 - \alpha_n}$ is a valid lower bound for $\mu_W$ that holds with probability at least $1-\alpha$. Performing simultaneous inference on $n$ means, however, comes at a cost. As $n$ grows, the quantile $z_{1 - \alpha_n}$ grows as well (depicted in the left panel of \Cref{fig:winner}), and the distance from the winning observation to the LCB correspondingly increases. 
 
 The more modern selective inference approach suggests providing an LCB that is valid conditionally on $W$. This approach provides inferences for only the winning mean $\mu_W$ and no other means, so we may hope that it avoids the simultaneous inference's curse of dimensionality. Following the recipe of \cite{Fithian2017} (see \Cref{sec:cond_appdx} for details), one finds the conditional LCB $\hat{\mu}_{cond}$ to be the infimum of the confidence region
 \begin{equation}
@@ -1103,7 +1103,7 @@ The core idea behind hybrid inference is giving a confidence region $C_{hyb}(X)$
        &=1-\alpha.
 \end{align*}
 
-Considering some $\beta < \alpha$ and defining $\beta_n = 1 - (1-\beta)^{\frac{1}{n}}$, our good event is that the confidence lower bounds $X_i -  z_{1-\beta_n}$ for the means $\mu_i$ all simultaneously hold:
+Considering some $\beta < \alpha$ and defining $\beta_n = 1 - (1-\beta)^{1/n}$, our good event is that the confidence lower bounds $X_i -  z_{1-\beta_n}$ for the means $\mu_i$ all simultaneously hold:
 \begin{equation*}
     G_{\mu} = \{X_i < \mu_i + z_{1-\beta_n} \text{ for all } i \in [n] \}.
 \end{equation*}
