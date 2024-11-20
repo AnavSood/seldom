@@ -41,6 +41,7 @@
 \newcommand{\Cov}{\textup{Cov}}
 \newcommand{\Var}{\textup{Var}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\X}{\boldsymbol{X}}
 
 \providecommand{\keywords}[1]
 {
@@ -59,7 +60,7 @@
 \maketitle
 
 \begin{abstract}
-Selective inference is a subfield of statistics that enables valid inferences after selection of a data-dependent question. In this paper, we introduce selectively dominant p-values, a class of p-values that allow practitioners to easily perform inference after arbitrary selection procedures. Unlike a traditional p-value, whose distribution must stochastically dominate the uniform distribution under the null, a selectively dominant p-value must have a  post-selection distribution that stochastically dominates that of a uniform having undergone the same selection process; moreover, this property must hold simultaneously for all possible selection processes. Despite the strength of this condition, we show that all commonly used p-values (e.g., p-values from two-sided testing in parametric families, one-sided testing in monotone likelihood ratio and exponential families, $F$-tests in linear regression, and permutation tests) are selectively dominant. By recasting two canonical selective inference problems—inference on winners and rank verification—in our selective dominance framework, we provide simpler derivations, a deeper conceptual understanding, and new generalizations and variations of these methods. Additionally, we use our insights to introduce selective variants of methods that combine p-values, such as Fisher's combination test. 
+Selective inference is a subfield of statistics that enables valid inference after selection of a data-dependent question. In this paper, we introduce selectively dominant p-values, a class of p-values that allows practitioners to easily perform inference after arbitrary selection procedures. Unlike a traditional p-value, whose distribution must stochastically dominate the uniform distribution under the null, a selectively dominant p-value must have a  post-selection distribution that stochastically dominates that of a uniform having undergone the same selection process; moreover, this property must hold simultaneously for all possible selection processes. Despite the strength of this condition, we show that all commonly used p-values (e.g., p-values from two-sided testing in parametric families, one-sided testing in monotone likelihood ratio and exponential families, $F$-tests in linear regression, and permutation tests) are selectively dominant. By recasting two canonical selective inference problems—inference on winners and rank verification—in our selective dominance framework, we provide simpler derivations, a deeper conceptual understanding, and new generalizations and variations of these methods. Additionally, we use our insights to introduce selective variants of methods that combine p-values, such as Fisher's combination test. 
 \end{abstract}
 
 
@@ -278,7 +279,7 @@ In a permutation test we observe data $X \in \mathcal{X}$ and compute a test sta
 \end{example}
 
 \begin{example}[$F$-tests for regression]
-Suppose we observe data $Y \in \R^n$ from a linear model $Y = \boldsymbol{X} \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\boldsymbol{X} \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try and reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\boldsymbol{X}$, so it is trivially selectively dominant given $Z = \boldsymbol{X}$. We describe this test and its associated p-value more explicitly in \Cref{sec:f_test_appdx}. 
+Suppose we observe data $Y \in \R^n$ from a linear model $Y = \X \beta + \epsilon$ parameterized by $\beta \in \R^p$,  where $\X \in \R^{n \times p }$ has full column rank with probability one and is independent of $\epsilon \sim N(0, \sigma^2 I_n)$. We can run an $F$-test to try and reject the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$. The p-value associated with the $F$-test has an exact $\text{Unif}([0, 1])$ distribution given $\X$, so it is trivially selectively dominant given $Z = \X$. We describe this test and its associated p-value more explicitly in \Cref{sec:f_test_appdx}. 
 \end{example}
 
 Establishing \Cref{exm:mlr} and \Cref{exm:exp_fam} is non-trivial, and the bulk of \Cref{sec:one_sided_appdx} is spent doing so. The majority the article focuses on examples from these two non-trivial settings. 
@@ -318,7 +319,7 @@ Our second example shows how to use \Cref{thm:adjustment} to perform inference u
     \end{align*}
     Marginal error control then follows from the law of total probability. 
     \begin{align*}
-        P(\text{falsely reject } H_{0, W}) &= \sum_{j=1}^n P(\text{falsely reject } H_{0, j} \mid W = j)P(W=j) \\
+        P(\text{falsely reject } H_{0, W}) &= \sum_{j=1}^n P(W=j)P(\text{falsely reject } H_{0, j} \mid W = j) \\
                                           &\leq \alpha \sum_{j=1}^n P(W=j)\\
                                           &\leq \alpha. 
     \end{align*}
@@ -350,7 +351,7 @@ Crucially, in \Cref{exm:carve}, the conditional distribution of the random varia
 
 In the most basic version of data fission, we add and subtract independent normal noise $Z \sim N(0, 1)$ to a normal sample $X \sim N(\mu, 1)$ to get two independent samples $X_1, X_2 \sim N(\mu, 2)$ centered at the same mean. This is meant to mimic data splitting: the first sample can be used for selection and the second for inference. Data thinning generalizes this idea by making $X$ a random vector from a parametric family and adding noise to make $k$ new random vectors $X_1, \dots, X_k$ that (1) are independent and (2) can be used to recover $X$ via a deterministic function $X = T(X_1, \dots, X_k)$. Vanilla data thinning involves using some of the $X_i$ to perform selection and then the rest to do inference. Data carving, however, suggests constructing a p-value $p = p(T(X_1, \dots, X_n))$ using all of the data, despite some of the $X_i$ being used for selection. Because the noise we add to $X$ to get the $X_i$ has no dependence on the unknown parameter, the joint distribution of the $X_i$ given $p$ also has no dependence on the unknown parameter. Therefore, contrary to the what \cite{Leiner} suggest, the selection function $s(x)$ is always \underline{known}, and we can always apply our framework to data carve and get more power. If the selection process is highly complicated, it is true that $s(x)$ may be very difficult to compute, but in theory it is always accessible to us via extensive simulations. 
 
-Our framework also applies to regression problems, including \cite{2016}'s foundational problem of doing inference on LASSO selected regression coefficients. For sake of brevity, we have moved this discussion to \Cref{sec:lasso_appdx}.  
+Our framework also applies to regression problems, including \cite{Lee2016}'s foundational problem of doing inference on LASSO selected regression coefficients. This example is a bit long, so we have deferred it to \Cref{sec:lasso_appdx}.  
 
 \Cref{exm:correction}, \Cref{exm:winner}, \Cref{exm:carve} all share a common theme. In all three examples, the practitioner cheats. They peak at the p-value and, to varying degrees, they only test the null when the p-value looks promising. The purpose of selective procedures is to adjust the p-value in a way that accounts for this cheating. The harsher the cheating is, the more this adjustment inflates the original p-value. 
 
@@ -662,7 +663,7 @@ The crucial difference between our derivation and \cite{Hung2019}'s is that \cit
 \section{Combining selective p-values}
 \label{sec:multiple}
 
-In this section we illustrate how our selective dominance viewpoint allows us to combine inferences across many p-values, even post-selection. Rather than just selecting just one p-value to use for inference as in \Cref{sec:dominance}, some of this section's methods select multiple p-values. As such, we need to slightly generalize our framework from \Cref{sec:dominance}. The generalization is intuitive, and for sake of brevity we have deferred a formal account of it to \Cref{sec:multiple_p_vals_appdx}. The validity of the methods we propose in this section are a direct consequence of the discussion in  \Cref{sec:multiple_p_vals_appdx}. 
+In this section we illustrate how our selective dominance viewpoint allows us to combine inferences across many p-values, even post-selection. Rather than selecting just one p-value to use for inference as in \Cref{sec:dominance}, some of this section's methods select multiple p-values. To accommodate this, we generalize \Cref{sec:dominance}'s framework to allow us to select and perform post-selection inference with multiple p-values rather than just one. The generalization is intuitive, and for sake of brevity we have deferred a formal account of it to \Cref{sec:multiple_p_vals_appdx}.
 
 \subsection{Publication bias corrected meta-analysis}
 
@@ -683,7 +684,7 @@ This approach is analogous to data-carving. After using part of our data for sel
 
 Our combination approach allows us to make more powerful inferences on the open science dataset. Our approach finds that 47 study pairs have significant findings, whereas using solely the original study p-value $p_O/\alpha$ or the replication study p-value $p_R$ results in only 39 or 34 significant findings respectively. It is surprising that, even after a harsh adjustment for publication bias, the corrected original study p-values result in more discoveries than replication study p-values. It is hard to gauge if this is due to chance, differences between the original and replication studies (e.g., minor differences in population demographics, devices used for measurement, sample size), or because there is somehow even harsher selection bias in the original studies than what we have accounted for. It may even be the case that some replicators felt incentivized to induce bias in the opposite direction, and tried to ensure that the replication studies were \underline{not} significant. 
 
-\subsection{Adaptive versions of fisher's combination test}
+\subsection{Adaptive versions of Fisher's combination test}
 
 \begin{figure}
     \centering
@@ -765,19 +766,19 @@ where $U_{aux} \sim \text{Unif}([0, 1])$ adds auxiliary randomness that is indep
 \subsection{$F$-test p-value}
 \label{sec:f_test_appdx}
 
-For the matrix $\boldsymbol{X} \in \R^{n \times p}$, let $\boldsymbol{X}_q \in \R^{n \times q}$ denote the matrix that just contains the first $q$ columns of $\boldsymbol{X}$.
+For the matrix $\X \in \R^{n \times p}$, let $\X_q \in \R^{n \times q}$ denote the matrix that just contains the first $q$ columns of $\X$.
 Then define 
 \begin{equation*}
-    \text{RSS}_f = \|Y -  \boldsymbol{X} (\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{X}^\top Y\|^2_2
+    \text{RSS}_f = \|Y -  \X (\X^\top \X)^{-1} \X^\top Y\|^2_2
 \end{equation*}
 \begin{equation*}
-    \text{RSS}_r = \|Y -  \boldsymbol{X}_q (\boldsymbol{X}_q^\top \boldsymbol{X}_q)^{-1} \boldsymbol{X}_q^\top Y\|^2_2
+    \text{RSS}_r = \|Y -  \X_q (\X_q^\top \X_q)^{-1} \X_q^\top Y\|^2_2
 \end{equation*}
 Under the null $H_0 : \beta_{q+1} = \dots = \beta_p = 0$, the $F$ statistic 
 \begin{equation*}
     F = \frac{(\text{RSS}_r - \text{RSS}_f)/(p-q)}{\text{RSS}_f/(n-p-1)}
 \end{equation*}
-has an exact $F_{p-q, n-q-1}$ distribution conditional on $\boldsymbol{X}$. Let $G$ denote the CDF of the $F_{p-q, n-q-1}$ distribution. Under $H_0$, the p-value $p = 1 - G(p)$ for this test has an exact $\text{Unif}([0, 1])$ distribution conditional on $\boldsymbol{X}$.
+has an exact $F_{p-q, n-q-1}$ distribution conditional on $\X$. Let $G$ denote the CDF of the $F_{p-q, n-q-1}$ distribution. Under $H_0$, the p-value $p = 1 - G(p)$ for this test has an exact $\text{Unif}([0, 1])$ distribution conditional on $\X$.
 
 \subsection{Selective dominance and independence}
 \label{sec:sel_dom_independence}
@@ -852,7 +853,70 @@ Then the fact that $p_{carve}$ is monotone non-decreasing in $t$ follows from th
 \subsection{Post selection inference for the LASSO}
 \label{sec:lasso_appdx}
 
-Coming soon. 
+In the below example, we freely refer to results from \cite{Lee2016}. 
+
+\begin{example}[Post selection inference for the LASSO]
+
+    Suppose that $p$ is a valid p-value for testing the null $H_0$ and it is selectively dominant given $Z$. Imagine there are known functions $q^+(z) \leq q^-(z)$ and $v(z)$, and we only choose to test $H_0$ with $p$ when $x(Z) > 0$ and $p \in [q^+(Z), q^{-}(Z)]$.  Applying our framework with the selection function $s(x) = I(p \in [q^+(Z), q^{-}(Z)])I(v(Z) > 0)$, \Cref{thm:adjustment} tells us that we control selective Type I error if we reject according to the selective p-value $p_{sel} = \frac{p - q^+(Z)}{q^-(Z) - q^+(Z)}$:
+    \begin{equation}
+        \label{eq:lasso_error_control}
+        P_{H_{0}}\left(\frac{p - q^+(Z)}{q^-(Z) - q^+(Z)} \leq \alpha | S = 1\right)  \leq \alpha.
+    \end{equation} 
+    
+    Now, suppose we observe n-dimensional data $Y \in N(\mu, \sigma^2)$ and a fixed matrix $\X \in \R^{n \times p}$. For a fixed regularization strength $\lambda$, the LASSO solution is composed of a fitted coefficient vector $\hat{\beta} \in \R^p$ and a sign vector $\hat{s} \in \R^p$ that satisfy the following Karush-Kuhn-Tucker conditions:
+    \begin{align*}
+        &X^{\top}(X \hat{\beta} - Y) + \lambda \hat{s} = 0,\\
+        &\hat{s}_i = \text{sign}(\hat{\beta}_j)  &\text{ if } \hat{\beta}_j \neq 0,\\
+        &\hat{s}_i \in [-1, 1] &\text{ if } \hat{\beta}_j = 0.
+    \end{align*}
+    We define the fitted model from the LASSO to be the set 
+    \begin{equation*}
+        \hat{M} = \{i \in \{1, \dots, p\} : |\hat{s}_i| = 1\}
+    \end{equation*}
+    For almost every $\lambda$, this is equal to the set of $i \in [p]$ for which $\hat{\beta}_i$ is non-zero. 
+    
+    
+    Now we establish our inferential target. For a subset $M \subseteq [p]$, define $\X_M \in \R^{n \times |M|}$ to be the matrix whose columns are indexed by $M$. Our goal is to do inference on the population parameters for the model $M$,
+    \begin{equation*}
+        \beta^M = \argmin_{b \in R^{|M|}} E[ \|Y - \X_M b \|^2_2] = \X^{\top} \mu.
+    \end{equation*}
+    Particularly, we focus on doing inference on the $j$th index of this parameter vector $\beta^M_j = e_j^{\top} \X_M^{\dagger} \mu$ by testing the null $H_{0, j}^M: \beta^M_j \leq 0$. Letting $\Omega^M = X^{\dagger} (X^{\dagger})^{\top}$, we see that $e_j^{\top}X_M^{\dagger} y \sim N(\beta_j^M, \sigma^2 \Omega^M_{jj} )$. Thus we can test this null using the p-value 
+    \begin{equation*}
+        p^M_j = 1 - \Phi\left( \frac{e_j^{\top}X_M^{\dagger} y}{\sigma \sqrt{\Omega^M_{jj}}}\right),
+    \end{equation*}
+    which is selectively dominant by \Cref{exm:mlr}. However, we only use this p-value to test the null when we observe that $\hat{M} = M$. 
+    
+    Define $Z = (I_n - ((X_M^{\dagger}))^{\top}e_je_j^{\top} X_M^{\dagger}/\Omega^M_{jj}) Y  $ so that $Y$ and $Z$ are independent. Lemma 5.1 of \cite{Lee2016}, often dubbed the polyhedral lemma, tells us exactly that there are functions 
+    \begin{align*}
+        &q_j^{M, s, +}(z) = 1 - \Phi\left( \frac{\mathcal{V}^{M, s, +}(z)}{\sigma \sqrt{\Omega^M_{jj}}}\right) \\
+        &q_j^{M, s, -}(z) = 1 - \Phi\left( \frac{\mathcal{V}^{M, s, -}(z)}{\sigma \sqrt{\Omega^M_{jj}}}\right) \\
+        &\mathcal{V}^{M, s, 0}(z)
+    \end{align*}
+    of $z$, such that 
+    \begin{equation*}
+        \{\hat{M} = M, \hat{s}_M = s \} = \{ p^{M}_j \in [q_j^{M, s, +}(Z), q_j^{M, s, -}(Z)],   \mathcal{V}_{M, s}^0(Z)\geq 0\} 
+    \end{equation*}
+    The functions $\mathcal{V}^{M, s, -}(z)$, $\mathcal{V}^{M, s, +}(z)$, $\mathcal{V}^{M, s, 0}(z)$ are exactly as given in \cite{Lee2016}. 
+
+    Now it is easy to see that rejecting the data-dependent null  $H_{0, j}^{\hat{M}}$ when $ (p^{\hat{M}}_j - q_j^{\hat{M}, \hat{s}, +}(Z))/(q_j^{\hat{M}, \hat{s}, -}(Z) - q_j^{\hat{M}, \hat{s}, +}(Z))$ is at most $\alpha$ controls Type I error conditionally on $\hat{M}$, and therefore also marginally. If $H_{0, j}^{M}$ is false, then trivially $P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M, \hat{s}_M = s) = 0 \leq \alpha $. For the case that $H_{0, j}^M$ is true, the selection event $ \hat{M} = M$ and $\hat{s}_M = s$ is the same as selecting $p^M_j$ for inference in \eqref{eq:lasso_error_control}, so 
+    \begin{align*}
+        P(\text{falsely reject } H_{0, j}^{\hat{M}}| \hat{M} = M, \hat{s}_M = s) &= P \left( \frac{p^{\hat{M}}_j - q_j^{\hat{M}, \hat{s}, +}(Z)}{q_j^{\hat{M}, \hat{s}, -}(Z) - q_j^{\hat{M}, \hat{s}, +}(Z)} \leq \alpha \;\middle|\; \hat{M} = M, \hat{s}_M = s \right)\\
+        &=P \left( \frac{p^{M}_j - q_j^{M, s, +}(Z)}{q_j^{M, s, -}(Z) - q_j^{M, s, +}(Z)} \leq \alpha \;\middle|\; \hat{M} = M, \hat{s}_M = s \right)\\
+        &\leq \alpha 
+    \end{align*}
+    Conditional error control on $\hat{M}$ then follows from the law of total probability,
+    \begin{align*}
+        P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M) &= \sum_{s \in \{-1, 1 \}^{|M}} P(\hat{s}_M = s | \hat{M} = M) P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M, \hat{s}_M = s)\\
+                                                                   &\leq \alpha \sum_{s \in \{-1, 1 \}^{|M}} P(\hat{s}_M = s | \hat{M} = M)\\
+                                                                   &=\alpha,
+    \end{align*}
+    as does marginal error control,
+    \begin{align*}
+        P(\text{falsely reject } H_{0, j}^{\hat{M}}) &= \sum_{M \subseteq [p]} P(\hat{M} = M) P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M)  \\
+                                                     &\leq \alpha \sum_{M \subseteq [p]}P(\hat{M} = M)\\
+                                                     &= \alpha. 
+    \end{align*}
+    \end{example}
 
 \subsection{Comparing conditional and simultaneous inference}
 \label{sec:beta_dist_appdx}
@@ -1306,7 +1370,7 @@ This is sufficient to imply the claim from the main text.
     Suppose that $p$ is a selectively dominant p-value for testing the null $H_0$, but we only choose to test $H_0$ when $p < 1/2$. Applying our framework with the p-value $p$ and selection function $s(x) = I(x < 1/2)$, \Cref{thm:adjustment} tells us that we control selective Type I error if we reject according to the selective p-value $p_{sel} = 2p$:
     \begin{equation}
         \label{eq:rank_verification_error_control}
-        P_{H_{0}}\left(p_{sel} \leq \frac{\alpha}{2} | S = 1\right) = P_{H_{0}}\left(2p_{sel} \leq \alpha | S = 1\right) \leq \alpha.
+        P_{H_{0}}\left(p_ \leq \frac{\alpha}{2} | S = 1\right) = P_{H_{0}}\left(2p \leq \alpha | S = 1\right) \leq \alpha.
     \end{equation} 
     
     Now, consider data $X_1 \sim N(\mu_1, 1/\sqrt{2})$ and $X_2 \sim N(\mu_2, 1/\sqrt{2})$. For the one-sided nulls $H_{0, ij}: \mu_i \leq \mu_j$ the UMP p-values $p_{ij} = 1 - \Phi(X_i - X_j)$ are selectively dominant by \Cref{exm:mlr}. Denoting the winner $W = \argmax_{j = 1, 2} X_j$ and runner-up $R = \argmin_{j = 1, 2} X_j$, it is now clear rejecting the data-dependent null $H_{0, WR}: \mu_W \leq \mu_R$ when $p_{WR} \leq \alpha/2$ maintains Type I error control both conditionally on $W$ and marginally. If $H_{0, ij}$ is not true, then trivially $P(\text{falsely reject } H_{0, WR} \mid W = i) = 0 \leq \alpha$. For the case that $H_{0, ij}$ is true, the event $W=i$ is identical to the event $p_{ij} < 1/2$, and hence is the same event as selecting $p_{ij}$ for inference in \eqref{eq:rank_verification_error_control}. Therefore, in this case,
@@ -1317,7 +1381,7 @@ This is sufficient to imply the claim from the main text.
     \end{align*}
     This establishes error control conditional on $W$. Marginal error control then follows from the law of total probability:
     \begin{align*}
-        P(\text{falsely reject } H_{0, WR}) &= \sum_{i=1, 2} P(\text{falsely reject } H_{0,ij} \mid W = i)P(W=i) \\
+        P(\text{falsely reject } H_{0, WR}) &= \sum_{i=1, 2} P(W=i) P(\text{falsely reject } H_{0,ij} \mid W = i) \\
                                           &\leq \alpha \sum_{i = 1, 2} P(W=i)\\
                                           &=\alpha. 
     \end{align*}
@@ -1369,7 +1433,7 @@ This is sufficient to imply the claim from the main text.
     \end{align*} 
     Again, marginal error control follows from the usual law of total probability argument:
     \begin{align*}
-        P(\text{falsely reject } \cup_{j \neq W} H_{0, Wj}) &= \sum_{i=1}^n P(\text{falsely reject } \cup_{j \neq W} H_{0, Wj} |W = i) P(W= i)\\
+        P(\text{falsely reject } \cup_{j \neq W} H_{0, Wj}) &= \sum_{i=1}^n P(W= i)P(\text{falsely reject } \cup_{j \neq W} H_{0, Wj} |W = i) \\
         &\leq \alpha \sum_{i=1}^n P(W=i)\\
         &=\alpha.
     \end{align*}
@@ -1725,9 +1789,9 @@ is monotone in non-decreasing in $\theta$. This is the subject of our next lemma
     where we have noted that if $(t, u) \in E_{r, s}$ then $t \geq r$ and if $(t, u) \in E_{r, s}$ then $t \leq r$, and also that $g_{\theta_0}(t) = 1$ almost everywhere in the measure $\omega$.  
 \end{proof}
 
-\section{Selecting Multiple p-Values for Inference}
+\section{Selecting multiple p-values for inference}
 \label{sec:multiple_p_vals_appdx}
-
+\iffalse 
 In this appendix, we generalize our selective dominance framework to allow us to select multiple p-values for inference. As we applied the results from \Cref{sec:dominance} in \Cref{exm:winner}, one can apply the results from this section to establish validity of all the methods we propose in \Cref{sec:multiple}. 
 
 Suppose we have $n$ independent and selectively dominant p-values for the nulls $H_{0, i}$. We imagine conditioning on some collection of them, which, without loss of generality, we can take to be $Z = (p_{k+1}, \dots, p_n)$. Note that, due to independence, conditioning on $Z = z$ does not change the distribution of $p_j$. Thus, the $p_j$ remain p-values under the nulls $H_{0, j}$ that are independent. Now, for $1 \leq j \leq k$, we consider $k$ binary selection random variables $S_j \in \{0, 1\}$, where $S_j = 1$ when $p_j$ is selected. The relationship between $p_j$, $Z$, and $S_j$ is governed by the selection function 
@@ -1769,6 +1833,154 @@ This can be confirmed via Bayes rule. Consider a collection of sets $A_j$. Condi
     &= \prod_{j = 1}^k P(p_{sel, j} \in A_j | Z, S_j=1),
 \end{align*}
 where we have used that the $p_j$ are independent conditional on $Z$.
+\fi 
+\iffalse 
+In this appendix, we generalize our selective dominance framework to allow us to select multiple p-values for inference. 
+
+Suppose we have $n$ independent and selectively dominant p-values for the nulls $H_{0, i}$. We will imagine using the first $k$ of them to test the global null $\cap_{i=1}^k H_{0, i}$ after they have been selected. Defining $Z = (p_{k+1}, \dots, p_n)$ to be the remaining random variables, we define $k$ binary selection random variables $S_j \in \{0, 1\}$ for $k \leq j$, where $S_j = 1$ when $p_j$ is selected. The relationship between $p_j$, $Z$, and $S_j$ is governed by the selection function \footnote{Formally $s(p_j, Z) = E[S | p_j, Z]$.} 
+\begin{equation*}
+    s_j(x, z) = p(S_j = 1 | p_j = x, Z=z)
+\end{equation*} 
+Supposing that $U_j$ are independent uniform random variables on the same probability space that are also independent of each other and $Z$, we imagine selecting the $U_j$ using the same selection functions. That is, also have binary selection variables $S'_j \in \{0, 1\}$ whose joint distribution with $U_j$ is governed by \footnote{Formally $s(U, Z) = E[S' | U, Z]$.} 
+\begin{equation*}
+    P(S'_j = 1| U_j = x, Z = z) = s_j(x, z)
+\end{equation*}
+
+We demand that the selection happens independently, i.e., 
+\begin{equation*}
+    P(S_1 = 1, \dots, S_k = 1 \mid p_1, \dots, p_k, Z) = \prod_{j = 1}^k P(S_j = 1 \mid p_j, Z) \text{ a.e. under } P 
+\end{equation*} 
+By taking expectations conditional on $Z$ with respect to both sides, we find that the $S_j$ are independent given $Z$ a.e. under $P$. The follow equalities hold a.e. under $P$. 
+\begin{align*}
+    P(S_1 = 1, \dots, S_k = 1 \mid Z) &= E[P(S_1 = 1, \dots, S_k = 1 | p_1, \dots, p_k, Z) \mid Z] \\
+    &= E \left[\prod_{j = 1}^k P(S_j = 1 | p_j, Z) \;\middle|\; Z\right]\\
+    &= \prod_{j=1}^k E[P(S_j = 1 | p_j, Z)]\\
+    &= \prod_{j=1}^k P(S_j = 1 | Z)
+\end{align*}
+where we have used that the $p_j$ are conditionally independent given $Z$ to move the expectation inside the product. 
+
+Now we restrict our attentions to selection functions $s_{j}(x, z)$ for which $P(S_1=1, \dots, S_k= 1)$ is positive. When this is the case we can define the conditional probability measures $Q(\cdot) = P(\cdot| S_1=1, \dots, S_k= 1)$ and $Q_j(\cdot) = P(\cdot | S_j = 1)$. Note that $Q$ is absolutely continuous with respect to all the $Q_j$ and also $P$, so any statement which is true a.e. under any $Q_j$ or under $P$ is also true a.e. under $Q$. Applying \Cref{lem:ce}, the following equalities thus hold a.e. under $Q$:
+
+\begin{align*}
+    &E_Q[ I(p_1 \in A_1) \dots I(p_k \in A_k) \mid Z] \\
+    &= \frac{E_P[ I(p_1 \in A_1)S_1 \dots I(p_k \in A_k)S_k \mid Z] }{E_P[ S_1\dots S_k \mid Z]}\\
+    &= \frac{E_P[I(p_1 \in A_1) \dots I(p_k \in A_k) E_P[ S_1\dots S_k \mid p_1, \dots, p_k, Z] | \mid Z ]  }{E_P[ S_1\dots S_k \mid Z]}\\
+    &= \frac{E_P[I(p_1 \in A_1) P(S_1= 1 | p_1, Z) \dots I(p_k \in A_k) P(S_k= 1 | p_k, Z)  | \mid Z ]  }{E_P[ S_1\dots S_k \mid Z]}\\
+    &= \prod_{i=1}^k \frac{E_P[ I(p_i \in A_1) P(S_i= 1 | p_i, Z)]}{P(S_i= 1 | Z)}
+\end{align*}
+
+where again we have used the conditional independence of the $p_j$ given $Z$. 
+\fi 
+
+
+In this appendix, we generalize our selective dominance framework to allow us to select multiple p-values for inference. 
+
+Suppose we have $k$ p-values for the nulls $H_{0, i}$ that are selectively dominant given some common $Z$. We require that these p-values are conditionally independent given $Z$. Define $k$ binary selection random variables $S_j \in \{0, 1\}$, where $S_j = 1$ when $p_j$ is selected. The relationship between $p_j$, $Z$, and $S_j$ is governed by the selection functions \footnote{Again, formally $s(p_j, Z) = E[S | p_j, Z]$.} 
+\begin{equation*}
+    s_j(x, z) = p(S_j = 1 | p_j = x, Z=z)
+\end{equation*} 
+Furthermore, we demand that the different selections happen independently, i.e., 
+\begin{equation}
+    \label{eq:mult_indep}
+    P(S_1 = 1, \dots, S_k = 1 \mid p_1, \dots, p_k, Z) = \prod_{j = 1}^k P(S_j = 1 \mid p_j, Z) \text{ a.e. under } P 
+\end{equation} 
+
+Define the selective p-values from \Cref{thm:adjustment} $p_{sel, j} = \int_0^{p_j} s_j(x, Z)dx/\int_0^1 s_j(x, Z) dx$. Our goal is to show that these selective p-values remain independent and are also valid p-values after selection:
+
+\begin{equation}
+    \label{eq:mult_error_control}
+    P_{\cap_{i=1}^k H_{0, i}}(p_{sel, 1} \leq t_1, \dots, p_{sel, j} \leq t_1 | S_1=1, \dots, S_j=1) \leq \prod_{j=1}^k t_j \text{ for all } t \in [0,1 ]^k 
+\end{equation}
+
+Fix a distribution $P$ in the global null. As this statement is vacuously true when $P( S_1=1, \dots, S_j=1) = 0$, it suffices to suppose that  $P( S_1=1, \dots, S_j=1) > 0$, in which case we can define the conditional probability measures 
+\begin{equation*}
+    Q(A) = P(A| S_1=1, \dots, S_k= 1) = \frac{P(A,  S_1=1, \dots, S_k=1)}{P( S_1=1, \dots, S_k=1)}
+\end{equation*}
+and 
+\begin{equation*}
+    Q_j(A) = P(A| S_j=1) = \frac{P(A, S_j=1)}{P( S_j=1)}
+\end{equation*}
+Note that $Q$ is absolutely continuous with respect to all the $Q_j$ and also $P$, so any statement which is true a.e. under any $Q_j$ or a.e under $P$ is also true a.e. under $Q$.
+
+By taking expectations of \eqref{eq:mult_indep} conditional on $Z$ with respect to both sides, we find that the $S_j$ are independent given $Z$ a.e. under $P$ (and thus also a.e. under $Q$). The following equalities hold a.e. under $P$. 
+\begin{align*}
+    P(S_1 = 1, \dots, S_k = 1 \mid Z) &= E[P(S_1 = 1, \dots, S_k = 1 | p_1, \dots, p_k, Z) \mid Z] \\
+    &= E \left[\prod_{j = 1}^k P(S_j = 1 | p_j, Z) \;\middle|\; Z\right] & \text{(\Cref{eq:mult_indep}) }\\
+    &= \prod_{j=1}^k E[P(S_j = 1 | p_j, Z)] & \text{ ($p_j$ conditionally independent given $Z$)  } \\
+    &= \prod_{j=1}^k P(S_j = 1 | Z)
+\end{align*}
+where we have used that the $p_j$ are conditionally independent given $Z$ to move the expectation inside the product. 
+
+Now, we recall from \Cref{sec:adjustment_proof} that the selective p-value $p_{sel, j}$ is a continuous function of $p_j$ for a.e. $Z$ under $Q_j$, and therefore this is true for a.e. $Z$ under $Q$. Namely, we have for all $t \in [0, 1]^k$ that 
+
+\begin{align*}
+    Q(p_{sel, 1} \leq t_1,  \dots, p_{sel, k} \leq t_k| Z) &=  Q(p_1 \in A_{1, Z, t}, \dots, p_k \in A_{k, Z, t} |Z) \text{ a.e. under } Q
+\end{align*}
+To be specific, for $z$ such that $\int_0^1 s_j(x, z)dx > 0 $, the $A_{j, z, t}$ are Borel sets such that $\int_0^y s_j(x, z)/\int_0^1 s_j(x, z) \leq t_j \iff y \in A_z$. Now, the following equalities hold for all $t \in [0, 1]^k$ a.e. under $Q$:
+
+\begin{align*}
+    &E_Q[ I(p_1 \in A_{1, Z, t}) \dots I(p_k \in A_{k, Z, t}) \mid Z] \\
+    &= \frac{E_P[ I(p_1 \in A_{1, Z, t})S_1 \dots I(p_k \in A_{k, Z, t})S_k \mid Z] }{E_P[ S_1\dots S_k \mid Z]} & \text{(\Cref{lem:ce})}\\
+    &= \frac{E_P[I(p_1 \in A_{1, Z, t}) \dots I(p_k \in A_{k, Z, t}) E_P[ S_1\dots S_k \mid p_1, \dots, p_k, Z] | \mid Z ]  }{E_P[ S_1\dots S_k \mid Z]}  & \text{(LoTE)}\\
+    &= \frac{E_P[I(p_1 \in A_{1, Z, t}) E_P[S_1= 1 | p_k, Z] \dots I(p_k \in A_{k, Z, t}) E_P[S_k= 1 | p_k, Z]  | \mid Z ]  }{E_P[ S_1\dots S_k \mid Z]} & \text{(\Cref{eq:mult_indep})}\\
+    &= \prod_{i=1}^k \frac{E_P[ I(p_i \in A_{i, Z, t}) E_P[S_i= 1 | p_i, Z]| Z]}{E_P[S_{i, Z} | Z]} & \text{(earlier result)}\\\\
+    &= \prod_{i=1}^k \frac{E_P[ I(p_i \in A_{i, Z, t})S_i| Z]}{E_P[S_i | Z]} & \text{(LoTE)} \\
+    &=  \prod_{i=1}^k E_{Q_i}[I(p_i \in A_{i, Z, t})| Z] & \text{(\Cref{lem:ce})}\\
+    &= \prod_{i=1}^k E_{Q_i}[I(p_{sel, i} \leq t_i)| Z] & \text{(earlier reasoning)}\\
+    &\leq \prod_{i=1}^k t_i & \text{(\Cref{thm:adjustment})}
+\end{align*}
+Of course, the fact that 
+\begin{equation*}
+    P(p_{sel, 1} \leq t_1, \dots, p_{sel, k} \leq t_k | Z, S_1=1, \dots, S_j=1) \leq \prod_{j=1}^k t_j \text{ for all } t \in [0,1 ]^k  \text{ a.e. under } Q 
+\end{equation*}
+is sufficient to imply \eqref{eq:mult_error_control}. 
+
+\subsection{Proof of \Cref{cor:cfisher}}
+
+Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the nulls $H_{0, i}$. We consider a subset $p_{i_1}, \dots, p_{i_k}$ of them to use for inference. Denoting the remaining as $Z = (p_{i_{k+1}}, \dots, p_{i_n})$, we have that $p_{i_1}, \dots, p_{i_k}$ are conditionally independent given $Z$. We select the $p_{i_j}$ for $j \leq k$ to use for inference when they are smaller than all the p-values in $Z$, i.e., we use the selection functions $s_{j}(x, z) = I(x \leq \min_k z_k)$. For these selection functions, the condition \Cref{eq:mult_indep} is obviously satisfied, and \Cref{eq:mult_error_control} tells us that, under the global null $\cap_{j=1}^k H_{0, i_j} $, the selective p-values $p_{i_j}/\min_{\ell \not \in \{i_1, \dots, i_k \} } p_{\ell}$ are independent and valid p-values after selection. In particular, if we denote the $1-\alpha$ quantile of the $\chi^2_{d}$ distribution as $Q_d$, a consequence of \Cref{eq:mult_error_control} is that 
+\begin{equation}
+    \label{eq:cfisher_error_control}
+    P_{\cap_{j=1}^k H_{0, i_j} }(-2 \sum_{j=1}^k \log(p_{i_j}/ \min_{\ell \not \in \{i_1, \dots, i_k\}} p_{\ell} ) \geq Q_{2k}|S_{i_1} = 1, \dots,  S_{i_k} = 1)
+\end{equation}
+
+To show conditional error control, we first note that if $ \cap_{j = 1}^k H_{0, i_j}$ is false, then trivially
+\begin{equation*}
+    P(\text{falsely reject } \cap_{i=1}^k H_{0, (i)} |S_{i_1} = 1, \dots,  S_{i_k} = 1) = 0 \leq \alpha.
+\end{equation*} 
+For the case that $\cap_{j = 1}^k H_{0, i_j}$ is true, then the event $S_{i_1} = 1, \dots,  S_{i_k} = 1$ is the same as selecting the $p_{i_1}, \dots, p_{i_k}$ for inference in \eqref{eq:cfisher_error_control}, so 
+\begin{align*}
+    &P(\text{falsely reject } \cap_{i=1}^k H_{0, (i)} |S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &=P(-2 \sum_{j=1}^k \log(p_{(j)}/p_{(k+1)}) \geq Q_{2k} |S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &=  P(-2 \sum_{j=1}^k \log(p_{i_j}/ \min_{\ell \not \in \{i_1, \dots, i_k\}} p_{\ell} ) \geq Q_{2k}|S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &\leq \alpha 
+\end{align*}
+Now, letting $J$ denote the set of indices of the bottom $k$ p-values, It follows from the definition of conditional expectation that $P(A| J) = P(A | S_j = 1 \text{ for all } j \in J)$ a.e. under $P$, and the above therefore implies that $P(\text{falsely reject } \cap_{i=1}^k H_{0, (i)} | J)  \leq \alpha$ a.e. under $P$. Marginal error control then follows from the law of total expectation.
+
+To see that the same applies for the global null repeat the same argument and replace any mentions of $\cap_{j = 1}^k H_{0, i_j}$ and $\cap_{j=1}^k H_{0, (j)}$ with $\cap_{i=1}^n H_{0, i}$. 
+
+\subsection{Proof of \Cref{cor:tfisher}}
+
+
+Suppose we have $n$ independent and selectively dominant p-values $p_i$ for the nulls $H_{0, i}$. We select $p_j$ to use for inference when it is smaller than some pre-specified threshold $\tau_j$, i.e., we use the selection functions $s_{j}(x) = I(x \leq \tau_j)$. Let $S_j$ be the indicator that the $j$th p-value is selected and $J$ be the random set of indices of the selected p-values. For these selection functions, the condition \eqref{eq:mult_indep} is obviously satisfied, and \eqref{eq:mult_error_control} tells us that, under the global null $\cap_{j=1}^k H_{0, i_j} $, the selective p-values $p_{i_j}/\tau_j$ are independent and valid p-values after selection. In particular, if we denote the $1-\alpha$ quantile of the $\chi^2_{d}$ distribution as $Q_d$, a consequence of \Cref{eq:mult_error_control} is that 
+\begin{equation*}
+    \label{eq:tfisher_error_control}
+    P_{\cap_{j=1}^k H_{0, i_j} }(-2 \sum_{j=1}^k \log(p_{i_j}/ \tau_j ) \geq Q_{2k}|S_{i_1} = 1, \dots,  S_{i_k} = 1)
+\end{equation*}
+
+To show conditional error control, we first note that if $ \cap_{j = 1}^k H_{0, i_j}$ is false, then trivially
+\begin{equation*}
+    P(\text{falsely reject } \cap_{j \in J}^k H_{0, j} |S_{i_1} = 1, \dots,  S_{i_k} = 1) = 0 \leq \alpha.
+\end{equation*} 
+For the case that $\cap_{j = 1}^k H_{0, i_j}$ is true, then the event $S_{i_1} = 1, \dots,  S_{i_k} = 1$ is the same as selecting the $p_{i_1}, \dots, p_{i_k}$ for inference in \eqref{eq:tfisher_error_control}, so 
+\begin{align*}
+    &P(\text{falsely reject } \cap_{j \in J}^k H_{0, j} |S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &=P(-2 \sum_{j\in J} \log(p_{j}/ \tau_j ) \geq Q_{2k} |S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &=  P(-2 \sum_{j=1}^k \log(p_{i_j}/ \tau_j ) \geq Q_{2k}|S_{i_1} = 1, \dots,  S_{i_k} = 1)\\
+    &\leq \alpha 
+\end{align*}
+It follows from the definition of conditional expectation that $P(A| J) = P(A | S_j = 1 \text{ for all } j \in J)$ a.e. under $P$, and the above therefore implies that $P(\text{falsely reject } \cap_{j \in J} H_{0, j} | J)  \leq \alpha$ a.e. under $P$. Marginal error control then follows from the law of total expectation.
+
+To see that the same applies for the global null repeat the same argument and replace any mentions of $\cap_{j = 1}^k H_{0, i_j}$ and $\cap_{j \in J} H_{0, j}$ with $\cap_{i=1}^n H_{0, i}$. 
 
 \section{Proofs}
 \label{sec:proofs_appdx}
