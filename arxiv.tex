@@ -179,7 +179,7 @@ In the problems we consider, we use $p$ to test the null $H_0$ only after it has
     \label{eq:valid_given_z}
     P_{H_0}(p \leq t | Z) \leq P(U \leq t)  = t \text{ for all } t \in [0, 1],  \text{ a.e. under } P_{H_0}.
 \end{equation}
-The random vector $Z$ plays an integral role in establishing the relationship between $p$ and a binary selection random variable $S \in \{0, 1\}$, which takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function} \footnote{Formally, the selection function $s(\cdot, \cdot)$ such is an instantiation of the conditional expectation $s(p, Z) = E[S|p , Z ]$. },
+The random vector $Z$ plays an integral role in the relationship between $p$ and a binary selection random variable $S \in \{0, 1\}$, which takes value one when $p$ is selected and zero otherwise. The relationship between $p$, $Z$, and $S$ is governed by a \textbf{selection function} \footnote{Formally, the selection function $s(\cdot, \cdot)$ such is an instantiation of the conditional expectation $s(p, Z) = E[S|p , Z ]$. },
 \begin{equation*}
     s(x, z) = P(S = 1 \mid p = x, Z = z).
 \end{equation*}
@@ -302,7 +302,7 @@ Suppose we have a selectively dominant p-value $p$ for the null hypothesis $H_0$
 \end{equation*}
 \end{example}
 
-In \Cref{exm:publication_bias}, if one computes the selective p-value $p_{sel}$ from \eqref{eq:adjustment} carefully, they will find it equals $\min(p/\alpha, 1)$, rather than $p/\alpha$ as we originally claimed. However,these two expressions are almost surely equal under the conditional probability measure $P(\cdot|S=1)$ given selection. \Cref{thm:adjustment}'s result therefore applies regardless of which one we choose to use. Throughout the remainder of our examples, we will continue to give expressions for $p_{sel}$ that, at the very least, are equal to \eqref{eq:adjustment} a.e. under $P(\cdot|S=1)$.
+In \Cref{exm:publication_bias}, if one computes the selective p-value $p_{sel}$ from \eqref{eq:adjustment} carefully, they will find it equals $\min(p/\alpha, 1)$, rather than $p/\alpha$ as we originally claimed. However, these two expressions are almost surely equal under $P(\cdot|S=1)$, the conditional probability measure given selection. \Cref{thm:adjustment}'s result therefore applies regardless of which one we choose to use. Throughout the remainder of our examples, we will continue to give expressions for $p_{sel}$ that, at the very least, are equal to \eqref{eq:adjustment} a.e. under $P(\cdot|S=1)$.
 
 Since essentially all the p-values researchers use are selectively dominant, \Cref{exm:correction} gives a simple way for readers to make valid inferences in the presence of publication bias: declare a studies' result significant when the associated p-value is at most $\alpha^2$.
 
@@ -670,7 +670,7 @@ The crucial difference between our derivation and \cite{Hung2019}'s is that \cit
 
 In this section we illustrate how our selective dominance viewpoint allows us to combine inferences across many p-values, even post-selection. Rather than selecting just one p-value to use for inference as in \Cref{sec:dominance}, some of this section's methods select multiple p-values. To accommodate this, we generalize \Cref{sec:dominance}'s framework to allow us to select and perform post-selection inference with multiple p-values rather than just one. The generalization is intuitive, and for sake of brevity we have deferred a formal account of it to \Cref{sec:multiple_p_vals_appdx}.
 
-\subsection{Publication bias corrected meta-analysis}
+\subsection{Publication bias aware meta-analysis}
 
 \begin{figure}
     \centering
