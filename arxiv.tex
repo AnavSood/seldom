@@ -876,7 +876,7 @@ In the below example, we freely refer to results from \cite{Lee2016}.
     For almost every $\lambda$, this is equal to the set of $i \in [p]$ for which $\hat{\beta}_i$ is non-zero. 
     
     
-    Now we establish our inferential target. For a subset $M \subseteq [p]$, define $\X_M \in \R^{n \times |M|}$ to be the matrix whose columns are indexed by $M$. Our goal is to do inference on the population parameters for the model $M$,
+    Now we establish our inferential target. For a subset $M \subseteq [p]$, define $\X_M \in \R^{n \times |M|}$ to be the matrix that has the columns of $\X$ indexed by $M$. Our goal is to do inference on the population parameters for the model $M$,
     \begin{equation*}
         \beta^M = \argmin_{b \in R^{|M|}} E[ \|Y - \X_M b \|^2_2] = \X^{\top} \mu.
     \end{equation*}
@@ -886,7 +886,7 @@ In the below example, we freely refer to results from \cite{Lee2016}.
     \end{equation*}
     which is selectively dominant by \Cref{exm:mlr}. However, we only use this p-value to test the null when we observe that $\hat{M} = M$. 
     
-    Define $Z = (I_n - ((X_M^{\dagger}))^{\top}e_je_j^{\top} X_M^{\dagger}/\Omega^M_{jj}) Y  $ so that $Y$ and $Z$ are independent. Lemma 5.1 of \cite{Lee2016}, often dubbed the polyhedral lemma, tells us exactly that there are functions 
+    Define $Z = (I_n - (X_M^{\dagger})^{\top}e_je_j^{\top} X_M^{\dagger}/\Omega^M_{jj}) Y  $ so that $Y$ and $Z$ are independent. Lemma 5.1 of \cite{Lee2016}, often dubbed the polyhedral lemma, precisely tells us that there are functions 
     \begin{align*}
         &q_j^{M, s, +}(z) = 1 - \Phi\left( \frac{\mathcal{V}^{M, s, +}(z)}{\sigma \sqrt{\Omega^M_{jj}}}\right) \\
         &q_j^{M, s, -}(z) = 1 - \Phi\left( \frac{\mathcal{V}^{M, s, -}(z)}{\sigma \sqrt{\Omega^M_{jj}}}\right) \\
@@ -896,7 +896,7 @@ In the below example, we freely refer to results from \cite{Lee2016}.
     \begin{equation*}
         \{\hat{M} = M, \hat{s}_M = s \} = \{ p^{M}_j \in [q_j^{M, s, +}(Z), q_j^{M, s, -}(Z)],   \mathcal{V}_{M, s}^0(Z)\geq 0\} 
     \end{equation*}
-    The functions $\mathcal{V}^{M, s, -}(z)$, $\mathcal{V}^{M, s, +}(z)$, $\mathcal{V}^{M, s, 0}(z)$ are exactly as given in \cite{Lee2016}. 
+    The functions $\mathcal{V}^{M, s, -}(z)$, $\mathcal{V}^{M, s, +}(z)$, $\mathcal{V}^{M, s, 0}(z)$ match those given in \cite{Lee2016}. 
 
     Now it is easy to see that rejecting the data-dependent null  $H_{0, j}^{\hat{M}}$ when $ (p^{\hat{M}}_j - q_j^{\hat{M}, \hat{s}, +}(Z))/(q_j^{\hat{M}, \hat{s}, -}(Z) - q_j^{\hat{M}, \hat{s}, +}(Z))$ is at most $\alpha$ controls Type I error conditionally on $\hat{M}$, and therefore also marginally. If $H_{0, j}^{M}$ is false, then trivially $P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M, \hat{s}_M = s) = 0 \leq \alpha $. For the case that $H_{0, j}^M$ is true, the selection event $ \hat{M} = M$ and $\hat{s}_M = s$ is the same as selecting $p^M_j$ for inference in \eqref{eq:lasso_error_control}, so 
     \begin{align*}
@@ -906,8 +906,8 @@ In the below example, we freely refer to results from \cite{Lee2016}.
     \end{align*}
     Conditional error control on $\hat{M}$ then follows from the law of total probability,
     \begin{align*}
-        P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M) &= \sum_{s \in \{-1, 1 \}^{|M}} P(\hat{s}_M = s | \hat{M} = M) P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M, \hat{s}_M = s)\\
-                                                                   &\leq \alpha \sum_{s \in \{-1, 1 \}^{|M}} P(\hat{s}_M = s | \hat{M} = M)\\
+        P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M) &= \sum_{s \in \{-1, 1 \}^{|M|}} P(\hat{s}_M = s | \hat{M} = M) P(\text{falsely reject } H_{0, j}^{\hat{M}} | \hat{M} = M, \hat{s}_M = s)\\
+                                                                   &\leq \alpha \sum_{s \in \{-1, 1 \}^{|M|}} P(\hat{s}_M = s | \hat{M} = M)\\
                                                                    &=\alpha,
     \end{align*}
     as does marginal error control,
